@@ -6,6 +6,7 @@
  * tl;dr - this is where all the tRPC server stuff is created and plugged in.
  * The pieces you will need to use are documented accordingly near the end
  */
+import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
@@ -22,8 +23,8 @@ import { ZodError } from "zod";
  *
  * @see https://trpc.io/docs/server/context
  */
-export const createTRPCContext = () => {
-  return {};
+export const createTRPCContext = ({ req, res }: CreateNextContextOptions) => {
+  return { req, res };
 };
 
 /**

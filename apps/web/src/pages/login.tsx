@@ -1,21 +1,27 @@
 import Image from "next/image";
+import { RiLoader3Fill } from "react-icons/ri";
 import { SiDiscord } from "react-icons/si";
 
 import { Button } from "@giverve/ui/button";
 
-import logo from "~/assets/logo.png";
 import BaseLayout from "~/layouts/base-layout";
+import { api } from "~/utils/api";
+import logo from "../assets/logo.png";
 
 export default function Login() {
+  const { mutate, data, isPending } = api.auth.login.useMutation();
+
+  if (data) window.location.href = data.url;
+
   return (
     <BaseLayout title="Login">
       <main className="flex h-[100dvh] items-center justify-center">
-        <section className="mx-auto grid w-full max-w-md gap-6 rounded-lg p-8 shadow-lg">
+        <section className="mx-auto grid w-full max-w-sm gap-6 rounded-lg p-8 shadow-lg">
           <div className="grid gap-2 text-center">
             <Image
               src={logo}
               alt="Jikubot Logo"
-              className="mx-auto size-36 rounded-full"
+              className="pointer-events-none mx-auto size-32 select-none rounded-full"
               priority
             />
             <h1 className="text-4xl font-bold">Welcome Back!</h1>
@@ -24,9 +30,19 @@ export default function Login() {
             </p>
           </div>
           <div className="grid gap-4">
-            <Button className="font-medium">
-              <SiDiscord className="mr-2 size-5" />
-              Login with Discord
+            <Button
+              onClick={() => mutate()}
+              disabled={isPending}
+              className="font-semibold"
+            >
+              {!isPending ? (
+                <>
+                  <SiDiscord className="mr-2 size-5" />
+                  Login with Discord
+                </>
+              ) : (
+                <RiLoader3Fill className="size-7 animate-spin" />
+              )}
             </Button>
           </div>
         </section>
