@@ -4,9 +4,9 @@ import { SiDiscord } from "react-icons/si";
 
 import { Button } from "@giverve/ui/button";
 
+import logo from "~/assets/logo.png";
 import BaseLayout from "~/layouts/base-layout";
 import { api } from "~/utils/api";
-import logo from "../assets/logo.png";
 
 export default function Login() {
   const { mutate, data, isPending } = api.auth.login.useMutation();
