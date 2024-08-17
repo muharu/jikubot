@@ -208,9 +208,6 @@ importers:
       superjson:
         specifier: 'catalog:'
         version: 2.2.1
-      zod:
-        specifier: 'catalog:'
-        version: 3.23.8
     devDependencies:
       '@giverve/eslint-config':
         specifier: workspace:*
@@ -266,6 +263,9 @@ importers:
       '@trpc/server':
         specifier: 'catalog:'
         version: 11.0.0-rc.477
+      cookie:
+        specifier: ^0.6.0
+        version: 0.6.0
       superjson:
         specifier: 'catalog:'
         version: 2.2.1
@@ -282,6 +282,9 @@ importers:
       '@giverve/tsconfig':
         specifier: workspace:*
         version: link:../../tooling/typescript
+      '@types/cookie':
+        specifier: ^0.6.0
+        version: 0.6.0
       eslint:
         specifier: 'catalog:'
         version: 9.9.0(jiti@1.21.6)
