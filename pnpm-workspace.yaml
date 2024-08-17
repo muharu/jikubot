@@ -1,0 +1,46 @@
+# Define the package directories
+packages:
+  - apps/*
+  - packages/*
+  - tooling/*
+
+# Define the package catalog for general dependencies
+catalog:
+  # TRPC packages
+  "@tanstack/react-query": ^5.51.9
+  "@trpc/client": ^11.0.0-rc.466
+  "@trpc/next": ^11.0.0-rc.446
+  "@trpc/react-query": ^11.0.0-rc.466
+  "@trpc/server": ^11.0.0-rc.466
+  superjson: "2.2.1"
+
+  # Hono
+  "@hono/node-server": "^1.12.0"
+  "@hono/trpc-server": "^0.3.2"
+  hono: "^4.5.5"
+
+  # Next.js packages
+  next: "14.2.5"
+  jiti: "^1.21.6"
+
+  # Tailwind CSS packages
+  tailwindcss: "^3.4.9"
+  postcss: "^8.4.39"
+
+  # Tooling packages
+  dotenv-cli: "^7.4.2"
+  esbuild: "^0.23.0"
+  eslint: ^9.7.0
+  prettier: ^3.3.3
+  rimraf: "^6.0.1"
+  tsx: "^4.17.0"
+  typescript: ^5.5.3
+  zod: ^3.23.8
+
+catalogs:
+  # Define additional catalogs for specific React versions
+  react18:
+    react: 18.3.1
+    react-dom: 18.3.1
+    "@types/react": ^18.3.3
+    "@types/react-dom": ^18.3.0

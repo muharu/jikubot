@@ -1,0 +1,37 @@
+{
+  "name": "bot",
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "pnpm with-env tsx --watch src/index.ts",
+    "build": "rimraf ./dist && pnpm with-env node esbuild.config.mjs",
+    "start": "pnpm with-env node dist/cluster.js",
+    "clean": "git clean -xdf .cache .next .turbo node_modules",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "with-env": "dotenv -e ../../.env --"
+  },
+  "dependencies": {
+    "@giverve/api": "workspace:*",
+    "@trpc/client": "catalog:",
+    "@trpc/server": "catalog:",
+    "commandkit": "^0.1.10",
+    "discord-hybrid-sharding": "^2.2.0",
+    "discord.js": "^14.15.3",
+    "superjson": "catalog:"
+  },
+  "devDependencies": {
+    "@giverve/eslint-config": "workspace:*",
+    "@giverve/prettier-config": "workspace:*",
+    "@giverve/tsconfig": "workspace:*",
+    "@types/node": "latest",
+    "dotenv-cli": "catalog:",
+    "esbuild": "catalog:",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "rimraf": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:"
+  },
+  "prettier": "@giverve/prettier-config"
+}
