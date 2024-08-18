@@ -1,17 +1,17 @@
 import type { IncomingMessage } from "http";
 import type { ParsedUrlQuery } from "querystring";
 
-import { API_CONSTANTS } from "@giverve/api";
-
-import { getCookie } from "./cookies";
+import { constants, cookies } from "@giverve/api";
 
 interface AuthorizeServerSideParams {
   req: IncomingMessage;
   query: ParsedUrlQuery;
 }
 
+const { COOKIE_OAUTH_STATE_NAME } = constants;
+
 export function authorizeServerSide({ req, query }: AuthorizeServerSideParams) {
-  const stateFromCookie = getCookie(req, API_CONSTANTS.COOKIE_OAUTH_STATE_NAME);
+  const stateFromCookie = cookies.getCookie(req, COOKIE_OAUTH_STATE_NAME);
   const stateFromUrlQuery = query.state as string;
   const codeFromUrlQuery = query.code as string;
 

@@ -1,7 +1,8 @@
 import type { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
 
 import type { AppRouter } from "./root";
-import API_CONSTANTS from "./common/constants";
+import constants from "./common/constants";
+import cookies from "./common/cookies";
 import { appRouter } from "./root";
 import { createCallerFactory, createTRPCContext } from "./trpc";
 
@@ -30,5 +31,5 @@ type RouterInputs = inferRouterInputs<AppRouter>;
  **/
 type RouterOutputs = inferRouterOutputs<AppRouter>;
 
-export { API_CONSTANTS, appRouter, createCaller, createTRPCContext };
+export { appRouter, constants, cookies, createCaller, createTRPCContext };
 export type { AppRouter, RouterInputs, RouterOutputs };

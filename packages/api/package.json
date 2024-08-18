@@ -37,7 +37,6 @@
     "@giverve/db": "workspace:*",
     "@giverve/validators": "workspace:*",
     "@trpc/server": "catalog:",
-    "cookie": "^0.6.0",
     "superjson": "catalog:",
     "wretch": "^2.9.0",
     "zod": "catalog:"
@@ -46,7 +45,6 @@
     "@giverve/eslint-config": "workspace:*",
     "@giverve/prettier-config": "workspace:*",
     "@giverve/tsconfig": "workspace:*",
-    "@types/cookie": "^0.6.0",
     "discord-api-types": "^0.37.94",
     "eslint": "catalog:",
     "prettier": "catalog:",

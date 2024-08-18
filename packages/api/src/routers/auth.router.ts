@@ -1,4 +1,4 @@
-import API_CONSTANTS from "../common/constants";
+import constants from "../common/constants";
 import cookies from "../common/cookies";
 import utils from "../common/utils";
 import authSchema from "../schemas/auth.schema";
@@ -9,7 +9,7 @@ const {
   COOKIE_ACCESS_TOKEN_NAME,
   COOKIE_REFRESH_TOKEN_NAME,
   COOKIE_OAUTH_STATE_NAME,
-} = API_CONSTANTS;
+} = constants;
 
 export const authRouter = createTRPCRouter({
   login: publicProcedure
