@@ -1,21 +1,24 @@
 import type { GetServerSideProps } from "next";
-import { useRouter } from "next/router";
+import { useEffect, useRef } from "react";
 import { RiLoader3Fill } from "react-icons/ri";
 
 import BaseLayout from "~/layouts/base-layout";
+import { api } from "~/utils/api";
 import { authorizeServerSide } from "~/utils/gssp";
 
 export default function Authorization({
   code,
   state,
 }: Readonly<{ code: string; state: string }>) {
-  const { replace } = useRouter();
+  const { mutate } = api.auth.authorize.useMutation();
+  const hasRun = useRef(false);
 
-  if (!code || !state) {
-    void replace("/login");
-  } else {
-    console.log("Code:", code, "State:", state);
-  }
+  useEffect(() => {
+    if (!hasRun.current) {
+      hasRun.current = true;
+      mutate({ code, state });
+    }
+  }, [code, state, mutate]);
 
   return (
     <BaseLayout title="Authorization">

@@ -269,6 +269,9 @@ importers:
       superjson:
         specifier: 'catalog:'
         version: 2.2.1
+      wretch:
+        specifier: ^2.9.0
+        version: 2.9.0
       zod:
         specifier: 'catalog:'
         version: 3.23.8
@@ -285,6 +288,9 @@ importers:
       '@types/cookie':
         specifier: ^0.6.0
         version: 0.6.0
+      discord-api-types:
+        specifier: ^0.37.94
+        version: 0.37.94
       eslint:
         specifier: 'catalog:'
         version: 9.9.0(jiti@1.21.6)
@@ -2236,6 +2242,9 @@ packages:
 
   discord-api-types@0.37.83:
     resolution: {integrity: sha512-urGGYeWtWNYMKnYlZnOnDHm8fVRffQs3U0SpE8RHeiuLKb/u92APS8HoQnPTFbnXmY1vVnXjXO4dOxcAn3J+DA==}
+
+  discord-api-types@0.37.94:
+    resolution: {integrity: sha512-gD1CDdsnXNTLGwvVoxCXMlM4L2NXUaB227h5z2F0oQ0VkRFi/BzSOTPuOoieq8czUMl67Z+rVstKNVcPFom6fw==}
 
   discord-hybrid-sharding@2.2.0:
     resolution: {integrity: sha512-nI9iyqrrQvBR8HZjiNu8Tsb0HR9mqp0ZlSfiIxUaqiwaBzTtG2o4/yCZIMwnj3DnV4UZeuejuhPhr8vkz+uiwg==}
@@ -4195,6 +4204,10 @@ packages:
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
 
+  wretch@2.9.0:
+    resolution: {integrity: sha512-kKp1xWQO+Vh9I6RJq7Yers2KKrmF7LXB00c9knMDn3IdB7etcQOarrsHArpj1sZ1Dlav8ss6R1DuUpDSTqmQew==}
+    engines: {node: '>=14'}
+
   ws@8.18.0:
     resolution: {integrity: sha512-8VbfWfHLbbwu3+N6OKsOMpBdT4kXPDDB9cJk2bJ6mh9ucxdlnNvH1e+roYkKmN9Nxw2yjz7VzeO9oOz2zJ04Pw==}
     engines: {node: '>=10.0.0'}
@@ -5809,6 +5822,8 @@ snapshots:
       path-type: 4.0.0
 
   discord-api-types@0.37.83: {}
+
+  discord-api-types@0.37.94: {}
 
   discord-hybrid-sharding@2.2.0: {}
 
@@ -8007,6 +8022,8 @@ snapshots:
       strip-ansi: 7.1.0
 
   wrappy@1.0.2: {}
+
+  wretch@2.9.0: {}
 
   ws@8.18.0: {}
 
