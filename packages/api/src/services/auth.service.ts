@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 
-import type { RESTPostOAuth2AccessTokenResult } from "../common/lib/discord";
-import { discord } from "../common/lib/discord";
+import type { RESTPostOAuth2AccessTokenResult } from "../common/discord";
+import discord from "../common/discord";
 
 export async function exchangeAuthorizationCodeForToken(
   code: string,
