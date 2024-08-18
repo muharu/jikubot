@@ -27,6 +27,8 @@ export function setCookie(
   }
 }
 
-export const cookies = {
+const cookies = {
   setCookie,
 };
+
+export default cookies;

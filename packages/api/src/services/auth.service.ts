@@ -3,11 +3,9 @@ import { TRPCError } from "@trpc/server";
 import type { RESTPostOAuth2AccessTokenResult } from "../common/lib/discord";
 import { discord } from "../common/lib/discord";
 
-export async function exchangeAuthorizationCodeForToken({
-  code,
-}: {
-  code: string;
-}): Promise<RESTPostOAuth2AccessTokenResult> {
+export async function exchangeAuthorizationCodeForToken(
+  code: string,
+): Promise<RESTPostOAuth2AccessTokenResult> {
   const fetch = discord.fetch;
   const route = discord.routes.oauth2TokenExchange();
   const params = new URLSearchParams();
@@ -32,6 +30,8 @@ export async function exchangeAuthorizationCodeForToken({
   }
 }
 
-export const authServices = {
+const authServices = {
   exchangeAuthorizationCodeForToken,
 };
+
+export default authServices;
