@@ -37,6 +37,7 @@
     "@giverve/db": "workspace:*",
     "@giverve/validators": "workspace:*",
     "@trpc/server": "catalog:",
+    "jose": "^5.6.3",
     "superjson": "catalog:",
     "wretch": "^2.9.0",
     "zod": "catalog:"
