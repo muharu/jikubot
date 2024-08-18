@@ -10,8 +10,11 @@ export const authorizeRequest = z.object({
 });
 
 export const authorizeResponse = z.object({
-  code: z.string(),
-  state: z.string(),
+  id: z.number(),
+  username: z.string(),
+  email: z.string().email(),
+  globalName: z.string(),
+  avatar: z.string(),
 });
 
 const authSchema = {

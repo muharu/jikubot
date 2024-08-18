@@ -1,12 +1,16 @@
 import { TRPCError } from "@trpc/server";
 
-import type { RESTPostOAuth2AccessTokenResult } from "../common/discord";
+import type {
+  RESTGetAPIUserResult,
+  RESTPostOAuth2AccessTokenResult,
+} from "../common/discord";
 import discord from "../common/discord";
+
+const fetch = discord.fetch;
 
 export async function exchangeAuthorizationCodeForToken(
   code: string,
 ): Promise<RESTPostOAuth2AccessTokenResult> {
-  const fetch = discord.fetch;
   const route = discord.routes.oauth2TokenExchange();
   const params = new URLSearchParams();
 
@@ -30,8 +34,30 @@ export async function exchangeAuthorizationCodeForToken(
   }
 }
 
+export async function exchangeAccessTokenForUserInfo(
+  accessToken: string,
+): Promise<RESTGetAPIUserResult> {
+  const route = discord.routes.user();
+
+  try {
+    return await fetch
+      .url(route)
+      .headers({
+        Authorization: `Bearer ${accessToken}`,
+      })
+      .get()
+      .json<RESTGetAPIUserResult>();
+  } catch {
+    throw new TRPCError({
+      code: "SERVICE_UNAVAILABLE",
+      message: "Error getting user info from discord server",
+    });
+  }
+}
+
 const authServices = {
   exchangeAuthorizationCodeForToken,
+  exchangeAccessTokenForUserInfo,
 };
 
 export default authServices;

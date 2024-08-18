@@ -1,6 +1,7 @@
 import constants from "../common/constants";
 import cookies from "../common/cookies";
 import utils from "../common/utils";
+import authUserDTOMapper from "../dtos/auth.dto";
 import authSchema from "../schemas/auth.schema";
 import authServices from "../services/auth.service";
 import { createTRPCRouter, publicProcedure } from "../trpc";
@@ -9,6 +10,7 @@ const {
   COOKIE_ACCESS_TOKEN_NAME,
   COOKIE_REFRESH_TOKEN_NAME,
   COOKIE_OAUTH_STATE_NAME,
+  COOKIE_JWT_NAME,
 } = constants;
 
 export const authRouter = createTRPCRouter({
@@ -16,11 +18,14 @@ export const authRouter = createTRPCRouter({
     .output(authSchema.loginResponse)
     .mutation(({ ctx }) => {
       const { res } = ctx;
+
       const authState = utils.generateRandomString(43);
       const url = utils.generateDiscordAuthorizationUrl(authState);
+
       cookies.setCookie(res, COOKIE_OAUTH_STATE_NAME, authState, {
         maxAge: 60 * 60, // 1 hour
       });
+
       return { url };
     }),
 
@@ -29,20 +34,31 @@ export const authRouter = createTRPCRouter({
     .output(authSchema.authorizeResponse)
     .mutation(async ({ ctx, input }) => {
       const { res } = ctx;
-      const { code, state } = input;
+      const { code } = input;
 
-      const tokens = await authServices.exchangeAuthorizationCodeForToken(code);
-      const encryptedAccessToken = utils.encryptString(tokens.access_token);
-      const encryptedRefreshToken = utils.encryptString(tokens.refresh_token);
+      const { access_token, refresh_token, expires_in } =
+        await authServices.exchangeAuthorizationCodeForToken(code);
+      const userInfoFromDiscord =
+        await authServices.exchangeAccessTokenForUserInfo(access_token);
+
+      const user = authUserDTOMapper.convertToAuthUserDTO(userInfoFromDiscord);
+
+      const jwt = await utils.signJWT(user, expires_in);
+
+      const encryptedAccessToken = utils.encryptString(access_token);
+      const encryptedRefreshToken = utils.encryptString(refresh_token);
+      const encryptedJWT = utils.encryptString(jwt);
 
       cookies.setCookie(res, COOKIE_ACCESS_TOKEN_NAME, encryptedAccessToken, {
-        maxAge: tokens.expires_in,
+        maxAge: expires_in,
       });
-
       cookies.setCookie(res, COOKIE_REFRESH_TOKEN_NAME, encryptedRefreshToken, {
-        maxAge: tokens.expires_in,
+        maxAge: expires_in,
+      });
+      cookies.setCookie(res, COOKIE_JWT_NAME, encryptedJWT, {
+        maxAge: expires_in,
       });
 
-      return { code, state };
+      return user;
     }),
 });
