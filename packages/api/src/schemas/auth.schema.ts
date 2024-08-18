@@ -9,9 +9,15 @@ export const authorizeRequest = z.object({
   state: z.string(),
 });
 
+export const authorizeResponse = z.object({
+  code: z.string(),
+  state: z.string(),
+});
+
 const authSchema = {
   loginResponse,
   authorizeRequest,
+  authorizeResponse,
 };
 
 export default authSchema;

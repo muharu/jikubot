@@ -26,9 +26,10 @@ export const authRouter = createTRPCRouter({
 
   authorize: publicProcedure
     .input(authSchema.authorizeRequest)
+    .output(authSchema.authorizeResponse)
     .mutation(async ({ ctx, input }) => {
       const { res } = ctx;
-      const { code } = input;
+      const { code, state } = input;
 
       const tokens = await authServices.exchangeAuthorizationCodeForToken(code);
       const encryptedAccessToken = utils.encryptString(tokens.access_token);
@@ -42,9 +43,6 @@ export const authRouter = createTRPCRouter({
         maxAge: tokens.expires_in,
       });
 
-      return {
-        code: input.code,
-        state: input.state,
-      };
+      return { code, state };
     }),
 });
