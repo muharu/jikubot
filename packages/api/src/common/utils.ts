@@ -1,3 +1,4 @@
+import { createDbTransaction } from "./lib/db-transaction";
 import CryptoHandler from "./lib/encryption";
 import { decodeJWT, signJWT, verifyJWT } from "./lib/jwt";
 
@@ -44,6 +45,7 @@ const utils = {
   signJWT,
   verifyJWT,
   decodeJWT,
+  createDbTransaction,
 };
 
 export default utils;

@@ -1,10 +1,14 @@
 import { TRPCError } from "@trpc/server";
 
+import type { tokens, users } from "@giverve/db";
+
 import type {
   RESTGetAPIUserResult,
   RESTPostOAuth2AccessTokenResult,
 } from "../common/discord";
 import discord from "../common/discord";
+import utils from "../common/utils";
+import userRepository from "../repositories/user.repository";
 
 const fetch = discord.fetch;
 
@@ -26,10 +30,11 @@ export async function exchangeAuthorizationCodeForToken(
       .body(params)
       .post()
       .json<RESTPostOAuth2AccessTokenResult>();
-  } catch {
+  } catch (error) {
     throw new TRPCError({
       code: "SERVICE_UNAVAILABLE",
-      message: "Error getting tokens from discord server",
+      message: "Failed to exchange authorization code with Discord.",
+      ...(process.env.NODE_ENV !== "production" && { cause: error }),
     });
   }
 }
@@ -47,10 +52,58 @@ export async function exchangeAccessTokenForUserInfo(
       })
       .get()
       .json<RESTGetAPIUserResult>();
-  } catch {
+  } catch (error) {
     throw new TRPCError({
       code: "SERVICE_UNAVAILABLE",
-      message: "Error getting user info from discord server",
+      message: "Failed to fetch user info from Discord.",
+      ...(process.env.NODE_ENV !== "production" && { cause: error }),
+    });
+  }
+}
+
+export async function saveOrUpdateUser(
+  discordId: number,
+  data: typeof users.$inferInsert,
+) {
+  try {
+    return await utils.createDbTransaction(async (ctx) => {
+      const user = await userRepository.findUserByDiscordId(discordId, ctx);
+      if (!user) {
+        await userRepository.insertUser(data, ctx);
+      } else {
+        await userRepository.updateUserByDiscordId(discordId, data, ctx);
+      }
+    });
+  } catch (error) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Failed to save or update user in the database.",
+      ...(process.env.NODE_ENV !== "production" && { cause: error }),
+    });
+  }
+}
+
+export async function saveOrUpdateUserTokens(
+  discordId: number,
+  data: typeof tokens.$inferInsert,
+) {
+  try {
+    return await utils.createDbTransaction(async (ctx) => {
+      const user = await userRepository.findUserTokensByDiscordId(
+        discordId,
+        ctx,
+      );
+      if (!user) {
+        await userRepository.insertUserTokens(data, ctx);
+      } else {
+        await userRepository.updateUserTokensByDiscordId(discordId, data, ctx);
+      }
+    });
+  } catch (error) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Failed to save or update user tokens in the database.",
+      ...(process.env.NODE_ENV !== "production" && { cause: error }),
     });
   }
 }
@@ -58,6 +111,8 @@ export async function exchangeAccessTokenForUserInfo(
 const authServices = {
   exchangeAuthorizationCodeForToken,
   exchangeAccessTokenForUserInfo,
+  saveOrUpdateUser,
+  saveOrUpdateUserTokens,
 };
 
 export default authServices;

@@ -49,6 +49,20 @@ export const authRouter = createTRPCRouter({
       const encryptedRefreshToken = utils.encryptString(refresh_token);
       const encryptedJWT = utils.encryptString(jwt);
 
+      await authServices.saveOrUpdateUser(user.id, {
+        discordId: user.id,
+        username: user.username,
+        email: user.email,
+        avatar: user.avatar,
+        globalName: user.globalName,
+      });
+
+      await authServices.saveOrUpdateUserTokens(user.id, {
+        discordId: user.id,
+        accessToken: access_token,
+        refreshToken: refresh_token,
+      });
+
       cookies.setCookie(res, COOKIE_ACCESS_TOKEN_NAME, encryptedAccessToken, {
         maxAge: expires_in,
       });

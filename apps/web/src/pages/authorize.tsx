@@ -1,5 +1,6 @@
 import type { GetServerSideProps } from "next";
 import { useEffect, useRef } from "react";
+import { useRouter } from "next/router";
 import { RiLoader3Fill } from "react-icons/ri";
 
 import BaseLayout from "~/layouts/base-layout";
@@ -10,8 +11,17 @@ export default function Authorization({
   code,
   state,
 }: Readonly<{ code: string; state: string }>) {
-  const { mutate } = api.auth.authorize.useMutation();
+  const router = useRouter();
   const hasRun = useRef(false);
+
+  const { mutate } = api.auth.authorize.useMutation({
+    onSuccess: () => {
+      void router.replace("/");
+    },
+    onError: () => {
+      void router.replace("/login");
+    },
+  });
 
   useEffect(() => {
     if (!hasRun.current) {
