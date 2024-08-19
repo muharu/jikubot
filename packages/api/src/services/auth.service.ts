@@ -34,7 +34,7 @@ export async function exchangeAuthorizationCodeForToken(
     throw new TRPCError({
       code: "SERVICE_UNAVAILABLE",
       message: "Failed to exchange authorization code with Discord.",
-      ...(process.env.NODE_ENV !== "production" && { cause: error }),
+      cause: process.env.NODE_ENV !== "production" && error,
     });
   }
 }
@@ -56,7 +56,31 @@ export async function exchangeAccessTokenForUserInfo(
     throw new TRPCError({
       code: "SERVICE_UNAVAILABLE",
       message: "Failed to fetch user info from Discord.",
-      ...(process.env.NODE_ENV !== "production" && { cause: error }),
+      cause: process.env.NODE_ENV !== "production" && error,
+    });
+  }
+}
+
+export async function getNewTokens(refreshToken: string) {
+  const route = discord.routes.oauth2TokenExchange();
+  const params = new URLSearchParams();
+
+  params.append("client_id", String(process.env.AUTH_DISCORD_ID));
+  params.append("client_secret", String(process.env.AUTH_DISCORD_SECRET));
+  params.append("grant_type", "refresh_token");
+  params.append("refresh_token", refreshToken);
+
+  try {
+    return await fetch
+      .url(route)
+      .body(params)
+      .post()
+      .json<RESTPostOAuth2AccessTokenResult>();
+  } catch (error) {
+    throw new TRPCError({
+      code: "SERVICE_UNAVAILABLE",
+      message: "Failed to refresh access token with Discord.",
+      cause: process.env.NODE_ENV !== "production" && error,
     });
   }
 }
@@ -78,7 +102,7 @@ export async function saveOrUpdateUser(
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
       message: "Failed to save or update user in the database.",
-      ...(process.env.NODE_ENV !== "production" && { cause: error }),
+      cause: process.env.NODE_ENV !== "production" && error,
     });
   }
 }
@@ -103,7 +127,7 @@ export async function saveOrUpdateUserTokens(
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
       message: "Failed to save or update user tokens in the database.",
-      ...(process.env.NODE_ENV !== "production" && { cause: error }),
+      cause: process.env.NODE_ENV !== "production" && error,
     });
   }
 }
@@ -111,6 +135,7 @@ export async function saveOrUpdateUserTokens(
 const authServices = {
   exchangeAuthorizationCodeForToken,
   exchangeAccessTokenForUserInfo,
+  getNewTokens,
   saveOrUpdateUser,
   saveOrUpdateUserTokens,
 };
