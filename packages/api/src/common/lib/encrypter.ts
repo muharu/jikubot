@@ -88,4 +88,9 @@ class CryptoHandler {
   }
 }
 
-export default CryptoHandler;
+const encrypter = new CryptoHandler(String(process.env.AUTH_SECRET), {
+  encoding: "base64url",
+  saltLength: 10,
+});
+
+export default encrypter;

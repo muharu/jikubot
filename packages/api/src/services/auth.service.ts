@@ -11,6 +11,7 @@ import utils from "../common/utils";
 import userRepository from "../repositories/user.repository";
 
 const fetch = discord.fetch;
+const transaction = utils.createDbTransaction();
 
 export async function exchangeAuthorizationCodeForToken(
   code: string,
@@ -144,7 +145,7 @@ export async function saveOrUpdateUser(
   data: typeof users.$inferInsert,
 ) {
   try {
-    return await utils.createDbTransaction(async (ctx) => {
+    return await transaction(async (ctx) => {
       const user = await userRepository.findUserByDiscordId(discordId, ctx);
       if (!user) {
         await userRepository.insertUser(data, ctx);
@@ -166,7 +167,7 @@ export async function saveOrUpdateUserTokens(
   data: typeof tokens.$inferInsert,
 ) {
   try {
-    return await utils.createDbTransaction(async (ctx) => {
+    return await transaction(async (ctx) => {
       const user = await userRepository.findUserTokensByDiscordId(
         discordId,
         ctx,

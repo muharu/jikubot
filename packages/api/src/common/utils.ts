@@ -1,51 +1,50 @@
-import { createDbTransaction } from "./lib/db-transaction";
-import CryptoHandler from "./lib/encryption";
-import { decodeJWT, signJWT, verifyJWT } from "./lib/jwt";
+import { db } from "@giverve/db";
 
-const cryptoHandler = new CryptoHandler(String(process.env.AUTH_SECRET), {
-  encoding: "base64url",
-  saltLength: 10,
-});
+import type { ExtendedPayload } from "./lib/jwt";
+import encrypter from "./lib/encrypter";
+import generator from "./lib/generator";
+import jwt from "./lib/jwt";
 
-export function encryptString(str: string): string {
-  return cryptoHandler.encrypt(str);
-}
+class Utils {
+  private encrypter = encrypter;
+  private generator = generator;
+  private jwt = jwt;
 
-export function decryptString(str: string): string {
-  return cryptoHandler.decrypt(str);
-}
-
-export function generateRandomString(length: number): string {
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
-  const charactersLength = characters.length;
-  let result = "";
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  public createDbTransaction() {
+    return db.transaction.bind(db);
   }
-  return result;
+
+  public encryptString(str: string): string {
+    return this.encrypter.encrypt(str);
+  }
+
+  public decryptString(str: string): string {
+    return this.encrypter.decrypt(str);
+  }
+
+  public generateRandomString(length: number): string {
+    return this.generator.generateRandomString(length);
+  }
+
+  public generateDiscordAuthorizationUrl(state: string): string {
+    return this.generator.generateDiscordAuthorizationUrl(state);
+  }
+
+  public async signJWT<T extends ExtendedPayload>(
+    payload: T,
+    maxAge?: string | number | Date,
+  ): Promise<string> {
+    return this.jwt.signJWT(payload, maxAge);
+  }
+
+  public async verifyJWT<T extends ExtendedPayload>(token: string): Promise<T> {
+    return this.jwt.verifyJWT<T>(token);
+  }
+
+  public decodeJWT<T extends ExtendedPayload>(token: string): T | null {
+    return this.jwt.decodeJWT<T>(token);
+  }
 }
 
-export function generateDiscordAuthorizationUrl(state: string): string {
-  const params = new URLSearchParams({
-    client_id: String(process.env.AUTH_DISCORD_ID),
-    redirect_uri: String(process.env.API_BASE_URL + "/authorize"),
-    response_type: "code",
-    scope: "identify email guilds",
-    state,
-  });
-  return `https://discord.com/api/oauth2/authorize?${params.toString()}`;
-}
-
-const utils = {
-  generateRandomString,
-  generateDiscordAuthorizationUrl,
-  encryptString,
-  decryptString,
-  signJWT,
-  verifyJWT,
-  decodeJWT,
-  createDbTransaction,
-};
-
+const utils = new Utils();
 export default utils;
