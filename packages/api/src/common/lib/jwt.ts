@@ -18,7 +18,7 @@ export interface ExtendedPayload extends JWTPayload {
   globalName: string;
 }
 
-export class JWT {
+class JWT {
   private secret: string;
   private algorithm: JWTHeaderParameters["alg"];
   private maxAge: MaxAgeFormat;
