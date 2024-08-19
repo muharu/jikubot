@@ -1,11 +1,16 @@
-import { Routes } from "discord-api-types/v10";
+import { discordApiFetchInstance, discordApiRoutes } from "./lib/fetch-wrapper";
 
-import { discordApiFetchInstance } from "./lib/fetch-wrapper";
+class Discord {
+  public fetch: typeof discordApiFetchInstance;
+  public routes: typeof discordApiRoutes;
 
-const discord = {
-  fetch: discordApiFetchInstance,
-  routes: Routes,
-};
+  constructor() {
+    this.fetch = discordApiFetchInstance;
+    this.routes = discordApiRoutes;
+  }
+}
+
+const discord = new Discord();
 
 export default discord;
 export type * from "discord-api-types/v10";
