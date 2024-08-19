@@ -80,16 +80,67 @@ export async function checkHasLoggedInServerSide({
           permanent: false,
         },
       };
+    } else {
+      return {
+        props: {},
+      };
     }
-
-    return {
-      props: {},
-    };
   } catch (error) {
     console.error(error);
     clearCookies(res);
     return {
       props: {},
+    };
+  }
+}
+
+export async function checkIsLoggedInServerSide({
+  req,
+  res,
+}: {
+  req: IncomingMessage;
+  res: ServerResponse;
+}) {
+  const accessToken = cookies.getCookie(req, COOKIE_ACCESS_TOKEN_NAME);
+  const refreshToken = cookies.getCookie(req, COOKIE_REFRESH_TOKEN_NAME);
+  const jwt = cookies.getCookie(req, COOKIE_JWT_NAME);
+
+  if (!accessToken || !refreshToken || !jwt) {
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  }
+
+  try {
+    if (accessToken && refreshToken && jwt) {
+      utils.decryptString(accessToken);
+      utils.decryptString(refreshToken);
+      const decryptedJwt = utils.decryptString(jwt);
+
+      await utils.verifyJWT(decryptedJwt);
+
+      return {
+        props: {},
+      };
+    } else {
+      return {
+        redirect: {
+          destination: "/login",
+          permanent: false,
+        },
+      };
+    }
+  } catch (error) {
+    console.error(error);
+    clearCookies(res);
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
     };
   }
 }
