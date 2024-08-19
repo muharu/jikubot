@@ -85,7 +85,8 @@ export async function checkHasLoggedInServerSide({
     return {
       props: {},
     };
-  } catch {
+  } catch (error) {
+    console.error(error);
     clearCookies(res);
     return {
       props: {},

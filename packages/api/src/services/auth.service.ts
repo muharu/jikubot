@@ -85,6 +85,60 @@ export async function getNewTokens(refreshToken: string) {
   }
 }
 
+export async function revokeAccessToken(accessToken: string) {
+  const route = discord.routes.oauth2TokenRevocation();
+  const params = new URLSearchParams();
+
+  params.append("token", accessToken);
+  params.append("token_type_hint", "access_token");
+
+  try {
+    return await fetch.url(route).body(params).post().json();
+  } catch (error) {
+    throw new TRPCError({
+      code: "SERVICE_UNAVAILABLE",
+      message: "Failed to revoke token with Discord.",
+      cause: process.env.NODE_ENV !== "production" && error,
+    });
+  }
+}
+
+export async function revokeRefreshToken(refreshToken: string) {
+  const route = discord.routes.oauth2TokenRevocation();
+  const params = new URLSearchParams();
+
+  params.append("token", refreshToken);
+  params.append("token_type_hint", "refresh_token");
+
+  try {
+    return await fetch.url(route).body(params).post().json();
+  } catch (error) {
+    throw new TRPCError({
+      code: "SERVICE_UNAVAILABLE",
+      message: "Failed to revoke token with Discord.",
+      cause: process.env.NODE_ENV !== "production" && error,
+    });
+  }
+}
+
+export async function revokeAllTokens(
+  accessToken: string,
+  refreshToken: string,
+) {
+  try {
+    await Promise.all([
+      revokeAccessToken(accessToken),
+      revokeRefreshToken(refreshToken),
+    ]);
+  } catch (error) {
+    throw new TRPCError({
+      code: "SERVICE_UNAVAILABLE",
+      message: "Failed to revoke all tokens with Discord.",
+      cause: process.env.NODE_ENV !== "production" && error,
+    });
+  }
+}
+
 export async function saveOrUpdateUser(
   discordId: number,
   data: typeof users.$inferInsert,
@@ -136,6 +190,9 @@ const authServices = {
   exchangeAuthorizationCodeForToken,
   exchangeAccessTokenForUserInfo,
   getNewTokens,
+  revokeAccessToken,
+  revokeRefreshToken,
+  revokeAllTokens,
   saveOrUpdateUser,
   saveOrUpdateUserTokens,
 };
