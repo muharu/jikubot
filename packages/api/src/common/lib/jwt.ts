@@ -9,8 +9,16 @@ const JWT_SECRET = String(process.env.AUTH_SECRET);
 const DEFAULT_JWT_ALGORITHM: JWTHeaderParameters["alg"] = "HS256";
 const DEFAULT_JWT_MAX_AGE = "1h";
 
-async function signJWT(
-  payload: JWTPayload,
+interface ExtendedPayload extends JWTPayload {
+  id: number;
+  username: string;
+  email: string;
+  avatar: string;
+  globalName: string;
+}
+
+async function signJWT<T extends JWTPayload>(
+  payload: T,
   maxAge?: number | string | Date,
 ): Promise<string> {
   const jwt = await new SignJWT(payload)
@@ -21,7 +29,9 @@ async function signJWT(
   return jwt;
 }
 
-async function verifyJWT(token: string): Promise<JWTPayload> {
+async function verifyJWT<T extends JWTPayload = ExtendedPayload>(
+  token: string,
+): Promise<T> {
   const { payload } = await joseVerifyJwt(
     token,
     new TextEncoder().encode(JWT_SECRET),
@@ -29,12 +39,14 @@ async function verifyJWT(token: string): Promise<JWTPayload> {
       algorithms: [DEFAULT_JWT_ALGORITHM],
     },
   );
-  return payload;
+  return payload as T;
 }
 
-function decodeJWT(token: string): JWTPayload | null {
+function decodeJWT<T extends JWTPayload = ExtendedPayload>(
+  token: string,
+): T | null {
   const decoded = joseDecodeJwt(token);
-  return decoded;
+  return decoded as T;
 }
 
 export { decodeJWT, signJWT, verifyJWT };
