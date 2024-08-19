@@ -5,7 +5,7 @@ import { RiLoader3Fill } from "react-icons/ri";
 
 import BaseLayout from "~/layouts/base-layout";
 import { api } from "~/utils/api";
-import { authorizeServerSide } from "~/utils/gssp";
+import { checkAuthorizeServerSide } from "~/utils/gssp";
 
 export default function Authorization({
   code,
@@ -46,7 +46,7 @@ export const getServerSideProps: GetServerSideProps = async ({
   req,
   query,
 }) => {
-  return await authorizeServerSide({
+  return await checkAuthorizeServerSide({
     req,
     query,
   });

@@ -42,8 +42,9 @@ export const authRouter = createTRPCRouter({
         await authServices.exchangeAccessTokenForUserInfo(access_token);
 
       const user = authUserDTOMapper.convertToAuthUserDTO(userInfoFromDiscord);
+      const jwtExpirationTime = new Date(Date.now() + expires_in * 1000);
 
-      const jwt = await utils.signJWT(user, expires_in);
+      const jwt = await utils.signJWT(user, jwtExpirationTime);
 
       const encryptedAccessToken = utils.encryptString(access_token);
       const encryptedRefreshToken = utils.encryptString(refresh_token);

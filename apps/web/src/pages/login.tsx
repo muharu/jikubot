@@ -1,5 +1,8 @@
+import type { GetServerSideProps } from "next";
+
 import LogoSection from "~/features/login/components/logo-section";
 import BaseLayout from "~/layouts/base-layout";
+import { checkHasLoggedInServerSide } from "~/utils/gssp";
 import { LoginButton } from "../features/login/components/login-button";
 
 export default function Login() {
@@ -16,3 +19,7 @@ export default function Login() {
     </BaseLayout>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+  return await checkHasLoggedInServerSide({ req, res });
+};
