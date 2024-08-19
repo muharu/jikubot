@@ -37,13 +37,16 @@
     "@giverve/db": "workspace:*",
     "@giverve/validators": "workspace:*",
     "@trpc/server": "catalog:",
+    "jose": "^5.6.3",
     "superjson": "catalog:",
+    "wretch": "^2.9.0",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@giverve/eslint-config": "workspace:*",
     "@giverve/prettier-config": "workspace:*",
     "@giverve/tsconfig": "workspace:*",
+    "discord-api-types": "^0.37.94",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "typescript": "catalog:"

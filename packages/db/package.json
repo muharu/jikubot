@@ -35,7 +35,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "dev": "tsc",
+    "dev": "tsc --watch",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
@@ -47,7 +47,6 @@
   "dependencies": {
     "@t3-oss/env-core": "^0.10.1",
     "drizzle-orm": "^0.31.2",
-    "drizzle-zod": "^0.5.1",
     "postgres": "^3.4.4",
     "zod": "catalog:"
   },
