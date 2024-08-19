@@ -7,21 +7,21 @@ const DEFAULT_ENCODING: BufferEncoding = "hex";
 const DEFAULT_SALT_LENGTH = 64;
 const DEFAULT_PBKDF2_ITERATIONS = 100000;
 
-interface CryptoHandlerOptions {
+export interface CryptoUtilsOptions {
   encoding?: BufferEncoding;
   pbkdf2Iterations?: number;
   saltLength?: number;
 }
 
-class CryptoHandler {
-  private readonly secret: string;
-  private readonly encoding: BufferEncoding;
-  private readonly saltLength: number;
-  private readonly pbkdf2Iterations: number;
+export class CryptoUtils {
+  private secret: string;
+  private encoding: BufferEncoding;
+  private saltLength: number;
+  private pbkdf2Iterations: number;
 
-  constructor(secret: string, options?: CryptoHandlerOptions) {
+  constructor(secret: string, options?: CryptoUtilsOptions) {
     if (!secret || typeof secret !== "string") {
-      throw new Error("CryptoHandler: secret must be a non-empty string");
+      throw new Error("CryptoUtils: secret must be a non-empty string");
     }
 
     this.secret = secret;
@@ -41,7 +41,7 @@ class CryptoHandler {
     );
   }
 
-  public encrypt(value: string): string {
+  public encryptString(value: string): string {
     if (!value) {
       throw new Error("Value must not be null or undefined");
     }
@@ -55,12 +55,11 @@ class CryptoHandler {
       cipher.update(value, "utf8"),
       cipher.final(),
     ]);
-
     const tag = cipher.getAuthTag();
     return Buffer.concat([salt, iv, tag, encrypted]).toString(this.encoding);
   }
 
-  public decrypt(encryptedValue: string): string {
+  public decryptString(encryptedValue: string): string {
     if (!encryptedValue) {
       throw new Error("Value must not be null or undefined");
     }
@@ -83,14 +82,11 @@ class CryptoHandler {
       decipher.update(encrypted),
       decipher.final(),
     ]);
-
     return decrypted.toString("utf8");
   }
+
+  public generateRandomString(length = 32): string {
+    const bytes = crypto.randomBytes(length);
+    return bytes.toString("base64").replace(/\+/g, "-").replace(/=+$/, "");
+  }
 }
-
-const encrypter = new CryptoHandler(String(process.env.AUTH_SECRET), {
-  encoding: "base64url",
-  saltLength: 10,
-});
-
-export default encrypter;

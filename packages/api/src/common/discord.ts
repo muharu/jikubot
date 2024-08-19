@@ -1,6 +1,6 @@
 import type { FetchLike, Wretch, WretchOptions } from "wretch";
 import { Routes } from "discord-api-types/v10";
-import wrapFetch from "wretch";
+import wretch from "wretch";
 import { WretchError } from "wretch/resolver";
 
 class Discord {
@@ -13,8 +13,7 @@ class Discord {
   }
 
   private createFetchInstance(baseUrl: string): Wretch {
-    const fetchInstance = wrapFetch(baseUrl);
-
+    const fetchInstance = wretch(baseUrl);
     const discordRatelimitHandlerMiddleware =
       (next: FetchLike) => async (url: string, opts: WretchOptions) => {
         let response = await next(url, opts);
@@ -36,6 +35,17 @@ class Discord {
       };
     fetchInstance.middlewares([discordRatelimitHandlerMiddleware]);
     return fetchInstance;
+  }
+
+  public generateDiscordAuthorizationUrl(state: string): string {
+    const params = new URLSearchParams({
+      client_id: String(process.env.AUTH_DISCORD_ID),
+      redirect_uri: String(process.env.API_BASE_URL + "/authorize"),
+      response_type: "code",
+      scope: "identify email guilds",
+      state,
+    });
+    return `https://discord.com/api/oauth2/authorize?${params.toString()}`;
   }
 }
 

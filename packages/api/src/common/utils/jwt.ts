@@ -18,30 +18,33 @@ export interface ExtendedPayload extends JWTPayload {
   globalName: string;
 }
 
-class JWT {
+export class JWTUtils {
   private secret: string;
   private algorithm: JWTHeaderParameters["alg"];
   private maxAge: MaxAgeFormat;
 
-  constructor(secret: string, maxAge: MaxAgeFormat = DEFAULT_JWT_MAX_AGE) {
+  constructor(secret: string) {
+    if (!secret || typeof secret !== "string") {
+      throw new Error("JWTUtils: secret must be a non-empty string");
+    }
+
     this.secret = secret;
     this.algorithm = DEFAULT_JWT_ALGORITHM;
-    this.maxAge = maxAge;
+    this.maxAge = DEFAULT_JWT_MAX_AGE;
   }
 
-  async signJWT<T extends JWTPayload>(
+  public async signJWT<T extends JWTPayload>(
     payload: T,
-    maxAge?: number | string | Date,
+    maxAge?: MaxAgeFormat,
   ): Promise<string> {
     const jwt = await new SignJWT(payload)
       .setProtectedHeader({ alg: this.algorithm })
       .setExpirationTime(maxAge ?? this.maxAge)
       .sign(new TextEncoder().encode(this.secret));
-
     return jwt;
   }
 
-  async verifyJWT<T extends JWTPayload = ExtendedPayload>(
+  public async verifyJWT<T extends JWTPayload = ExtendedPayload>(
     token: string,
   ): Promise<T> {
     const { payload } = await joseVerifyJwt(
@@ -54,11 +57,12 @@ class JWT {
     return payload as T;
   }
 
-  decodeJWT<T extends JWTPayload = ExtendedPayload>(token: string): T | null {
+  public decodeJWT<T extends JWTPayload = ExtendedPayload>(
+    token: string,
+  ): T | null {
     const decoded = joseDecodeJwt(token);
     return decoded as T;
   }
 }
 
-const jwt = new JWT(String(process.env.AUTH_SECRET));
-export default jwt;
+export type { JWTPayload } from "jose";
