@@ -1,16 +1,72 @@
 import type { IncomingMessage, ServerResponse } from "http";
 
-import type { CookieOptions, SameSiteOption } from "./lib/cookie-helper";
-import cookieHelper from "./lib/cookie-helper";
+type SameSiteOption = "strict" | "lax" | "none";
+interface CookieOptions {
+  httpOnly?: boolean;
+  secure?: boolean;
+  path?: string;
+  sameSite?: SameSiteOption;
+  expires?: Date;
+  maxAge?: number;
+}
 
 class Cookies {
+  private serialize(
+    name: string,
+    value: string,
+    options: CookieOptions = {},
+  ): string {
+    let cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}`;
+
+    if (options.expires) {
+      cookie += `; expires=${options.expires.toUTCString()}`;
+    } else if (options.maxAge) {
+      cookie += `; max-age=${options.maxAge}`;
+    }
+
+    if (options.path) {
+      cookie += `; path=${options.path}`;
+    }
+
+    if (options.secure) {
+      cookie += "; secure";
+    }
+
+    if (options.httpOnly) {
+      cookie += "; HttpOnly";
+    }
+
+    if (options.sameSite) {
+      cookie += `; SameSite=${options.sameSite}`;
+    }
+
+    return cookie;
+  }
+
+  private parse(cookieHeader?: string): Record<string, string> {
+    const cookies: Record<string, string> = {};
+
+    if (cookieHeader) {
+      const cookiesArray = cookieHeader.split(";");
+      cookiesArray.forEach((cookie) => {
+        const [name, ...rest] = cookie.split("=");
+        if (name) {
+          const value = rest.join("=").trim();
+          cookies[decodeURIComponent(name.trim())] = decodeURIComponent(value);
+        }
+      });
+    }
+
+    return cookies;
+  }
+
   public setCookie(
     res: ServerResponse,
     name: string,
     value: string,
     options?: CookieOptions,
   ) {
-    const serializedCookie = cookieHelper.serialize(name, value, {
+    const serializedCookie = this.serialize(name, value, {
       httpOnly:
         process.env.NODE_ENV === "production" ? true : options?.httpOnly,
       secure: process.env.NODE_ENV === "production" ? true : options?.secure,
@@ -34,7 +90,7 @@ class Cookies {
 
   public getCookie(req: IncomingMessage, name: string) {
     const cookieHeader = req.headers.cookie;
-    const cookies = cookieHelper.parse(cookieHeader);
+    const cookies = this.parse(cookieHeader);
     return cookies[name];
   }
 
@@ -46,7 +102,7 @@ class Cookies {
       sameSite?: SameSiteOption;
     },
   ) {
-    const serializedCookie = cookieHelper.serialize(name, "", {
+    const serializedCookie = this.serialize(name, "", {
       expires: new Date(0),
       path: options?.path ?? "/",
       sameSite: options?.sameSite ?? "lax",
