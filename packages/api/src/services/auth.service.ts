@@ -4,15 +4,11 @@ import type {
   RESTGetAPIUserResult,
   RESTPostOAuth2AccessTokenResult,
 } from "../common/discord";
-import type { InsertTokens, InsertUser } from "../repositories/user.repository";
-import discord from "../common/discord";
-import utils from "../common/utils";
-import userRepository from "../repositories/user.repository";
+import type { InsertTokens } from "../repositories/token.repository";
+import type { InsertUser } from "../repositories/user.repository";
+import { BaseService } from "./base.service";
 
-export class AuthService {
-  private fetch = discord.fetch;
-  private transaction = utils.createDbTransaction();
-
+export class AuthService extends BaseService {
   private getClientCredentialsParams() {
     return new URLSearchParams({
       client_id: String(process.env.AUTH_DISCORD_ID),
@@ -23,7 +19,7 @@ export class AuthService {
   public async exchangeAuthorizationCodeForToken(
     code: string,
   ): Promise<RESTPostOAuth2AccessTokenResult> {
-    const route = discord.routes.oauth2TokenExchange();
+    const route = this.routes.oauth2TokenExchange();
     const params = this.getClientCredentialsParams();
     params.append("grant_type", "authorization_code");
     params.append("code", code);
@@ -47,7 +43,7 @@ export class AuthService {
   public async exchangeAccessTokenForUserInfo(
     accessToken: string,
   ): Promise<RESTGetAPIUserResult> {
-    const route = discord.routes.user();
+    const route = this.routes.user();
 
     try {
       return await this.fetch
@@ -67,7 +63,7 @@ export class AuthService {
   }
 
   public async getNewTokens(refreshToken: string) {
-    const route = discord.routes.oauth2TokenExchange();
+    const route = this.routes.oauth2TokenExchange();
     const params = this.getClientCredentialsParams();
     params.append("grant_type", "refresh_token");
     params.append("refresh_token", refreshToken);
@@ -88,7 +84,7 @@ export class AuthService {
   }
 
   public async revokeAccessToken(accessToken: string) {
-    const route = discord.routes.oauth2TokenRevocation();
+    const route = this.routes.oauth2TokenRevocation();
     const params = new URLSearchParams({
       token: accessToken,
       token_type_hint: "access_token",
@@ -106,7 +102,7 @@ export class AuthService {
   }
 
   public async revokeRefreshToken(refreshToken: string) {
-    const route = discord.routes.oauth2TokenRevocation();
+    const route = this.routes.oauth2TokenRevocation();
     const params = new URLSearchParams({
       token: refreshToken,
       token_type_hint: "refresh_token",
@@ -141,11 +137,14 @@ export class AuthService {
   public async saveOrUpdateUser(discordId: number, data: InsertUser) {
     try {
       return await this.transaction(async (ctx) => {
-        const user = await userRepository.findUserByDiscordId(discordId, ctx);
+        const user = await this.userRepository.findUserByDiscordId(
+          discordId,
+          ctx,
+        );
         if (!user) {
-          await userRepository.insertUser(data, ctx);
+          await this.userRepository.insertUser(data, ctx);
         } else {
-          await userRepository.updateUserByDiscordId(discordId, data, ctx);
+          await this.userRepository.updateUserByDiscordId(discordId, data, ctx);
         }
       });
     } catch (error) {
@@ -160,14 +159,14 @@ export class AuthService {
   public async saveOrUpdateUserTokens(discordId: number, data: InsertTokens) {
     try {
       return await this.transaction(async (ctx) => {
-        const user = await userRepository.findUserTokensByDiscordId(
+        const user = await this.tokenRepository.findUserTokensByDiscordId(
           discordId,
           ctx,
         );
         if (!user) {
-          await userRepository.insertUserTokens(data, ctx);
+          await this.tokenRepository.insertUserTokens(data, ctx);
         } else {
-          await userRepository.updateUserTokensByDiscordId(
+          await this.tokenRepository.updateUserTokensByDiscordId(
             discordId,
             data,
             ctx,

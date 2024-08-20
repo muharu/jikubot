@@ -1,5 +1,3 @@
-import { db } from "@giverve/db";
-
 import type { CryptoUtilsOptions } from "./crypto";
 import type { ExtendedPayload, JWTPayload, MaxAgeFormat } from "./jwt";
 import { CryptoUtils } from "./crypto";
@@ -49,10 +47,6 @@ export class Utils {
     token: string,
   ): T | null {
     return this.jwtUtils.decodeJWT(token);
-  }
-
-  public createDbTransaction() {
-    return db.transaction.bind(db);
   }
 }
 

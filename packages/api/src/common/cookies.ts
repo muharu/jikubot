@@ -1,79 +1,38 @@
+import type { CookieParseOptions, CookieSerializeOptions } from "cookie";
 import type { IncomingMessage, ServerResponse } from "http";
-
-export type SameSiteOption = "strict" | "lax" | "none";
-export interface CookieOptions {
-  httpOnly?: boolean;
-  secure?: boolean;
-  path?: string;
-  sameSite?: SameSiteOption;
-  expires?: Date;
-  maxAge?: number;
-}
+import { parse as parseCookie, serialize as serializeCookie } from "cookie";
 
 export class Cookies {
   private serialize(
     name: string,
     value: string,
-    options: CookieOptions = {},
+    options?: CookieSerializeOptions,
   ): string {
-    let cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}`;
-
-    if (options.expires) {
-      cookie += `; expires=${options.expires.toUTCString()}`;
-    } else if (options.maxAge) {
-      cookie += `; max-age=${options.maxAge}`;
-    }
-
-    if (options.path) {
-      cookie += `; path=${options.path}`;
-    }
-
-    if (options.secure) {
-      cookie += "; secure";
-    }
-
-    if (options.httpOnly) {
-      cookie += "; HttpOnly";
-    }
-
-    if (options.sameSite) {
-      cookie += `; SameSite=${options.sameSite}`;
-    }
-
-    return cookie;
+    return serializeCookie(name, value, options);
   }
 
-  private parse(cookieHeader?: string): Record<string, string> {
-    const cookies: Record<string, string> = {};
-
-    if (cookieHeader) {
-      const cookiesArray = cookieHeader.split(";");
-      cookiesArray.forEach((cookie) => {
-        const [name, ...rest] = cookie.split("=");
-        if (name) {
-          const value = rest.join("=").trim();
-          cookies[decodeURIComponent(name.trim())] = decodeURIComponent(value);
-        }
-      });
-    }
-
-    return cookies;
+  private parse(
+    cookieHeader?: string,
+    options?: CookieParseOptions,
+  ): Record<string, string> {
+    return cookieHeader != null && cookieHeader !== ""
+      ? parseCookie(cookieHeader, options)
+      : {};
   }
 
   public setCookie(
     res: ServerResponse,
     name: string,
     value: string,
-    options?: CookieOptions,
+    options: CookieSerializeOptions = {},
   ) {
     const serializedCookie = this.serialize(name, value, {
-      httpOnly:
-        process.env.NODE_ENV === "production" ? true : options?.httpOnly,
-      secure: process.env.NODE_ENV === "production" ? true : options?.secure,
-      path: options?.path ?? "/",
-      sameSite: options?.sameSite ?? "lax",
-      expires: options?.expires,
-      maxAge: options?.maxAge,
+      httpOnly: options.httpOnly ?? process.env.NODE_ENV === "production",
+      secure: options.secure ?? process.env.NODE_ENV === "production",
+      path: options.path ?? "/",
+      sameSite: options.sameSite ?? "lax",
+      expires: options.expires,
+      maxAge: options.maxAge,
     });
 
     const existingCookies = res.getHeader("Set-Cookie");
@@ -97,10 +56,7 @@ export class Cookies {
   public deleteCookie(
     res: ServerResponse,
     name: string,
-    options?: {
-      path?: string;
-      sameSite?: SameSiteOption;
-    },
+    options?: CookieSerializeOptions,
   ) {
     const serializedCookie = this.serialize(name, "", {
       expires: new Date(0),
