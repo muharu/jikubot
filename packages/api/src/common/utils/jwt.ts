@@ -7,28 +7,15 @@ import {
 
 const DEFAULT_JWT_ALGORITHM: JWTHeaderParameters["alg"] = "HS256";
 const DEFAULT_JWT_MAX_AGE = "1h";
-
-export type MaxAgeFormat = string | number | Date;
-
-export interface ExtendedPayload extends JWTPayload {
-  id: number;
-  username: string;
-  email: string;
-  avatar: string;
-  globalName: string;
-}
+const DEFAULT_AUTH_SECRET = String(process.env.AUTH_SECRET);
 
 export class JWTUtils {
   private secret: string;
   private algorithm: JWTHeaderParameters["alg"];
   private maxAge: MaxAgeFormat;
 
-  constructor(secret: string) {
-    if (!secret || typeof secret !== "string") {
-      throw new Error("JWTUtils: secret must be a non-empty string");
-    }
-
-    this.secret = secret;
+  constructor(secret?: string) {
+    this.secret = secret ?? DEFAULT_AUTH_SECRET;
     this.algorithm = DEFAULT_JWT_ALGORITHM;
     this.maxAge = DEFAULT_JWT_MAX_AGE;
   }
@@ -66,3 +53,11 @@ export class JWTUtils {
 }
 
 export type { JWTPayload } from "jose";
+export type MaxAgeFormat = string | number | Date;
+export interface ExtendedPayload extends JWTPayload {
+  id: number;
+  username: string;
+  email: string;
+  avatar: string;
+  globalName: string;
+}

@@ -3,15 +3,10 @@ import * as crypto from "crypto";
 const ALGORITHM = "aes-256-gcm";
 const IV_LENGTH = 16;
 const TAG_LENGTH = 16;
-const DEFAULT_ENCODING: BufferEncoding = "hex";
-const DEFAULT_SALT_LENGTH = 64;
+const DEFAULT_ENCODING: BufferEncoding = "base64";
+const DEFAULT_SALT_LENGTH = 10;
 const DEFAULT_PBKDF2_ITERATIONS = 100000;
-
-export interface CryptoUtilsOptions {
-  encoding?: BufferEncoding;
-  pbkdf2Iterations?: number;
-  saltLength?: number;
-}
+const DEFAULT_AUTH_SECRET = String(process.env.AUTH_SECRET);
 
 export class CryptoUtils {
   private secret: string;
@@ -19,12 +14,8 @@ export class CryptoUtils {
   private saltLength: number;
   private pbkdf2Iterations: number;
 
-  constructor(secret: string, options?: CryptoUtilsOptions) {
-    if (!secret || typeof secret !== "string") {
-      throw new Error("CryptoUtils: secret must be a non-empty string");
-    }
-
-    this.secret = secret;
+  constructor(secret?: string, options?: CryptoUtilsOptions) {
+    this.secret = secret ?? DEFAULT_AUTH_SECRET;
     this.encoding = options?.encoding ?? DEFAULT_ENCODING;
     this.saltLength = options?.saltLength ?? DEFAULT_SALT_LENGTH;
     this.pbkdf2Iterations =
@@ -89,4 +80,10 @@ export class CryptoUtils {
     const bytes = crypto.randomBytes(length);
     return bytes.toString("base64").replace(/\+/g, "-").replace(/=+$/, "");
   }
+}
+
+export interface CryptoUtilsOptions {
+  encoding?: BufferEncoding;
+  pbkdf2Iterations?: number;
+  saltLength?: number;
 }
