@@ -9,7 +9,7 @@ import discord from "../common/discord";
 import utils from "../common/utils";
 import userRepository from "../repositories/user.repository";
 
-class AuthService {
+export class AuthService {
   private fetch = discord.fetch;
   private transaction = utils.createDbTransaction();
 
