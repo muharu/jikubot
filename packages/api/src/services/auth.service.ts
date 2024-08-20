@@ -136,15 +136,15 @@ export class AuthService extends BaseService {
 
   public async saveOrUpdateUser(discordId: number, data: InsertUser) {
     try {
-      return await this.transaction(async (ctx) => {
+      return await this.transaction(async (trx) => {
         const user = await this.userRepository.findUserByDiscordId(
           discordId,
-          ctx,
+          trx,
         );
         if (!user) {
-          await this.userRepository.insertUser(data, ctx);
+          await this.userRepository.insertUser(data, trx);
         } else {
-          await this.userRepository.updateUserByDiscordId(discordId, data, ctx);
+          await this.userRepository.updateUserByDiscordId(discordId, data, trx);
         }
       });
     } catch (error) {
@@ -158,18 +158,18 @@ export class AuthService extends BaseService {
 
   public async saveOrUpdateUserTokens(discordId: number, data: InsertTokens) {
     try {
-      return await this.transaction(async (ctx) => {
+      return await this.transaction(async (trx) => {
         const user = await this.tokenRepository.findUserTokensByDiscordId(
           discordId,
-          ctx,
+          trx,
         );
         if (!user) {
-          await this.tokenRepository.insertUserTokens(data, ctx);
+          await this.tokenRepository.insertUserTokens(data, trx);
         } else {
           await this.tokenRepository.updateUserTokensByDiscordId(
             discordId,
             data,
-            ctx,
+            trx,
           );
         }
       });

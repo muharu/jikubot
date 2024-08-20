@@ -3,22 +3,22 @@ import { eq, tokens } from "@giverve/db";
 import { BaseRepository } from "./base.repository";
 
 export class TokenRepository extends BaseRepository {
-  public async findUserTokensByDiscordId(userId: number, ctx = this.ctx) {
-    return await ctx.query.tokens.findFirst({
+  public async findUserTokensByDiscordId(userId: number, trx = this.trx) {
+    return await trx.query.tokens.findFirst({
       where: (tokens, { eq }) => eq(tokens.discordId, userId),
     });
   }
 
-  public async insertUserTokens(data: InsertTokens, ctx = this.ctx) {
-    return await ctx.insert(tokens).values(data).returning();
+  public async insertUserTokens(data: InsertTokens, trx = this.trx) {
+    return await trx.insert(tokens).values(data).returning();
   }
 
   public async updateUserTokensByDiscordId(
     discordId: number,
     data: InsertTokens,
-    ctx = this.ctx,
+    trx = this.trx,
   ) {
-    return await ctx
+    return await trx
       .update(tokens)
       .set(data)
       .where(eq(tokens.discordId, discordId))
@@ -27,6 +27,5 @@ export class TokenRepository extends BaseRepository {
 }
 
 export default new TokenRepository();
-
 export type InsertTokens = typeof tokens.$inferInsert;
 export type SelectTokens = typeof tokens.$inferSelect;

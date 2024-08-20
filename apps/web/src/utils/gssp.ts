@@ -1,7 +1,7 @@
 import type { IncomingMessage, ServerResponse } from "http";
 import type { ParsedUrlQuery } from "querystring";
 
-import { constants, cookies, utils } from "@giverve/api";
+import { common } from "@giverve/api";
 
 interface AuthorizeServerSideParams {
   req: IncomingMessage;
@@ -13,13 +13,16 @@ const {
   COOKIE_ACCESS_TOKEN_NAME,
   COOKIE_REFRESH_TOKEN_NAME,
   COOKIE_JWT_NAME,
-} = constants;
+} = common.constants;
 
 export function checkAuthorizeServerSide({
   req,
   query,
 }: AuthorizeServerSideParams) {
-  const stateFromCookie = cookies.getCookie(req, COOKIE_OAUTH_STATE_NAME);
+  const stateFromCookie = common.cookies.getCookie(
+    req,
+    COOKIE_OAUTH_STATE_NAME,
+  );
   const stateFromUrlQuery = query.state as string;
   const codeFromUrlQuery = query.code as string;
 
@@ -56,9 +59,9 @@ export async function checkHasLoggedInServerSide({
   req: IncomingMessage;
   res: ServerResponse;
 }) {
-  const accessToken = cookies.getCookie(req, COOKIE_ACCESS_TOKEN_NAME);
-  const refreshToken = cookies.getCookie(req, COOKIE_REFRESH_TOKEN_NAME);
-  const jwt = cookies.getCookie(req, COOKIE_JWT_NAME);
+  const accessToken = common.cookies.getCookie(req, COOKIE_ACCESS_TOKEN_NAME);
+  const refreshToken = common.cookies.getCookie(req, COOKIE_REFRESH_TOKEN_NAME);
+  const jwt = common.cookies.getCookie(req, COOKIE_JWT_NAME);
 
   if (!accessToken || !refreshToken || !jwt) {
     return {
@@ -68,11 +71,11 @@ export async function checkHasLoggedInServerSide({
 
   try {
     if (accessToken && refreshToken && jwt) {
-      utils.decryptString(accessToken);
-      utils.decryptString(refreshToken);
-      const decryptedJwt = utils.decryptString(jwt);
+      common.utils.decryptString(accessToken);
+      common.utils.decryptString(refreshToken);
+      const decryptedJwt = common.utils.decryptString(jwt);
 
-      await utils.verifyJWT(decryptedJwt);
+      await common.utils.verifyJWT(decryptedJwt);
 
       return {
         redirect: {
@@ -101,9 +104,9 @@ export async function checkIsLoggedInServerSide({
   req: IncomingMessage;
   res: ServerResponse;
 }) {
-  const accessToken = cookies.getCookie(req, COOKIE_ACCESS_TOKEN_NAME);
-  const refreshToken = cookies.getCookie(req, COOKIE_REFRESH_TOKEN_NAME);
-  const jwt = cookies.getCookie(req, COOKIE_JWT_NAME);
+  const accessToken = common.cookies.getCookie(req, COOKIE_ACCESS_TOKEN_NAME);
+  const refreshToken = common.cookies.getCookie(req, COOKIE_REFRESH_TOKEN_NAME);
+  const jwt = common.cookies.getCookie(req, COOKIE_JWT_NAME);
 
   if (!accessToken || !refreshToken || !jwt) {
     return {
@@ -116,11 +119,11 @@ export async function checkIsLoggedInServerSide({
 
   try {
     if (accessToken && refreshToken && jwt) {
-      utils.decryptString(accessToken);
-      utils.decryptString(refreshToken);
-      const decryptedJwt = utils.decryptString(jwt);
+      common.utils.decryptString(accessToken);
+      common.utils.decryptString(refreshToken);
+      const decryptedJwt = common.utils.decryptString(jwt);
 
-      await utils.verifyJWT(decryptedJwt);
+      await common.utils.verifyJWT(decryptedJwt);
 
       return {
         props: {},
@@ -146,8 +149,8 @@ export async function checkIsLoggedInServerSide({
 }
 
 function clearCookies(res: ServerResponse) {
-  cookies.deleteCookie(res, COOKIE_OAUTH_STATE_NAME);
-  cookies.deleteCookie(res, COOKIE_ACCESS_TOKEN_NAME);
-  cookies.deleteCookie(res, COOKIE_REFRESH_TOKEN_NAME);
-  cookies.deleteCookie(res, COOKIE_JWT_NAME);
+  common.cookies.deleteCookie(res, COOKIE_OAUTH_STATE_NAME);
+  common.cookies.deleteCookie(res, COOKIE_ACCESS_TOKEN_NAME);
+  common.cookies.deleteCookie(res, COOKIE_REFRESH_TOKEN_NAME);
+  common.cookies.deleteCookie(res, COOKIE_JWT_NAME);
 }
