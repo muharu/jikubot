@@ -1,7 +1,7 @@
 import type { IncomingMessage, ServerResponse } from "http";
 
-type SameSiteOption = "strict" | "lax" | "none";
-interface CookieOptions {
+export type SameSiteOption = "strict" | "lax" | "none";
+export interface CookieOptions {
   httpOnly?: boolean;
   secure?: boolean;
   path?: string;
@@ -10,7 +10,7 @@ interface CookieOptions {
   maxAge?: number;
 }
 
-class Cookies {
+export class Cookies {
   private serialize(
     name: string,
     value: string,

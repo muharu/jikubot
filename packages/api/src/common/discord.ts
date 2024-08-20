@@ -3,7 +3,7 @@ import { Routes } from "discord-api-types/v10";
 import wretch from "wretch";
 import { WretchError } from "wretch/resolver";
 
-class Discord {
+export class Discord {
   public fetch: Wretch;
   public routes = Routes;
 
