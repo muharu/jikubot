@@ -1,5 +1,6 @@
 import constants from "../common/constants";
 import cookies from "../common/cookies";
+import discord from "../common/discord";
 import utils from "../common/utils";
 import authUserDTOMapper from "../dtos/auth.dto";
 import authSchema from "../schemas/auth.schema";
@@ -20,7 +21,7 @@ export const authRouter = createTRPCRouter({
       const { res } = ctx;
 
       const authState = utils.generateRandomString(43);
-      const url = utils.generateDiscordAuthorizationUrl(authState);
+      const url = discord.generateDiscordAuthorizationUrl(authState);
 
       cookies.setCookie(res, COOKIE_OAUTH_STATE_NAME, authState, {
         maxAge: 60 * 60, // 1 hour
