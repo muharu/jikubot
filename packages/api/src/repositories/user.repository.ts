@@ -1,7 +1,9 @@
 import { db, eq, tokens, users } from "@giverve/db";
 
-type InsertUser = typeof users.$inferInsert;
-type InsertTokens = typeof tokens.$inferInsert;
+export type InsertUser = typeof users.$inferInsert;
+export type InsertTokens = typeof tokens.$inferInsert;
+export type SelectUser = typeof users.$inferSelect;
+export type SelectTokens = typeof tokens.$inferSelect;
 
 class UserRepository {
   private ctx;

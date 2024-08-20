@@ -1,11 +1,10 @@
 import { TRPCError } from "@trpc/server";
 
-import type { tokens, users } from "@giverve/db";
-
 import type {
   RESTGetAPIUserResult,
   RESTPostOAuth2AccessTokenResult,
 } from "../common/discord";
+import type { InsertTokens, InsertUser } from "../repositories/user.repository";
 import discord from "../common/discord";
 import utils from "../common/utils";
 import userRepository from "../repositories/user.repository";
@@ -139,10 +138,7 @@ class AuthService {
     }
   }
 
-  public async saveOrUpdateUser(
-    discordId: number,
-    data: typeof users.$inferInsert,
-  ) {
+  public async saveOrUpdateUser(discordId: number, data: InsertUser) {
     try {
       return await this.transaction(async (ctx) => {
         const user = await userRepository.findUserByDiscordId(discordId, ctx);
@@ -161,10 +157,7 @@ class AuthService {
     }
   }
 
-  public async saveOrUpdateUserTokens(
-    discordId: number,
-    data: typeof tokens.$inferInsert,
-  ) {
+  public async saveOrUpdateUserTokens(discordId: number, data: InsertTokens) {
     try {
       return await this.transaction(async (ctx) => {
         const user = await userRepository.findUserTokensByDiscordId(
