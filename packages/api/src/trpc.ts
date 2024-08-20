@@ -6,7 +6,7 @@
  * tl;dr - this is where all the tRPC server stuff is created and plugged in.
  * The pieces you will need to use are documented accordingly near the end
  */
-import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
+import type { IncomingMessage, ServerResponse } from "http";
 import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
@@ -25,7 +25,13 @@ import { createCommonContext, createServiceContext } from "./context";
  *
  * @see https://trpc.io/docs/server/context
  */
-export const createTRPCContext = ({ req, res }: CreateNextContextOptions) => {
+export const createTRPCContext = ({
+  req,
+  res,
+}: {
+  req: IncomingMessage;
+  res: ServerResponse;
+}) => {
   const common = createCommonContext();
   const services = createServiceContext();
   return { req, res, common, services };
