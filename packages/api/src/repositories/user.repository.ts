@@ -10,17 +10,17 @@ class UserRepository {
     this.ctx = db;
   }
 
-  async findUserByDiscordId(discordId: number, ctx = this.ctx) {
+  public async findUserByDiscordId(discordId: number, ctx = this.ctx) {
     return await ctx.query.users.findFirst({
       where: (users, { eq }) => eq(users.discordId, discordId),
     });
   }
 
-  async insertUser(data: InsertUser, ctx = this.ctx) {
+  public async insertUser(data: InsertUser, ctx = this.ctx) {
     return await ctx.insert(users).values(data).returning();
   }
 
-  async updateUserByDiscordId(
+  public async updateUserByDiscordId(
     discordId: number,
     data: InsertUser,
     ctx = this.ctx,
@@ -32,17 +32,17 @@ class UserRepository {
       .returning();
   }
 
-  async findUserTokensByDiscordId(userId: number, ctx = this.ctx) {
+  public async findUserTokensByDiscordId(userId: number, ctx = this.ctx) {
     return await ctx.query.tokens.findFirst({
       where: (tokens, { eq }) => eq(tokens.discordId, userId),
     });
   }
 
-  async insertUserTokens(data: InsertTokens, ctx = this.ctx) {
+  public async insertUserTokens(data: InsertTokens, ctx = this.ctx) {
     return await ctx.insert(tokens).values(data).returning();
   }
 
-  async updateUserTokensByDiscordId(
+  public async updateUserTokensByDiscordId(
     discordId: number,
     data: InsertTokens,
     ctx = this.ctx,
