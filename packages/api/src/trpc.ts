@@ -11,6 +11,8 @@ import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
+import { createCommonContext, createServiceContext } from "./context";
+
 /**
  * 1. CONTEXT
  *
@@ -24,7 +26,9 @@ import { ZodError } from "zod";
  * @see https://trpc.io/docs/server/context
  */
 export const createTRPCContext = ({ req, res }: CreateNextContextOptions) => {
-  return { req, res };
+  const common = createCommonContext();
+  const services = createServiceContext();
+  return { req, res, common, services };
 };
 
 /**
