@@ -56,12 +56,10 @@ export class Utils {
   }
 }
 
-const utils = new Utils({
+export default new Utils({
   secret: String(process.env.AUTH_SECRET),
   cryptoOptions: {
     encoding: "base64url",
     saltLength: 10,
   },
 });
-
-export default utils;

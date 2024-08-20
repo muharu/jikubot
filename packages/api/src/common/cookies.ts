@@ -121,5 +121,4 @@ class Cookies {
   }
 }
 
-const cookies = new Cookies();
-export default cookies;
+export default new Cookies();

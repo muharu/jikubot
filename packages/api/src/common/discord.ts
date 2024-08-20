@@ -49,7 +49,5 @@ class Discord {
   }
 }
 
-const discord = new Discord();
-
-export default discord;
+export default new Discord();
 export type * from "discord-api-types/v10";
