@@ -1,5 +1,5 @@
 import { common, schemas, services } from "../context";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, dashboardProcedure, publicProcedure } from "../trpc";
 
 export const authRouter = createTRPCRouter({
   login: publicProcedure
@@ -84,4 +84,24 @@ export const authRouter = createTRPCRouter({
 
       return user;
     }),
+
+  logout: dashboardProcedure.mutation(({ ctx }) => {
+    common.utils.cookies.deleteCookie(
+      ctx.res,
+      common.constants.COOKIE_OAUTH_STATE_NAME,
+    );
+    common.utils.cookies.deleteCookie(
+      ctx.res,
+      common.constants.COOKIE_ACCESS_TOKEN_NAME,
+    );
+    common.utils.cookies.deleteCookie(
+      ctx.res,
+      common.constants.COOKIE_REFRESH_TOKEN_NAME,
+    );
+    common.utils.cookies.deleteCookie(
+      ctx.res,
+      common.constants.COOKIE_JWT_NAME,
+    );
+    return null;
+  }),
 });
