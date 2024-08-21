@@ -1,7 +1,9 @@
 import type { IncomingMessage, ServerResponse } from "http";
-import { initTRPC } from "@trpc/server";
+import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
+
+import { common } from "./context";
 
 export const createTRPCContext = ({
   req,
@@ -44,4 +46,69 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
   return result;
 });
 
+const authMiddleware = t.middleware(async ({ ctx: { req }, next }) => {
+  const accessTokenFromCookie = common.utils.cookies.getCookie(
+    req,
+    common.constants.COOKIE_ACCESS_TOKEN_NAME,
+  );
+  const refreshTokenFromCookie = common.utils.cookies.getCookie(
+    req,
+    common.constants.COOKIE_REFRESH_TOKEN_NAME,
+  );
+  const jwtFromCookie = common.utils.cookies.getCookie(
+    req,
+    common.constants.COOKIE_JWT_NAME,
+  );
+
+  if (!accessTokenFromCookie || !refreshTokenFromCookie || !jwtFromCookie) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+    });
+  }
+
+  try {
+    if (accessTokenFromCookie && refreshTokenFromCookie && jwtFromCookie) {
+      const accessToken = common.utils.crypto.decryptString(
+        accessTokenFromCookie,
+      );
+      const refreshToken = common.utils.crypto.decryptString(
+        refreshTokenFromCookie,
+      );
+      const decryptedJwt = common.utils.crypto.decryptString(jwtFromCookie);
+
+      const user = await common.utils.jwt.verifyJWT(decryptedJwt);
+
+      return await next({
+        ctx: {
+          accessToken,
+          refreshToken,
+          user,
+        },
+      });
+    } else {
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+      });
+    }
+  } catch (error) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      cause: process.env.NODE_ENV !== "production" && error,
+    });
+  }
+});
+
+const botMiddleware = t.middleware(async ({ next }) => {
+  const result = await next();
+  return result;
+});
+
 export const publicProcedure = t.procedure.use(timingMiddleware);
+
+export const dashboardProcedure = t.procedure
+  .use(timingMiddleware)
+  .use(authMiddleware);
+
+export const botProcedure = t.procedure
+  .use(timingMiddleware)
+  .use(botMiddleware);
