@@ -1,12 +1,11 @@
 import type { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
 
 import type { AppRouter } from "./root";
-import { createCommonContext } from "./context";
+import common from "./common/common.module";
 import { appRouter } from "./root";
 import { createCallerFactory, createTRPCContext } from "./trpc";
 
 const createCaller = createCallerFactory(appRouter);
-const common = createCommonContext();
 
 type RouterInputs = inferRouterInputs<AppRouter>;
 type RouterOutputs = inferRouterOutputs<AppRouter>;
