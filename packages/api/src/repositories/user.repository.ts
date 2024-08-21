@@ -1,31 +1,26 @@
-import { eq, users } from "@giverve/db";
+import { db, eq, users } from "@giverve/db";
 
-import { BaseRepository } from "./base.repository";
-
-export class UserRepository extends BaseRepository {
-  public async findUserByDiscordId(discordId: number, trx = this.trx) {
-    return await trx.query.users.findFirst({
-      where: (users, { eq }) => eq(users.discordId, discordId),
-    });
-  }
-
-  public async insertUser(data: InsertUser, trx = this.trx) {
-    return await trx.insert(users).values(data).returning();
-  }
-
-  public async updateUserByDiscordId(
-    discordId: number,
-    data: InsertUser,
-    trx = this.trx,
-  ) {
-    return await trx
-      .update(users)
-      .set(data)
-      .where(eq(users.discordId, discordId))
-      .returning();
-  }
+export async function findUserByDiscordId(discordId: number, trx = db) {
+  return await trx.query.users.findFirst({
+    where: (users, { eq }) => eq(users.discordId, discordId),
+  });
 }
 
-export default new UserRepository();
+export async function insertUser(data: InsertUser, trx = db) {
+  return await trx.insert(users).values(data).returning();
+}
+
+export async function updateUserByDiscordId(
+  discordId: number,
+  data: InsertUser,
+  trx = db,
+) {
+  return await trx
+    .update(users)
+    .set(data)
+    .where(eq(users.discordId, discordId))
+    .returning();
+}
+
 export type InsertUser = typeof users.$inferInsert;
 export type SelectUser = typeof users.$inferSelect;
