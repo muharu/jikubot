@@ -3,9 +3,6 @@ import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import common from "./common/common.module";
-import services from "./services/service.module";
-
 export const createTRPCContext = ({
   req,
   res,
@@ -13,7 +10,7 @@ export const createTRPCContext = ({
   req: IncomingMessage;
   res: ServerResponse;
 }) => {
-  return { req, res, common, services };
+  return { req, res };
 };
 
 const t = initTRPC.context<typeof createTRPCContext>().create({

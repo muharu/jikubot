@@ -19,7 +19,7 @@ export function checkAuthorizeServerSide({
   req,
   query,
 }: AuthorizeServerSideParams) {
-  const stateFromCookie = common.cookies.getCookie(
+  const stateFromCookie = common.utils.cookies.getCookie(
     req,
     COOKIE_OAUTH_STATE_NAME,
   );
@@ -59,9 +59,15 @@ export async function checkHasLoggedInServerSide({
   req: IncomingMessage;
   res: ServerResponse;
 }) {
-  const accessToken = common.cookies.getCookie(req, COOKIE_ACCESS_TOKEN_NAME);
-  const refreshToken = common.cookies.getCookie(req, COOKIE_REFRESH_TOKEN_NAME);
-  const jwt = common.cookies.getCookie(req, COOKIE_JWT_NAME);
+  const accessToken = common.utils.cookies.getCookie(
+    req,
+    COOKIE_ACCESS_TOKEN_NAME,
+  );
+  const refreshToken = common.utils.cookies.getCookie(
+    req,
+    COOKIE_REFRESH_TOKEN_NAME,
+  );
+  const jwt = common.utils.cookies.getCookie(req, COOKIE_JWT_NAME);
 
   if (!accessToken || !refreshToken || !jwt) {
     return {
@@ -71,11 +77,11 @@ export async function checkHasLoggedInServerSide({
 
   try {
     if (accessToken && refreshToken && jwt) {
-      common.crypto.decryptString(accessToken);
-      common.crypto.decryptString(refreshToken);
-      const decryptedJwt = common.crypto.decryptString(jwt);
+      common.utils.crypto.decryptString(accessToken);
+      common.utils.crypto.decryptString(refreshToken);
+      const decryptedJwt = common.utils.crypto.decryptString(jwt);
 
-      await common.jwt.verifyJWT(decryptedJwt);
+      await common.utils.jwt.verifyJWT(decryptedJwt);
 
       return {
         redirect: {
@@ -104,9 +110,15 @@ export async function checkIsLoggedInServerSide({
   req: IncomingMessage;
   res: ServerResponse;
 }) {
-  const accessToken = common.cookies.getCookie(req, COOKIE_ACCESS_TOKEN_NAME);
-  const refreshToken = common.cookies.getCookie(req, COOKIE_REFRESH_TOKEN_NAME);
-  const jwt = common.cookies.getCookie(req, COOKIE_JWT_NAME);
+  const accessToken = common.utils.cookies.getCookie(
+    req,
+    COOKIE_ACCESS_TOKEN_NAME,
+  );
+  const refreshToken = common.utils.cookies.getCookie(
+    req,
+    COOKIE_REFRESH_TOKEN_NAME,
+  );
+  const jwt = common.utils.cookies.getCookie(req, COOKIE_JWT_NAME);
 
   if (!accessToken || !refreshToken || !jwt) {
     return {
@@ -119,11 +131,11 @@ export async function checkIsLoggedInServerSide({
 
   try {
     if (accessToken && refreshToken && jwt) {
-      common.crypto.decryptString(accessToken);
-      common.crypto.decryptString(refreshToken);
-      const decryptedJwt = common.crypto.decryptString(jwt);
+      common.utils.crypto.decryptString(accessToken);
+      common.utils.crypto.decryptString(refreshToken);
+      const decryptedJwt = common.utils.crypto.decryptString(jwt);
 
-      await common.jwt.verifyJWT(decryptedJwt);
+      await common.utils.jwt.verifyJWT(decryptedJwt);
 
       return {
         props: {},
@@ -149,8 +161,8 @@ export async function checkIsLoggedInServerSide({
 }
 
 function clearCookies(res: ServerResponse) {
-  common.cookies.deleteCookie(res, COOKIE_OAUTH_STATE_NAME);
-  common.cookies.deleteCookie(res, COOKIE_ACCESS_TOKEN_NAME);
-  common.cookies.deleteCookie(res, COOKIE_REFRESH_TOKEN_NAME);
-  common.cookies.deleteCookie(res, COOKIE_JWT_NAME);
+  common.utils.cookies.deleteCookie(res, COOKIE_OAUTH_STATE_NAME);
+  common.utils.cookies.deleteCookie(res, COOKIE_ACCESS_TOKEN_NAME);
+  common.utils.cookies.deleteCookie(res, COOKIE_REFRESH_TOKEN_NAME);
+  common.utils.cookies.deleteCookie(res, COOKIE_JWT_NAME);
 }
