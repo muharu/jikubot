@@ -1,32 +1,26 @@
-import { eq, tokens } from "@giverve/db";
+import { db, eq, tokens } from "@giverve/db";
 
-import { BaseRepository } from "./base.repository";
-
-export class TokenRepository extends BaseRepository {
-  public async findUserTokensByDiscordId(userId: number, ctx = this.ctx) {
-    return await ctx.query.tokens.findFirst({
-      where: (tokens, { eq }) => eq(tokens.discordId, userId),
-    });
-  }
-
-  public async insertUserTokens(data: InsertTokens, ctx = this.ctx) {
-    return await ctx.insert(tokens).values(data).returning();
-  }
-
-  public async updateUserTokensByDiscordId(
-    discordId: number,
-    data: InsertTokens,
-    ctx = this.ctx,
-  ) {
-    return await ctx
-      .update(tokens)
-      .set(data)
-      .where(eq(tokens.discordId, discordId))
-      .returning();
-  }
+export async function findUserTokensByDiscordId(userId: number, trx = db) {
+  return await trx.query.tokens.findFirst({
+    where: (tokens, { eq }) => eq(tokens.discordId, userId),
+  });
 }
 
-export default new TokenRepository();
+export async function insertUserTokens(data: InsertTokens, trx = db) {
+  return await trx.insert(tokens).values(data).returning();
+}
+
+export async function updateUserTokensByDiscordId(
+  discordId: number,
+  data: InsertTokens,
+  trx = db,
+) {
+  return await trx
+    .update(tokens)
+    .set(data)
+    .where(eq(tokens.discordId, discordId))
+    .returning();
+}
 
 export type InsertTokens = typeof tokens.$inferInsert;
 export type SelectTokens = typeof tokens.$inferSelect;
