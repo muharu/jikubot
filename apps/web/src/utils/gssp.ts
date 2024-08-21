@@ -71,11 +71,11 @@ export async function checkHasLoggedInServerSide({
 
   try {
     if (accessToken && refreshToken && jwt) {
-      common.utils.decryptString(accessToken);
-      common.utils.decryptString(refreshToken);
-      const decryptedJwt = common.utils.decryptString(jwt);
+      common.crypto.decryptString(accessToken);
+      common.crypto.decryptString(refreshToken);
+      const decryptedJwt = common.crypto.decryptString(jwt);
 
-      await common.utils.verifyJWT(decryptedJwt);
+      await common.jwt.verifyJWT(decryptedJwt);
 
       return {
         redirect: {
@@ -119,11 +119,11 @@ export async function checkIsLoggedInServerSide({
 
   try {
     if (accessToken && refreshToken && jwt) {
-      common.utils.decryptString(accessToken);
-      common.utils.decryptString(refreshToken);
-      const decryptedJwt = common.utils.decryptString(jwt);
+      common.crypto.decryptString(accessToken);
+      common.crypto.decryptString(refreshToken);
+      const decryptedJwt = common.crypto.decryptString(jwt);
 
-      await common.utils.verifyJWT(decryptedJwt);
+      await common.jwt.verifyJWT(decryptedJwt);
 
       return {
         props: {},
