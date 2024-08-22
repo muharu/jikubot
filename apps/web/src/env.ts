@@ -18,12 +18,9 @@ export const env = createEnv({
   server: {
     POSTGRES_URL: z.string(),
     API_BASE_URL: z.string(),
-    // AUTH_SECRET:
-    //   process.env.NODE_ENV === "production"
-    //     ? z.string().min(1)
-    //     : z.string().min(1).optional(),
-    // AUTH_DISCORD_ID: z.string().min(1),
-    // AUTH_DISCORD_SECRET: z.string().min(1),
+    AUTH_SECRET: z.string().min(1),
+    AUTH_DISCORD_ID: z.string().min(1),
+    AUTH_DISCORD_SECRET: z.string().min(1),
   },
 
   /**
@@ -31,13 +28,16 @@ export const env = createEnv({
    * For them to be exposed to the client, prefix them with `NEXT_PUBLIC_`.
    */
   client: {
-    // NEXT_PUBLIC_CLIENTVAR: z.string(),
+    NEXT_PUBLIC_BASE_URL: z.string().min(1),
+    NEXT_PUBLIC_AUTH_DISCORD_ID: z.string().min(1),
   },
   /**
    * Destructure all variables from `process.env` to make sure they aren't tree-shaken away.
    */
   experimental__runtimeEnv: {
     NODE_ENV: process.env.NODE_ENV,
+    NEXT_PUBLIC_AUTH_DISCORD_ID: process.env.NEXT_PUBLIC_AUTH_DISCORD_ID,
+    NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
 
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },

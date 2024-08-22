@@ -1,4 +1,4 @@
-import { schemas } from "../context";
+import { schemas, services } from "../context";
 import { createTRPCRouter, dashboardProcedure } from "../trpc";
 
 export const userRouter = createTRPCRouter({
@@ -7,4 +7,9 @@ export const userRouter = createTRPCRouter({
     .query(({ ctx }) => {
       return ctx.user;
     }),
+
+  guilds: dashboardProcedure.query(async ({ ctx }) => {
+    const guilds = await services.user.getUserGuilds(ctx.accessToken);
+    return guilds;
+  }),
 });
