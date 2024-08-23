@@ -2,9 +2,11 @@ export interface GuildCardProps {
   id: string;
   name: string;
   icon?: string | null;
+  isJoined: boolean;
 }
 
 export interface CardContentProps {
-  name: string;
   id: string;
+  name: string;
+  isJoined: boolean;
 }

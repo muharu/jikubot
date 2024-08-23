@@ -6,22 +6,15 @@ import { common } from "../context";
 
 export async function getUserGuilds(
   accessToken: string,
-): Promise<schemas.user.GuildsMe> {
+): Promise<RESTGetAPICurrentUserGuildsResult> {
   const route = common.utils.discord.routes.userGuilds();
 
   try {
-    const data = await common.utils.discord.fetch
+    return await common.utils.discord.fetch
       .url(route)
       .headers({ Authorization: `Bearer ${accessToken}` })
       .get()
       .json<RESTGetAPICurrentUserGuildsResult>();
-
-    return data.map(({ id, name, permissions, icon }) => ({
-      id,
-      name,
-      permissions,
-      icon,
-    }));
   } catch (error) {
     throw new TRPCError({
       code: "SERVICE_UNAVAILABLE",
@@ -30,22 +23,15 @@ export async function getUserGuilds(
   }
 }
 
-export async function getBotGuilds() {
+export async function getBotGuilds(): Promise<RESTGetAPICurrentUserGuildsResult> {
   const route = common.utils.discord.routes.userGuilds();
 
   try {
-    const data = await common.utils.discord.fetch
+    return await common.utils.discord.fetch
       .url(route)
       .headers({ Authorization: `Bot ${process.env.BOT_DISCORD_TOKEN}` })
       .get()
       .json<RESTGetAPICurrentUserGuildsResult>();
-
-    return data.map(({ id, name, permissions, icon }) => ({
-      id,
-      name,
-      permissions,
-      icon,
-    }));
   } catch (error) {
     throw new TRPCError({
       code: "SERVICE_UNAVAILABLE",
@@ -54,26 +40,63 @@ export async function getBotGuilds() {
   }
 }
 
-export async function getManagedGuilds(accessToken: string) {
+export async function getManagedGuilds(
+  accessToken: string,
+): Promise<schemas.user.GuildsMe> {
+  const cacheKey = `managedGuilds:${accessToken}`;
+  const cachedGuilds =
+    await common.utils.cache.inMemoryCache.get<schemas.user.GuildsMe>(cacheKey);
+
+  if (cachedGuilds) {
+    return cachedGuilds;
+  }
+
+  // Fetch guilds
   const [userGuilds, botGuilds] = await Promise.all([
     getUserGuilds(accessToken),
     getBotGuilds(),
   ]);
 
-  // Filter the userGuilds to only those with MANAGE_GUILD permission
-  const managedGuilds = userGuilds.filter((guild) => {
-    return common.utils.bitfields.hasPermission(
+  // Create a Set for botGuilds IDs
+  const botGuildSet = new Set(botGuilds.map((botGuild) => botGuild.id));
+
+  // Separate the guilds into joined and unjoined
+  const guilds = userGuilds.map((guild) => {
+    const isManaged = common.utils.bitfields.hasPermission(
       Number(guild.permissions),
       "MANAGE_GUILD",
     );
+    const isJoined = botGuildSet.has(guild.id);
+
+    return {
+      ...guild,
+      isManaged,
+      isJoined,
+    };
   });
 
-  // Further filter to only include guilds present in botGuilds
-  const guilds = managedGuilds
-    .filter((guild) => {
-      return botGuilds.some((botGuild) => botGuild.id === guild.id);
-    })
-    .sort((a, b) => a.name.localeCompare(b.name));
+  // Split the guilds into joined and unjoined based on `isJoined` property
+  const [joinedGuilds, unjoinedGuildsWithPermissions] = guilds.reduce(
+    ([joined, unjoined], guild) => {
+      if (guild.isJoined) {
+        joined.push(guild);
+      } else if (guild.isManaged) {
+        unjoined.push(guild);
+      }
+      return [joined, unjoined];
+    },
+    [[], []] as [typeof guilds, typeof guilds],
+  );
 
-  return guilds;
+  // Sort both arrays by guild name
+  joinedGuilds.sort((a, b) => a.name.localeCompare(b.name));
+  unjoinedGuildsWithPermissions.sort((a, b) => a.name.localeCompare(b.name));
+
+  // Combine results: joined first, then unjoined
+  const result = joinedGuilds.concat(unjoinedGuildsWithPermissions);
+
+  // Cache the result
+  await common.utils.cache.inMemoryCache.set(cacheKey, result, 5_000);
+
+  return result;
 }

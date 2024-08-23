@@ -1,23 +1,26 @@
 import Image from "next/image";
 import Link from "next/link";
+import { LuExternalLink } from "react-icons/lu";
 
 import { cn } from "@giverve/ui";
 import { buttonVariants } from "@giverve/ui/button";
 
 import type { CardContentProps, GuildCardProps } from "../types";
+import { env } from "~/env";
 
 export default function GuildCard({
   id,
   name,
   icon,
+  isJoined,
 }: Readonly<GuildCardProps>) {
   return (
     <section className="flex flex-col">
       <div key={id} className="relative overflow-hidden rounded-lg">
-        <BackgroundImage id={id} icon={icon} name={name} />
-        <RoundedIcon id={id} icon={icon} name={name} />
+        <BackgroundImage id={id} icon={icon} name={name} isJoined={isJoined} />
+        <RoundedIcon id={id} icon={icon} name={name} isJoined={isJoined} />
       </div>
-      <CardContent id={id} name={name} />
+      <CardContent id={id} name={name} isJoined={isJoined} />
     </section>
   );
 }
@@ -64,35 +67,43 @@ function RoundedIcon({ id, icon, name }: Readonly<GuildCardProps>) {
   );
 }
 
-function CardContent({ id, name }: Readonly<CardContentProps>) {
+function CardContent({ id, name, isJoined }: Readonly<CardContentProps>) {
   return (
     <div className="flex items-center justify-between pt-2.5">
       <h2 className="line-clamp-1 text-lg font-semibold">{name}</h2>
-      <Link
-        href={`/dashboard/${id}`}
-        className={cn(buttonVariants({ size: "sm" }), "font-semibold")}
-      >
-        Go
-      </Link>
+      {isJoined ? (
+        <Link
+          href={`/dashboard/${id}`}
+          className={cn(
+            buttonVariants({ variant: "primary" }),
+            "font-semibold",
+          )}
+        >
+          Manage
+        </Link>
+      ) : (
+        <ButtonInvite id={id} />
+      )}
     </div>
   );
 }
 
-// function ButtonInvite({ id }: Readonly<{ id: string }>) {
-//   const inviteParams = new URLSearchParams({
-//     scope: "bot applications.commands",
-//     response_type: "code",
-//     redirect_uri: `${env.NEXT_PUBLIC_BASE_URL}/dashboard`,
-//     permissions: "364870364415",
-//     client_id: env.NEXT_PUBLIC_AUTH_DISCORD_ID,
-//     guild_id: id,
-//   });
-//   return (
-//     <a
-//       href={`https://discord.com/oauth2/authorize?${inviteParams.toString()}`}
-//       className={cn(buttonVariants({ size: "sm" }), "font-semibold")}
-//     >
-//       Invite
-//     </a>
-//   );
-// }
+function ButtonInvite({ id }: Readonly<{ id: string }>) {
+  const inviteParams = new URLSearchParams({
+    scope: "bot applications.commands",
+    response_type: "code",
+    redirect_uri: `${env.NEXT_PUBLIC_BASE_URL}/dashboard`,
+    permissions: "364870364415",
+    client_id: env.NEXT_PUBLIC_AUTH_DISCORD_ID,
+    guild_id: id,
+  });
+  return (
+    <a
+      href={`https://discord.com/oauth2/authorize?${inviteParams.toString()}`}
+      className={cn(buttonVariants({ variant: "secondary" }), "font-semibold")}
+    >
+      Invite
+      <LuExternalLink className="ml-1.5 size-4" />
+    </a>
+  );
+}

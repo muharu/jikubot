@@ -10,8 +10,14 @@ export default function GuildList() {
 
   return (
     <GuildListWrapper>
-      {guilds?.map(({ id, name, icon }) => (
-        <GuildCard key={id} id={id} name={name} icon={icon} />
+      {guilds?.map(({ id, name, icon, isJoined }) => (
+        <GuildCard
+          key={id}
+          id={id}
+          name={name}
+          icon={icon}
+          isJoined={isJoined}
+        />
       ))}
     </GuildListWrapper>
   );

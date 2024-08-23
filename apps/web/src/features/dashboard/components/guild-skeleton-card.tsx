@@ -11,7 +11,7 @@ export default function GuildSkeletonCard() {
       </div>
       <div className="flex items-center justify-between pt-2.5">
         <Skeleton className="h-6 w-32 rounded"></Skeleton>
-        <Skeleton className="h-9 w-12 rounded px-3"></Skeleton>
+        <Skeleton className="h-9 w-24 rounded px-3"></Skeleton>
       </div>
     </section>
   );

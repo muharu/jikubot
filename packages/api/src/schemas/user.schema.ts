@@ -13,6 +13,7 @@ export const guildMeResponse = z.object({
   name: z.string(),
   permissions: z.string(),
   icon: z.string().nullable(),
+  isJoined: z.boolean(),
 });
 export const guildsMeResponse = z.array(guildMeResponse);
 
