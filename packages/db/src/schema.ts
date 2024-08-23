@@ -1,4 +1,4 @@
-import { bigint, pgTable, varchar } from "drizzle-orm/pg-core";
+import { bigint, boolean, pgTable, varchar } from "drizzle-orm/pg-core";
 
 import { snowflake } from "./generate";
 
@@ -25,4 +25,13 @@ export const tokens = pgTable("tokens", {
     .references(() => users.discordId),
   accessToken: varchar("access_token", { length: 100 }).notNull(),
   refreshToken: varchar("refresh_token", { length: 100 }).notNull(),
+});
+
+export const guilds = pgTable("guilds", {
+  id: bigint("id", { mode: "number" })
+    .primaryKey()
+    .notNull()
+    .$defaultFn(() => Number(snowflake.generateId())),
+  guildId: bigint("guild_id", { mode: "number" }).notNull().unique(),
+  isPremium: boolean("is_premium").notNull().default(false),
 });

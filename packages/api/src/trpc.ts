@@ -96,7 +96,32 @@ const authMiddleware = t.middleware(async ({ ctx: { req }, next }) => {
   }
 });
 
-const botMiddleware = t.middleware(async ({ next }) => {
+const botMiddleware = t.middleware(async ({ next, ctx }) => {
+  // get the Authorization header
+  const authorization = ctx.req.headers.authorization;
+
+  // check if the Authorization header is present
+  if (!authorization) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+    });
+  }
+
+  // check if the Authorization header is a valid bearer token
+  const [type, token] = authorization.split(" ");
+  if (type !== "Bearer" || !token) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+    });
+  }
+
+  // check if the token is the same as the bot token
+  if (token !== process.env.BOT_DISCORD_TOKEN) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+    });
+  }
+
   const result = await next();
   return result;
 });
