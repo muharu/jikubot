@@ -11,7 +11,7 @@ export default function BaseHead({
 }: Readonly<BaseHeadProps>) {
   return (
     <Head>
-      <title>{title ? `${title} | Jikubot` : "Jikubot"}</title>
+      <title>{title ?? "Jikubot"}</title>
       <meta name="description" content={description ?? "Jikubot Discord bot"} />
     </Head>
   );

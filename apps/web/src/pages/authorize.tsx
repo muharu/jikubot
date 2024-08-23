@@ -1,9 +1,8 @@
 import type { GetServerSideProps } from "next";
 import { useEffect, useRef } from "react";
 import { useRouter } from "next/router";
-import { RiLoader3Fill } from "react-icons/ri";
 
-import BaseLayout from "~/layouts/base-layout";
+import GlobalLoading from "~/layouts/global-loading";
 import { api } from "~/utils/api";
 import { checkAuthorizeServerSide } from "~/utils/gssp";
 
@@ -30,16 +29,7 @@ export default function Authorization({
     }
   }, [code, state, mutate]);
 
-  return (
-    <BaseLayout title="Authorization">
-      <main className="flex h-screen items-center justify-center">
-        <section className="flex flex-col items-center gap-y-2">
-          <RiLoader3Fill className="h-16 w-16 animate-spin" />
-          <span className="text-lg">Authenticating...</span>
-        </section>
-      </main>
-    </BaseLayout>
-  );
+  return <GlobalLoading message="Authenticating..." />;
 }
 
 export const getServerSideProps: GetServerSideProps = async ({
