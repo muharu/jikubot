@@ -49,7 +49,7 @@ function RoundedIcon({ id, icon, name }: Readonly<GuildCardProps>) {
     <div className="absolute inset-0 flex items-center justify-center">
       {icon ? (
         <Image
-          src={`https://cdn.discordapp.com/icons/${id}/${icon}.png`}
+          src={`https://cdn.discordapp.com/icons/${id}/${icon}.webp`}
           width={96}
           height={96}
           alt={name}
