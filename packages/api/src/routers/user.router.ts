@@ -8,8 +8,10 @@ export const userRouter = createTRPCRouter({
       return ctx.user;
     }),
 
-  guilds: dashboardProcedure.query(async ({ ctx }) => {
-    const guilds = await services.user.getUserGuilds(ctx.accessToken);
-    return guilds;
-  }),
+  guilds: dashboardProcedure
+    .output(schemas.user.guildsMeResponse)
+    .query(async ({ ctx }) => {
+      const guilds = await services.user.getManagedGuilds(ctx.accessToken);
+      return guilds;
+    }),
 });

@@ -7,3 +7,15 @@ export const userMeResponse = z.object({
   globalName: z.string(),
   avatar: z.string(),
 });
+
+export const guildMeResponse = z.object({
+  id: z.string(),
+  name: z.string(),
+  permissions: z.string(),
+  icon: z.string().nullable(),
+});
+export const guildsMeResponse = z.array(guildMeResponse);
+
+export type UserMe = z.infer<typeof userMeResponse>;
+export type GuildMe = z.infer<typeof guildMeResponse>;
+export type GuildsMe = z.infer<typeof guildsMeResponse>;
