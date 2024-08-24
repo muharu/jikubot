@@ -1,6 +1,7 @@
 import { RiAddLine } from "react-icons/ri";
 
 import { Button } from "@giverve/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "@giverve/ui/dialog";
 
 import useDashboardCheck from "~/hooks/use-dashboard-check";
 import DashboardLayout from "~/layouts/dashboard-layout";
@@ -21,10 +22,7 @@ export default function Dashboard() {
             <h1 className="text-2xl">Events</h1>
             <span>Create new event for your community in discord server</span>
           </div>
-          <Button>
-            <RiAddLine className="mr-1.5 size-5" />
-            New
-          </Button>
+          <ModalCreateButton />
         </div>
 
         <div className="mt-8">
@@ -34,5 +32,19 @@ export default function Dashboard() {
         </div>
       </main>
     </DashboardLayout>
+  );
+}
+
+function ModalCreateButton() {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button>
+          <RiAddLine className="mr-1.5 size-5" />
+          New
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]"></DialogContent>
+    </Dialog>
   );
 }
