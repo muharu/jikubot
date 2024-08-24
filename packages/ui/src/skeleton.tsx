@@ -1,12 +1,15 @@
-import { cn } from "@giverve/ui";
+import { cn } from ".";
 
 function Skeleton({
   className,
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
+}: Readonly<React.HTMLAttributes<HTMLDivElement>>) {
   return (
     <div
-      className={cn("animate-pulse rounded-md bg-primary/10", className)}
+      className={cn(
+        "animate-pulse rounded-base border-2 border-border bg-white dark:border-darkBorder dark:bg-darkBg",
+        className,
+      )}
       {...props}
     />
   );
