@@ -17,22 +17,4 @@ export const userRouter = createTRPCRouter({
       );
       return guilds;
     }),
-
-  // botAddGuild: botProcedure
-  //   .input(schemas.user.guildMeRequest)
-  //   .mutation(async ({ input }) => {
-  //     await common.utils.transaction(async (trx) => {
-  //       const guild = await repositories.guild.findGuildById(
-  //         Number(input.id),
-  //         trx,
-  //       );
-
-  //       if (!guild) {
-  //         await repositories.guild.insertGuild(
-  //           { guildId: Number(input.id) },
-  //           trx,
-  //         );
-  //       }
-  //     });
-  //   }),
 });
