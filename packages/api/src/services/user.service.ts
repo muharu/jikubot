@@ -48,7 +48,7 @@ export async function getManagedGuilds(
 ): Promise<schemas.user.GuildsMe> {
   const cacheKey = `managedGuilds:${accessToken}`;
   const cachedGuilds =
-    common.utils.cache.inMemoryCache.get<schemas.user.GuildsMe>(cacheKey);
+    await common.utils.cache.inMemoryCache.get<schemas.user.GuildsMe>(cacheKey);
 
   if (cachedGuilds) {
     return cachedGuilds;
@@ -99,7 +99,7 @@ export async function getManagedGuilds(
   const result = joinedGuilds.concat(unjoinedGuildsWithPermissions);
 
   // Cache the result
-  common.utils.cache.inMemoryCache.set(cacheKey, result, 10_000);
+  await common.utils.cache.inMemoryCache.set(cacheKey, result, 10_000);
 
   return result;
 }
