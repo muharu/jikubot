@@ -7,4 +7,9 @@ export const botSaveGuildRequest = z.object({
   icon: z.string().nullable(),
 });
 
+export const botLeaveGuildRequest = z.object({
+  guildId: z.number(),
+});
+
 export type BotSaveGuildRequest = z.infer<typeof botSaveGuildRequest>;
+export type BotLeaveGuildRequest = z.infer<typeof botLeaveGuildRequest>;

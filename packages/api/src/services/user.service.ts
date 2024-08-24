@@ -116,7 +116,17 @@ export async function saveGuildOrUpdateActiveStatus(
     if (!guild) {
       await repositories.guild.insertGuild(data, trx);
     } else {
-      await repositories.guild.updateGuildActiveStatus(data.guildId, true);
+      await repositories.guild.updateGuildActiveStatus(data.guildId, true, trx);
+    }
+  });
+}
+
+export async function leaveGuild(guildId: number) {
+  await common.utils.transaction(async (trx) => {
+    const guild = await repositories.guild.findGuildById(guildId, trx);
+
+    if (guild) {
+      await repositories.guild.updateGuildActiveStatus(guildId, false, trx);
     }
   });
 }
