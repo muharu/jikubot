@@ -12,7 +12,9 @@ export default function Dashboard() {
   return (
     <DashboardLayout>
       <main>
-        <h1 className="text-2xl">Dashboard</h1>
+        <div>
+          <h1 className="text-2xl">Looking for Group</h1>
+        </div>
       </main>
     </DashboardLayout>
   );
