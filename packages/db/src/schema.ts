@@ -58,7 +58,6 @@ export const userGuilds = pgTable(
       .references(() => users.discordId),
     guildId: bigint("guild_id", { mode: "number" }).notNull(),
     permissions: bigint("permissions", { mode: "number" }).notNull(),
-    isManaged: boolean("is_managed").notNull(),
     joinedAt: bigint("joined_at", { mode: "number" })
       .notNull()
       .default(sql`extract(epoch from now())`),
@@ -68,7 +67,5 @@ export const userGuilds = pgTable(
       table.discordId,
       table.guildId,
     ),
-    guildIdIndex: index("guild_id_index").on(table.guildId),
-    isManagedIndex: index("is_managed_index").on(table.isManaged),
   }),
 );

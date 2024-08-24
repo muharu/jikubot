@@ -99,7 +99,7 @@ export async function getManagedGuilds(
   const result = joinedGuilds.concat(unjoinedGuildsWithPermissions);
 
   // Cache the result
-  await common.utils.cache.inMemoryCache.set(cacheKey, result, 20_000);
+  await common.utils.cache.inMemoryCache.set(cacheKey, result, 10_000);
 
   return result;
 }
@@ -107,58 +107,68 @@ export async function getManagedGuilds(
 export async function syncUserGuilds(discordId: number, accessToken: string) {
   const userGuildsData = await getUserGuilds(accessToken);
 
+  // Filter only the guilds that are managed
+  const managedGuildsData = userGuildsData.filter((guild) =>
+    common.utils.bitfields.hasPermission(
+      Number(guild.permissions),
+      "MANAGE_GUILD",
+    ),
+  );
+
   await common.utils.transaction(async (trx) => {
-    for (const guild of userGuildsData) {
-      const isManaged = common.utils.bitfields.hasPermission(
-        Number(guild.permissions),
-        "MANAGE_GUILD",
-      );
+    // Fetch existing guilds for the user
+    const existingGuilds = await trx.query.userGuilds.findMany({
+      where: eq(userGuilds.discordId, discordId),
+    });
 
-      const existingGuild = await trx.query.userGuilds.findFirst({
-        where: (userGuilds, { eq }) => eq(userGuilds.guildId, Number(guild.id)),
-      });
+    // Create a map of existing guilds for quick lookup
+    const existingGuildsMap = new Map<number, (typeof existingGuilds)[0]>(
+      existingGuilds.map((guild) => [guild.guildId, guild]),
+    );
 
-      console.log("Existing guild", existingGuild);
+    // Insert or update managed guilds
+    for (const guild of managedGuildsData) {
+      const guildId = Number(guild.id);
 
+      const existingGuild = existingGuildsMap.get(guildId);
       if (existingGuild) {
-        if (
-          existingGuild.permissions !== Number(guild.permissions) ||
-          existingGuild.isManaged !== isManaged
-        ) {
+        if (existingGuild.permissions !== Number(guild.permissions)) {
           await trx
             .update(userGuilds)
             .set({
               permissions: Number(guild.permissions),
-              isManaged,
             })
             .where(
               and(
                 eq(userGuilds.discordId, discordId),
-                eq(userGuilds.guildId, Number(guild.id)),
+                eq(userGuilds.guildId, guildId),
               ),
             );
         }
+        // Remove the guild from the map to know which guilds need to be deleted
+        existingGuildsMap.delete(guildId);
       } else {
         await trx.insert(userGuilds).values({
-          discordId: discordId,
-          guildId: Number(guild.id),
+          discordId,
+          guildId,
           permissions: Number(guild.permissions),
-          isManaged,
         });
       }
+    }
 
-      // Optionally: Remove any guilds that the user is no longer a part of
-      const guildIds = userGuildsData.map((guild) => Number(guild.id));
+    // Delete guilds that are no longer in the managed list
+    if (existingGuildsMap.size > 0) {
+      const guildIdsToDelete = Array.from(existingGuildsMap.keys());
       await trx
         .delete(userGuilds)
         .where(
           and(
             eq(userGuilds.discordId, discordId),
-            notInArray(userGuilds.guildId, guildIds),
+            notInArray(userGuilds.guildId, guildIdsToDelete),
           ),
         );
     }
   });
 
-  return userGuildsData;
+  return managedGuildsData;
 }
