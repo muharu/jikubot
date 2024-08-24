@@ -19,7 +19,7 @@ export default function BaseLayout({
       <BaseHead title={title} description={description} />
       <div
         className={cn(
-          "min-h-[100dvh] bg-background font-sans text-foreground antialiased",
+          "min-h-[100dvh] bg-[#f0f0f0] font-sans antialiased",
           fontPoppins.className,
         )}
       >
