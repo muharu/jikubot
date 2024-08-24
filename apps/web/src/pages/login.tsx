@@ -1,5 +1,7 @@
 import type { GetServerSideProps } from "next";
+import Link from "next/link";
 
+import { buttonVariants } from "@giverve/ui/button";
 import { Card } from "@giverve/ui/card";
 
 import BaseLayout from "~/layouts/base-layout";
@@ -17,8 +19,11 @@ export default function Login() {
               Login to access your dashboard and manage your events.
             </p>
           </div>
-          <div className="grid gap-4">
+          <div className="grid gap-3">
             <LoginButton />
+            <Link href="/" className={buttonVariants({ variant: "neutral" })}>
+              Back to Home
+            </Link>
           </div>
         </Card>
       </main>

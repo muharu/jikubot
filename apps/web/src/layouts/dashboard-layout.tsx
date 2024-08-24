@@ -20,7 +20,7 @@ export default function DashboardLayout({
   const currentGuild = data?.find((guild) => guild.id === guildId);
 
   return (
-    <BaseLayout title={`${currentGuild?.name} - Dashboard`}>
+    <BaseLayout title={`${currentGuild?.name} | Dashboard`}>
       <div className="flex h-[100dvh]">
         <Sidebar />
         <div className="flex h-full w-full flex-col">

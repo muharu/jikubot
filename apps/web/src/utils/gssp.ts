@@ -85,7 +85,7 @@ export async function checkHasLoggedInServerSide({
 
       return {
         redirect: {
-          destination: "/",
+          destination: "/home",
           permanent: false,
         },
       };
