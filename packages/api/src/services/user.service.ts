@@ -1,6 +1,8 @@
 import type { RESTGetAPICurrentUserGuildsResult } from "discord-api-types/v10";
 import { TRPCError } from "@trpc/server";
 
+import { and, eq, notInArray, userGuilds } from "@giverve/db";
+
 import type { schemas } from "../context";
 import { common } from "../context";
 
@@ -41,6 +43,7 @@ export async function getBotGuilds(): Promise<RESTGetAPICurrentUserGuildsResult>
 }
 
 export async function getManagedGuilds(
+  discordId: number,
   accessToken: string,
 ): Promise<schemas.user.GuildsMe> {
   const cacheKey = `managedGuilds:${accessToken}`;
@@ -53,7 +56,7 @@ export async function getManagedGuilds(
 
   // Fetch guilds
   const [userGuilds, botGuilds] = await Promise.all([
-    getUserGuilds(accessToken),
+    syncUserGuilds(discordId, accessToken),
     getBotGuilds(),
   ]);
 
@@ -96,7 +99,66 @@ export async function getManagedGuilds(
   const result = joinedGuilds.concat(unjoinedGuildsWithPermissions);
 
   // Cache the result
-  await common.utils.cache.inMemoryCache.set(cacheKey, result, 5_000);
+  await common.utils.cache.inMemoryCache.set(cacheKey, result, 20_000);
 
   return result;
+}
+
+export async function syncUserGuilds(discordId: number, accessToken: string) {
+  const userGuildsData = await getUserGuilds(accessToken);
+
+  await common.utils.transaction(async (trx) => {
+    for (const guild of userGuildsData) {
+      const isManaged = common.utils.bitfields.hasPermission(
+        Number(guild.permissions),
+        "MANAGE_GUILD",
+      );
+
+      const existingGuild = await trx.query.userGuilds.findFirst({
+        where: (userGuilds, { eq }) => eq(userGuilds.guildId, Number(guild.id)),
+      });
+
+      console.log("Existing guild", existingGuild);
+
+      if (existingGuild) {
+        if (
+          existingGuild.permissions !== Number(guild.permissions) ||
+          existingGuild.isManaged !== isManaged
+        ) {
+          await trx
+            .update(userGuilds)
+            .set({
+              permissions: Number(guild.permissions),
+              isManaged,
+            })
+            .where(
+              and(
+                eq(userGuilds.discordId, discordId),
+                eq(userGuilds.guildId, Number(guild.id)),
+              ),
+            );
+        }
+      } else {
+        await trx.insert(userGuilds).values({
+          discordId: discordId,
+          guildId: Number(guild.id),
+          permissions: Number(guild.permissions),
+          isManaged,
+        });
+      }
+
+      // Optionally: Remove any guilds that the user is no longer a part of
+      const guildIds = userGuildsData.map((guild) => Number(guild.id));
+      await trx
+        .delete(userGuilds)
+        .where(
+          and(
+            eq(userGuilds.discordId, discordId),
+            notInArray(userGuilds.guildId, guildIds),
+          ),
+        );
+    }
+  });
+
+  return userGuildsData;
 }

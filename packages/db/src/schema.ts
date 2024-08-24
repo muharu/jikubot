@@ -53,12 +53,10 @@ export const userGuilds = pgTable(
       .primaryKey()
       .notNull()
       .$defaultFn(() => Number(snowflake.generateId())),
-    userId: bigint("user_id", { mode: "number" })
+    discordId: bigint("discord_id", { mode: "number" })
       .notNull()
-      .references(() => users.id),
-    guildId: bigint("guild_id", { mode: "number" })
-      .notNull()
-      .references(() => guilds.id),
+      .references(() => users.discordId),
+    guildId: bigint("guild_id", { mode: "number" }).notNull(),
     permissions: bigint("permissions", { mode: "number" }).notNull(),
     isManaged: boolean("is_managed").notNull(),
     joinedAt: bigint("joined_at", { mode: "number" })
@@ -66,7 +64,10 @@ export const userGuilds = pgTable(
       .default(sql`extract(epoch from now())`),
   },
   (table) => ({
-    userGuildIndex: index("user_guild_index").on(table.userId, table.guildId),
+    userGuildIndex: index("user_guild_index").on(
+      table.discordId,
+      table.guildId,
+    ),
     guildIdIndex: index("guild_id_index").on(table.guildId),
     isManagedIndex: index("is_managed_index").on(table.isManaged),
   }),
