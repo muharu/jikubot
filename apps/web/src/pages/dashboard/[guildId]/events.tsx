@@ -11,6 +11,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@giverve/ui/dialog";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@giverve/ui/drawer";
 import { Input } from "@giverve/ui/input";
 import { Textarea } from "@giverve/ui/textarea";
 
@@ -41,6 +51,8 @@ export default function Dashboard() {
           <div className="min-h-20 rounded-md border-l border-r border-border"></div>
           <div className="min-h-20 rounded-md border border-border"></div>
         </div>
+
+        <DrawerCreateButton />
       </main>
     </DashboardLayout>
   );
@@ -72,9 +84,47 @@ function ModalCreateButton() {
           <DialogClose>
             <Button variant="neutral">Cancel</Button>
           </DialogClose>
-          <Button>Continoue</Button>
+          <Button>Continue</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function DrawerCreateButton() {
+  return (
+    <Drawer>
+      <DrawerTrigger asChild>
+        <Button
+          size="icon"
+          variant="noShadow"
+          className="absolute bottom-10 right-5 h-14 w-14 rounded-full lg:hidden"
+        >
+          <RiAddLine className="size-8" />
+        </Button>
+      </DrawerTrigger>
+      <DrawerContent>
+        <div className="px-4">
+          <DrawerHeader>
+            <DrawerTitle>Create Event</DrawerTitle>
+            <DrawerDescription>
+              Create a new event for your community
+            </DrawerDescription>
+          </DrawerHeader>
+
+          <form className="flex flex-col gap-y-2">
+            <Input placeholder="Event Title" autoFocus />
+            <Textarea placeholder="Event Description" />
+          </form>
+
+          <DrawerFooter className="grid grid-cols-2">
+            <DrawerClose asChild>
+              <Button variant="neutral">Cancel</Button>
+            </DrawerClose>
+            <Button>Continue</Button>
+          </DrawerFooter>
+        </div>
+      </DrawerContent>
+    </Drawer>
   );
 }

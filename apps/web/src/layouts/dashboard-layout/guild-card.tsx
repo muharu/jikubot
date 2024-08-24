@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { AiTwotoneHome } from "react-icons/ai";
 
 import { cn } from "@giverve/ui";
 import { buttonVariants } from "@giverve/ui/button";
@@ -27,15 +28,26 @@ export default function GuildCard() {
         <span>{currentGuild?.name}</span>
       </div>
 
-      <Link
-        href="/dashboard"
-        className={cn(
-          buttonVariants({ variant: "reverse", size: "sm" }),
-          "bg-secondary mt-4 w-full text-white",
-        )}
-      >
-        Change Server
-      </Link>
+      <div className="mt-2 flex items-center gap-x-2">
+        <Link
+          href="/home"
+          className={cn(
+            buttonVariants({ variant: "reverse", size: "icon" }),
+            "w-fit bg-white px-2 text-black",
+          )}
+        >
+          <AiTwotoneHome className="size-6" />
+        </Link>
+        <Link
+          href="/dashboard"
+          className={cn(
+            buttonVariants({ variant: "reverse", size: "sm" }),
+            "w-full bg-secondary text-white",
+          )}
+        >
+          Change Server
+        </Link>
+      </div>
     </Card>
   );
 }
