@@ -27,7 +27,9 @@ export default function DashboardLayout({
       <div className="flex h-[100dvh]">
         <Sidebar />
         <div className="flex h-full w-full flex-col">
-          <main className="flex-1 overflow-auto bg-bg p-4">{children}</main>
+          <main className="flex-1 overflow-auto bg-[#f0f0f0] p-4">
+            {children}
+          </main>
         </div>
       </div>
     </BaseLayout>
@@ -53,7 +55,7 @@ function Sidebar() {
                 ? "noShadow"
                 : "neutral",
             }),
-            "w-[95%] justify-start",
+            "w-[95%] justify-start font-semibold",
           )}
         >
           <AiTwotoneDashboard className="mr-2 size-6" />
@@ -68,7 +70,7 @@ function Sidebar() {
                 ? "noShadow"
                 : "neutral",
             }),
-            "w-[95%] justify-start",
+            "w-[95%] justify-start font-semibold",
           )}
         >
           <BsCalendar2Week className="mr-2 size-6" />
@@ -83,7 +85,7 @@ function Sidebar() {
                 ? "noShadow"
                 : "neutral",
             }),
-            "w-[95%] justify-start",
+            "w-[95%] justify-start font-semibold",
           )}
         >
           <HiUserGroup className="mr-2 size-6" />

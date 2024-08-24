@@ -31,7 +31,7 @@ export default function GuildCard() {
         href="/dashboard"
         className={cn(
           buttonVariants({ variant: "reverse", size: "sm" }),
-          "mt-4 w-full",
+          "bg-secondary mt-4 w-full text-white",
         )}
       >
         Change Server

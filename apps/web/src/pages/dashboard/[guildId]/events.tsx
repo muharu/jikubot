@@ -1,3 +1,7 @@
+import { RiAddLine } from "react-icons/ri";
+
+import { Button } from "@giverve/ui/button";
+
 import useDashboardCheck from "~/hooks/use-dashboard-check";
 import DashboardLayout from "~/layouts/dashboard-layout";
 import GlobalLoading from "~/layouts/global-loading";
@@ -12,7 +16,22 @@ export default function Dashboard() {
   return (
     <DashboardLayout>
       <main>
-        <h1 className="text-2xl">Events</h1>
+        <div className="hidden items-center justify-between lg:flex">
+          <div className="flex flex-col">
+            <h1 className="text-2xl">Events</h1>
+            <span>Create new event for your community in discord server</span>
+          </div>
+          <Button>
+            <RiAddLine className="mr-1.5 size-5" />
+            New
+          </Button>
+        </div>
+
+        <div className="mt-8">
+          <div className="min-h-20 rounded-md border border-border"></div>
+          <div className="min-h-20 rounded-md border-l border-r border-border"></div>
+          <div className="min-h-20 rounded-md border border-border"></div>
+        </div>
       </main>
     </DashboardLayout>
   );
