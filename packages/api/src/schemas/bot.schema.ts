@@ -6,3 +6,5 @@ export const botSaveGuildRequest = z.object({
   name: z.string(),
   icon: z.string().nullable(),
 });
+
+export type BotSaveGuildRequest = z.infer<typeof botSaveGuildRequest>;

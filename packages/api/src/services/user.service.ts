@@ -4,7 +4,7 @@ import { TRPCError } from "@trpc/server";
 import { and, eq, notInArray, userGuilds } from "@giverve/db";
 
 import type { schemas } from "../context";
-import { common } from "../context";
+import { common, repositories } from "../context";
 
 export async function getUserGuilds(
   accessToken: string,
@@ -102,6 +102,23 @@ export async function getManagedGuilds(
   await common.utils.cache.inMemoryCache.set(cacheKey, result, 10_000);
 
   return result;
+}
+
+export async function saveGuildOrUpdateActiveStatus(
+  data: schemas.bot.BotSaveGuildRequest,
+) {
+  await common.utils.transaction(async (trx) => {
+    const guild = await repositories.guild.findGuildById(
+      Number(data.guildId),
+      trx,
+    );
+
+    if (!guild) {
+      await repositories.guild.insertGuild(data, trx);
+    } else {
+      await repositories.guild.updateGuildActiveStatus(data.guildId, true);
+    }
+  });
 }
 
 export async function syncUserGuilds(discordId: number, accessToken: string) {
