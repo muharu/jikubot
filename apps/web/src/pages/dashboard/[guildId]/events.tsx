@@ -1,7 +1,18 @@
 import { RiAddLine } from "react-icons/ri";
 
 import { Button } from "@giverve/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@giverve/ui/dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@giverve/ui/dialog";
+import { Input } from "@giverve/ui/input";
+import { Textarea } from "@giverve/ui/textarea";
 
 import useDashboardCheck from "~/hooks/use-dashboard-check";
 import DashboardLayout from "~/layouts/dashboard-layout";
@@ -44,7 +55,26 @@ function ModalCreateButton() {
           New
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]"></DialogContent>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Create Event</DialogTitle>
+          <DialogDescription>
+            Create a new event for your community in discord server
+          </DialogDescription>
+        </DialogHeader>
+
+        <form className="flex flex-col gap-y-2">
+          <Input placeholder="Event Title" autoFocus />
+          <Textarea placeholder="Event Description" />
+        </form>
+
+        <DialogFooter>
+          <DialogClose>
+            <Button variant="neutral">Cancel</Button>
+          </DialogClose>
+          <Button>Continoue</Button>
+        </DialogFooter>
+      </DialogContent>
     </Dialog>
   );
 }
