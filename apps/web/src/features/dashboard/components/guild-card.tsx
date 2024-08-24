@@ -4,8 +4,9 @@ import { LuExternalLink } from "react-icons/lu";
 
 import { cn } from "@giverve/ui";
 import { buttonVariants } from "@giverve/ui/button";
+import { Card } from "@giverve/ui/card";
 
-import type { CardContentProps, GuildCardProps } from "../types";
+import type { GuildCardProps } from "../types";
 import { env } from "~/env";
 
 export default function GuildCard({
@@ -16,32 +17,32 @@ export default function GuildCard({
 }: Readonly<GuildCardProps>) {
   return (
     <section className="flex flex-col">
-      <div key={id} className="relative overflow-hidden rounded-lg">
-        <BackgroundImage id={id} icon={icon} name={name} isJoined={isJoined} />
+      <Card key={id} className="relative overflow-hidden rounded-lg">
+        <Background />
         <RoundedIcon id={id} icon={icon} name={name} isJoined={isJoined} />
+      </Card>
+      <div className="flex items-center justify-between pt-2.5">
+        <h2 className="line-clamp-1 text-lg font-semibold">{name}</h2>
+        {isJoined ? (
+          <Link
+            href={`/dashboard/${id}`}
+            className={cn(
+              buttonVariants({ variant: "default" }),
+              "font-semibold",
+            )}
+          >
+            Manage
+          </Link>
+        ) : (
+          <ButtonInvite id={id} />
+        )}
       </div>
-      <CardContent id={id} name={name} isJoined={isJoined} />
     </section>
   );
 }
 
-function BackgroundImage({ id, icon, name }: Readonly<GuildCardProps>) {
-  return (
-    <>
-      {icon ? (
-        <Image
-          src={`https://cdn.discordapp.com/icons/${id}/${icon}.png`}
-          width={256}
-          height={256}
-          alt={name}
-          className="h-36 w-full select-none border-2 border-foreground object-cover shadow-xl blur-xl"
-          priority
-        />
-      ) : (
-        <div className="h-36 w-full select-none bg-muted blur-xl" />
-      )}
-    </>
-  );
+function Background() {
+  return <div className="h-36 w-full select-none border-border bg-bg" />;
 }
 
 function RoundedIcon({ id, icon, name }: Readonly<GuildCardProps>) {
@@ -53,36 +54,15 @@ function RoundedIcon({ id, icon, name }: Readonly<GuildCardProps>) {
           width={96}
           height={96}
           alt={name}
-          className="h-24 w-24 select-none rounded-full border-2 border-muted bg-background object-cover"
+          className="h-24 w-24 select-none rounded-full object-cover"
           priority
         />
       ) : (
-        <div className="h-24 w-24 select-none rounded-full border-2 border-muted bg-background">
+        <div className="h-24 w-24 select-none rounded-full border border-border bg-main">
           <div className="flex h-full items-center justify-center text-3xl font-extrabold">
             {name[0]}
           </div>
         </div>
-      )}
-    </div>
-  );
-}
-
-function CardContent({ id, name, isJoined }: Readonly<CardContentProps>) {
-  return (
-    <div className="flex items-center justify-between pt-2.5">
-      <h2 className="line-clamp-1 text-lg font-semibold">{name}</h2>
-      {isJoined ? (
-        <Link
-          href={`/dashboard/${id}`}
-          className={cn(
-            buttonVariants({ variant: "primary" }),
-            "font-semibold",
-          )}
-        >
-          Manage
-        </Link>
-      ) : (
-        <ButtonInvite id={id} />
       )}
     </div>
   );
@@ -100,7 +80,7 @@ function ButtonInvite({ id }: Readonly<{ id: string }>) {
   return (
     <a
       href={`https://discord.com/oauth2/authorize?${inviteParams.toString()}`}
-      className={cn(buttonVariants({ variant: "secondary" }), "font-semibold")}
+      className={cn(buttonVariants({ variant: "neutral" }), "font-semibold")}
     >
       Invite
       <LuExternalLink className="ml-1.5 size-4" />

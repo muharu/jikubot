@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { GrDashboard } from "react-icons/gr";
+import { AiTwotoneDashboard } from "react-icons/ai";
 
 import { cn } from "@giverve/ui";
 import { buttonVariants } from "@giverve/ui/button";
@@ -24,7 +24,7 @@ export default function DashboardLayout({
       <div className="flex h-[100dvh]">
         <Sidebar />
         <div className="flex h-full w-full flex-col">
-          <main className="flex-1 overflow-auto p-4">{children}</main>
+          <main className="flex-1 overflow-auto bg-bg p-4">{children}</main>
         </div>
       </div>
     </BaseLayout>
@@ -36,16 +36,16 @@ function Sidebar() {
   const guildId = String(router.query.guildId);
 
   return (
-    <ScrollArea className="hidden h-[100dvh] w-[350px] rounded-md border-r p-4 lg:flex">
+    <ScrollArea className="hidden h-[100dvh] w-[350px] rounded-md border-r bg-white p-4 lg:flex">
       <nav className="flex flex-col gap-y-2">
         <Link
           href={`/dashboard/${guildId}`}
           className={cn(
-            buttonVariants({ variant: "secondary" }),
-            "w-full justify-start",
+            buttonVariants({ variant: "default" }),
+            "w-[95%] justify-start",
           )}
         >
-          <GrDashboard className="mr-2 size-5" />
+          <AiTwotoneDashboard className="mr-2 size-7" />
           Dashboard
         </Link>
       </nav>
