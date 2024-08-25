@@ -30,5 +30,25 @@ export async function updateGuildActiveStatus(
     .returning();
 }
 
+export async function upsertGuildWithActiveStatus(
+  data: InsertGuild,
+  activeStatus: boolean,
+  trx = db,
+) {
+  return await trx
+    .insert(guilds)
+    .values(data)
+    .onConflictDoUpdate({
+      target: guilds.guildId,
+      set: {
+        isActive: activeStatus,
+        name: data.name,
+        icon: data.icon,
+        ownerId: data.ownerId,
+      },
+    })
+    .returning();
+}
+
 export type InsertGuild = typeof guilds.$inferInsert;
 export type SelectGuild = typeof guilds.$inferSelect;
