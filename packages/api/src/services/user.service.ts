@@ -5,7 +5,10 @@ import { and, eq, guilds, notInArray, userGuilds } from "@giverve/db";
 
 import type { schemas } from "../context";
 import { common, repositories } from "../context";
-import { findManyUserGuildsByDiscordId } from "../repositories/user-guild.repository";
+import {
+  findFirstUserGuildByDiscordId,
+  findManyUserGuildsByDiscordId,
+} from "../repositories/user-guild.repository";
 
 export async function getUserGuilds(
   accessToken: string,
@@ -155,9 +158,10 @@ export async function syncUserGuilds(discordId: number, accessToken: string) {
 
       const existingGuild = existingGuildsMap.get(guildId);
       if (existingGuild) {
-        const isGuildExist = await trx.query.users.findFirst({
-          where: (user, { eq }) => eq(user.discordId, discordId),
-        });
+        const isGuildExist = await findFirstUserGuildByDiscordId(
+          discordId,
+          trx,
+        );
 
         if (guild.owner && isGuildExist) {
           await trx.update(guilds).set({

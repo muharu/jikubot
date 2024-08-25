@@ -1,8 +1,19 @@
 import { db, eq, userGuilds } from "@giverve/db";
 
-export function findManyUserGuildsByDiscordId(discordId: number, trx = db) {
-  return trx
-    .select()
-    .from(userGuilds)
-    .where(eq(userGuilds.discordId, discordId));
+export async function findManyUserGuildsByDiscordId(
+  discordId: number,
+  trx = db,
+) {
+  return trx.query.userGuilds.findMany({
+    where: eq(userGuilds.discordId, discordId),
+  });
+}
+
+export async function findFirstUserGuildByDiscordId(
+  discordId: number,
+  trx = db,
+) {
+  return trx.query.users.findFirst({
+    where: (user, { eq }) => eq(user.discordId, discordId),
+  });
 }
