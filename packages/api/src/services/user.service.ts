@@ -3,13 +3,6 @@ import { TRPCError } from "@trpc/server";
 
 import type { schemas } from "../context";
 import { common, repositories } from "../context";
-import { updateGuildByGuildId } from "../repositories/guild.repository";
-import {
-  deleteUserGuildsByGuildIds,
-  findManyUserGuildsByDiscordId,
-  insertUserGuilds,
-  updateUserGuildPermissionsByDiscordIdAndGuildId,
-} from "../repositories/user-guild.repository";
 
 export async function getUserGuilds(
   accessToken: string,
@@ -146,7 +139,11 @@ export async function syncUserGuilds(discordId: number, accessToken: string) {
 
   await common.utils.transaction(async (trx) => {
     // Fetch existing guilds for the user
-    const existingGuilds = await findManyUserGuildsByDiscordId(discordId, trx);
+    const existingGuilds =
+      await repositories.userGuild.findManyUserGuildsByDiscordId(
+        discordId,
+        trx,
+      );
 
     // Create a map of existing guilds for quick lookup
     const existingGuildsMap = new Map<number, (typeof existingGuilds)[0]>(
@@ -160,7 +157,7 @@ export async function syncUserGuilds(discordId: number, accessToken: string) {
 
       const existingGuild = existingGuildsMap.get(guildId);
       if (existingGuild) {
-        await updateGuildByGuildId({
+        await repositories.guild.updateGuildByGuildId({
           guildId,
           name: guild.name,
           icon: guild.icon,
@@ -168,7 +165,7 @@ export async function syncUserGuilds(discordId: number, accessToken: string) {
         });
 
         if (existingGuild.permissions !== permissions) {
-          await updateUserGuildPermissionsByDiscordIdAndGuildId(
+          await repositories.userGuild.updateUserGuildPermissionsByDiscordIdAndGuildId(
             discordId,
             guildId,
             permissions,
@@ -179,7 +176,7 @@ export async function syncUserGuilds(discordId: number, accessToken: string) {
         // Remove the guild from the map to know which guilds need to be deleted
         existingGuildsMap.delete(guildId);
       } else {
-        await insertUserGuilds({
+        await repositories.userGuild.insertUserGuilds({
           discordId,
           guildId,
           permissions,
@@ -190,7 +187,11 @@ export async function syncUserGuilds(discordId: number, accessToken: string) {
     // Delete guilds that are no longer in the managed list
     if (existingGuildsMap.size > 0) {
       const guildIdsToDelete = Array.from(existingGuildsMap.keys());
-      await deleteUserGuildsByGuildIds(discordId, guildIdsToDelete, trx);
+      await repositories.userGuild.deleteUserGuildsByGuildIds(
+        discordId,
+        guildIdsToDelete,
+        trx,
+      );
     }
   });
 
