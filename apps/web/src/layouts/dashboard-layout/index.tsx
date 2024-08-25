@@ -56,6 +56,7 @@ function Sidebar() {
 
       <nav className="mt-4 flex flex-col gap-y-3">
         <Link
+          prefetch={false}
           href={`/dashboard/${guildId}`}
           className={cn(
             buttonVariants({
@@ -69,6 +70,7 @@ function Sidebar() {
         </Link>
 
         <Link
+          prefetch={false}
           href={`/dashboard/${guildId}/events`}
           className={cn(
             buttonVariants({
@@ -82,6 +84,7 @@ function Sidebar() {
         </Link>
 
         <Link
+          prefetch={false}
           href={`/dashboard/${guildId}/lfg`}
           className={cn(
             buttonVariants({

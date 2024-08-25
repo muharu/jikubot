@@ -30,6 +30,7 @@ export default function GuildCard() {
 
       <div className="mt-2 flex items-center gap-x-2">
         <Link
+          prefetch={false}
           href="/home"
           className={cn(
             buttonVariants({ variant: "reverse", size: "icon" }),
@@ -39,6 +40,7 @@ export default function GuildCard() {
           <AiTwotoneHome className="size-6" />
         </Link>
         <Link
+          prefetch={false}
           href="/dashboard"
           className={cn(
             buttonVariants({ variant: "reverse", size: "sm" }),
