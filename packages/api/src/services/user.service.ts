@@ -8,6 +8,7 @@ import { common, repositories } from "../context";
 import {
   findFirstUserGuildByDiscordId,
   findManyUserGuildsByDiscordId,
+  updateUserGuildPermissionsByDiscordIdAndGuildId,
 } from "../repositories/user-guild.repository";
 
 export async function getUserGuilds(
@@ -177,17 +178,12 @@ export async function syncUserGuilds(discordId: number, accessToken: string) {
         }
 
         if (existingGuild.permissions !== Number(guild.permissions)) {
-          await trx
-            .update(userGuilds)
-            .set({
-              permissions: Number(guild.permissions),
-            })
-            .where(
-              and(
-                eq(userGuilds.discordId, discordId),
-                eq(userGuilds.guildId, guildId),
-              ),
-            );
+          await updateUserGuildPermissionsByDiscordIdAndGuildId(
+            discordId,
+            guildId,
+            Number(guild.permissions),
+            trx,
+          );
         }
 
         // Remove the guild from the map to know which guilds need to be deleted

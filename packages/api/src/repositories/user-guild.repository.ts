@@ -1,4 +1,4 @@
-import { db, eq, userGuilds } from "@giverve/db";
+import { and, db, eq, userGuilds } from "@giverve/db";
 
 export async function findManyUserGuildsByDiscordId(
   discordId: number,
@@ -16,4 +16,18 @@ export async function findFirstUserGuildByDiscordId(
   return trx.query.users.findFirst({
     where: (user, { eq }) => eq(user.discordId, discordId),
   });
+}
+
+export async function updateUserGuildPermissionsByDiscordIdAndGuildId(
+  discordId: number,
+  guildId: number,
+  permissions: number,
+  trx = db,
+) {
+  return trx
+    .update(userGuilds)
+    .set({ permissions })
+    .where(
+      and(eq(userGuilds.discordId, discordId), eq(userGuilds.guildId, guildId)),
+    );
 }
