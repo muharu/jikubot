@@ -1,7 +1,7 @@
 import type { RESTGetAPICurrentUserGuildsResult } from "discord-api-types/v10";
 import { TRPCError } from "@trpc/server";
 
-import { and, eq, notInArray, userGuilds } from "@giverve/db";
+import { and, eq, guilds, notInArray, userGuilds } from "@giverve/db";
 
 import type { schemas } from "../context";
 import { common, repositories } from "../context";
@@ -159,6 +159,19 @@ export async function syncUserGuilds(discordId: number, accessToken: string) {
 
       const existingGuild = existingGuildsMap.get(guildId);
       if (existingGuild) {
+        if (guild.owner) {
+          await trx.update(guilds).set({
+            name: guild.name,
+            icon: guild.icon,
+            ownerId: discordId,
+          });
+        } else {
+          await trx.update(guilds).set({
+            name: guild.name,
+            icon: guild.icon,
+          });
+        }
+
         if (existingGuild.permissions !== Number(guild.permissions)) {
           await trx
             .update(userGuilds)
@@ -172,6 +185,7 @@ export async function syncUserGuilds(discordId: number, accessToken: string) {
               ),
             );
         }
+
         // Remove the guild from the map to know which guilds need to be deleted
         existingGuildsMap.delete(guildId);
       } else {
