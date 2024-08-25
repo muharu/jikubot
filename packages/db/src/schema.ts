@@ -69,3 +69,17 @@ export const userGuilds = pgTable(
     ),
   }),
 );
+
+export const events = pgTable("events", {
+  id: bigint("id", { mode: "number" })
+    .primaryKey()
+    .notNull()
+    .$defaultFn(() => Number(snowflake.generateId())),
+  discordId: bigint("discord_id", { mode: "number" }).notNull(),
+  messageId: bigint("message_id", { mode: "number" }),
+  title: varchar("name", { length: 50 }).notNull(),
+  description: varchar("description", { length: 150 }),
+  createdAt: bigint("created_at", { mode: "number" })
+    .notNull()
+    .default(sql`extract(epoch from now())`),
+});

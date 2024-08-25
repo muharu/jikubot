@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { LuLoader2 } from "react-icons/lu";
@@ -28,6 +29,9 @@ export default function CreateEventForm({
 }: Readonly<{
   type: "dialog" | "drawer";
 }>) {
+  const router = useRouter();
+  const guildId = String(router.query.guildId);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -37,8 +41,9 @@ export default function CreateEventForm({
   });
 
   const { mutate, isPending } = api.dashboard.event.create.useMutation({
-    onSuccess: () => {
+    onSuccess: (eventId) => {
       form.reset();
+      void router.push(`/dashboard/${guildId}/events/${eventId}`);
     },
   });
 
