@@ -1,10 +1,9 @@
 import type { RESTGetAPICurrentUserGuildsResult } from "discord-api-types/v10";
 import { TRPCError } from "@trpc/server";
 
-import { eq, guilds } from "@giverve/db";
-
 import type { schemas } from "../context";
 import { common, repositories } from "../context";
+import { updateGuildByGuildId } from "../repositories/guild.repository";
 import {
   deleteUserGuildsByGuildIds,
   findManyUserGuildsByDiscordId,
@@ -161,14 +160,12 @@ export async function syncUserGuilds(discordId: number, accessToken: string) {
 
       const existingGuild = existingGuildsMap.get(guildId);
       if (existingGuild) {
-        await trx
-          .update(guilds)
-          .set({
-            name: guild.name,
-            icon: guild.icon,
-            ownerId: guild.owner ? discordId : undefined,
-          })
-          .where(eq(guilds.guildId, guildId));
+        await updateGuildByGuildId({
+          guildId,
+          name: guild.name,
+          icon: guild.icon,
+          ownerId: guild.owner ? discordId : undefined,
+        });
 
         if (existingGuild.permissions !== permissions) {
           await updateUserGuildPermissionsByDiscordIdAndGuildId(

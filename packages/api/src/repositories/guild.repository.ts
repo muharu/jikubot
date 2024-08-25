@@ -25,6 +25,17 @@ export async function upsertGuildWithActiveStatus(
     .returning();
 }
 
+export async function updateGuildByGuildId(data: InsertGuild, trx = db) {
+  return trx
+    .update(guilds)
+    .set({
+      name: data.name,
+      icon: data.icon,
+      ownerId: data.ownerId,
+    })
+    .where(eq(guilds.guildId, data.guildId));
+}
+
 export async function updateGuildActiveStatusIfExists(
   guildId: number,
   isActive: boolean,
