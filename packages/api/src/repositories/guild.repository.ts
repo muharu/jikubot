@@ -1,5 +1,11 @@
 import { db, eq, guilds } from "@giverve/db";
 
+export async function findManyActiveGuilds(trx = db) {
+  return await trx.query.guilds.findMany({
+    where: (guilds, { eq }) => eq(guilds.isActive, true),
+  });
+}
+
 export async function findGuildById(id: number, trx = db) {
   return await trx.query.guilds.findFirst({
     where: (guilds, { eq }) => eq(guilds.guildId, id),

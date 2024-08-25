@@ -1,5 +1,5 @@
-import { TRPCError } from "@trpc/server";
 import type { RESTGetAPICurrentUserGuildsResult } from "discord-api-types/v10";
+import { TRPCError } from "@trpc/server";
 
 import { and, eq, guilds, notInArray, userGuilds } from "@giverve/db";
 
@@ -54,14 +54,16 @@ export async function getManagedGuilds(
     return cachedGuilds;
   }
 
-  // Fetch guilds
-  const [userGuilds, botGuilds] = await Promise.all([
-    syncUserGuilds(discordId, accessToken),
-    getBotGuilds(),
-  ]);
+  // get the user guilds from discord api and sync them with the database
+  const userGuilds = await syncUserGuilds(discordId, accessToken);
+
+  // get the guilds from the database
+  const botGuildsFromDb = await repositories.guild.findManyActiveGuilds();
 
   // Create a Set for botGuilds IDs
-  const botGuildSet = new Set(botGuilds.map((botGuild) => botGuild.id));
+  const botGuildSet = new Set(
+    botGuildsFromDb.map((botGuild) => botGuild.guildId),
+  );
 
   // Separate the guilds into joined and unjoined
   const guilds = userGuilds.map((guild) => {
@@ -69,7 +71,7 @@ export async function getManagedGuilds(
       Number(guild.permissions),
       "MANAGE_GUILD",
     );
-    const isJoined = botGuildSet.has(guild.id);
+    const isJoined = botGuildSet.has(Number(guild.id));
 
     return {
       ...guild,

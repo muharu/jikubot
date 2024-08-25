@@ -13,7 +13,7 @@ export function LoginButton() {
     <Button
       onClick={() => mutate()}
       disabled={isPending}
-      className="font-semibold"
+      className="bg-[#7289da] font-semibold text-white"
     >
       {!isPending ? (
         <>
