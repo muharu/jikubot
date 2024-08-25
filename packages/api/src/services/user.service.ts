@@ -1,8 +1,6 @@
 import type { RESTGetAPICurrentUserGuildsResult } from "discord-api-types/v10";
 import { TRPCError } from "@trpc/server";
 
-import { and, eq, guilds, notInArray, userGuilds } from "@giverve/db";
-
 import type { schemas } from "../context";
 import { common, repositories } from "../context";
 
@@ -106,31 +104,26 @@ export async function getManagedGuilds(
   return result;
 }
 
-export async function saveGuildOrUpdateActiveStatus(
-  data: schemas.bot.BotSaveGuildRequest,
-) {
-  await common.utils.transaction(async (trx) => {
-    const guild = await repositories.guild.findGuildById(
-      Number(data.guildId),
-      trx,
-    );
-
-    if (!guild) {
-      await repositories.guild.insertGuild(data, trx);
-    } else {
-      await repositories.guild.updateGuildActiveStatus(data.guildId, true, trx);
-    }
-  });
+export async function joinGuild(data: schemas.bot.BotSaveGuildRequest) {
+  try {
+    await repositories.guild.upsertGuildWithActiveStatus(data, true);
+  } catch (error) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      cause: process.env.NODE_ENV === "development" && error,
+    });
+  }
 }
 
 export async function leaveGuild(guildId: number) {
-  await common.utils.transaction(async (trx) => {
-    const guild = await repositories.guild.findGuildById(guildId, trx);
-
-    if (guild) {
-      await repositories.guild.updateGuildActiveStatus(guildId, false, trx);
-    }
-  });
+  try {
+    await repositories.guild.updateGuildActiveStatusIfExists(guildId, false);
+  } catch (error) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      cause: process.env.NODE_ENV === "development" && error,
+    });
+  }
 }
 
 export async function syncUserGuilds(discordId: number, accessToken: string) {
@@ -146,9 +139,11 @@ export async function syncUserGuilds(discordId: number, accessToken: string) {
 
   await common.utils.transaction(async (trx) => {
     // Fetch existing guilds for the user
-    const existingGuilds = await trx.query.userGuilds.findMany({
-      where: eq(userGuilds.discordId, discordId),
-    });
+    const existingGuilds =
+      await repositories.userGuild.findManyUserGuildsByDiscordId(
+        discordId,
+        trx,
+      );
 
     // Create a map of existing guilds for quick lookup
     const existingGuildsMap = new Map<number, (typeof existingGuilds)[0]>(
@@ -158,47 +153,33 @@ export async function syncUserGuilds(discordId: number, accessToken: string) {
     // Insert or update managed guilds
     for (const guild of managedGuildsData) {
       const guildId = Number(guild.id);
+      const permissions = Number(guild.permissions);
 
       const existingGuild = existingGuildsMap.get(guildId);
       if (existingGuild) {
-        const isGuildExist = await trx.query.users.findFirst({
-          where: (user, { eq }) => eq(user.discordId, discordId),
+        await repositories.guild.updateGuildByGuildId({
+          guildId,
+          name: guild.name,
+          icon: guild.icon,
+          ownerId: guild.owner ? discordId : undefined,
         });
 
-        if (guild.owner && isGuildExist) {
-          await trx.update(guilds).set({
-            name: guild.name,
-            icon: guild.icon,
-            ownerId: discordId,
-          });
-        } else if (!guild.owner && isGuildExist) {
-          await trx.update(guilds).set({
-            name: guild.name,
-            icon: guild.icon,
-          });
-        }
-
-        if (existingGuild.permissions !== Number(guild.permissions)) {
-          await trx
-            .update(userGuilds)
-            .set({
-              permissions: Number(guild.permissions),
-            })
-            .where(
-              and(
-                eq(userGuilds.discordId, discordId),
-                eq(userGuilds.guildId, guildId),
-              ),
-            );
+        if (existingGuild.permissions !== permissions) {
+          await repositories.userGuild.updateUserGuildPermissionsByDiscordIdAndGuildId(
+            discordId,
+            guildId,
+            permissions,
+            trx,
+          );
         }
 
         // Remove the guild from the map to know which guilds need to be deleted
         existingGuildsMap.delete(guildId);
       } else {
-        await trx.insert(userGuilds).values({
+        await repositories.userGuild.insertUserGuilds({
           discordId,
           guildId,
-          permissions: Number(guild.permissions),
+          permissions,
         });
       }
     }
@@ -206,14 +187,11 @@ export async function syncUserGuilds(discordId: number, accessToken: string) {
     // Delete guilds that are no longer in the managed list
     if (existingGuildsMap.size > 0) {
       const guildIdsToDelete = Array.from(existingGuildsMap.keys());
-      await trx
-        .delete(userGuilds)
-        .where(
-          and(
-            eq(userGuilds.discordId, discordId),
-            notInArray(userGuilds.guildId, guildIdsToDelete),
-          ),
-        );
+      await repositories.userGuild.deleteUserGuildsByGuildIds(
+        discordId,
+        guildIdsToDelete,
+        trx,
+      );
     }
   });
 

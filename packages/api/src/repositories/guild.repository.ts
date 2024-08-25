@@ -1,32 +1,57 @@
-import { db, eq, guilds } from "@giverve/db";
+import { and, db, eq, exists, guilds } from "@giverve/db";
 
 export async function findManyActiveGuilds(trx = db) {
-  return await trx.query.guilds.findMany({
-    where: (guilds, { eq }) => eq(guilds.isActive, true),
-  });
+  return trx.select().from(guilds).where(eq(guilds.isActive, true));
 }
 
-export async function findGuildById(id: number, trx = db) {
-  return await trx.query.guilds.findFirst({
-    where: (guilds, { eq }) => eq(guilds.guildId, id),
-  });
+export function findGuildByGuildId(guildId: number, trx = db) {
+  return trx.select().from(guilds).where(eq(guilds.guildId, guildId));
 }
 
-export async function insertGuild(data: InsertGuild, trx = db) {
-  await trx.insert(guilds).values(data).returning();
-}
-
-export async function updateGuildActiveStatus(
-  guildId: number,
-  isActive = true,
+export async function upsertGuildWithActiveStatus(
+  data: InsertGuild,
+  isActive: boolean,
   trx = db,
 ) {
-  await trx
+  return trx
+    .insert(guilds)
+    .values(data)
+    .onConflictDoUpdate({
+      target: guilds.guildId,
+      set: {
+        isActive,
+      },
+    })
+    .returning();
+}
+
+export async function updateGuildByGuildId(data: InsertGuild, trx = db) {
+  return trx
+    .update(guilds)
+    .set({
+      name: data.name,
+      icon: data.icon,
+      ownerId: data.ownerId,
+    })
+    .where(eq(guilds.guildId, data.guildId));
+}
+
+export async function updateGuildActiveStatusIfExists(
+  guildId: number,
+  isActive: boolean,
+  trx = db,
+) {
+  return trx
     .update(guilds)
     .set({
       isActive,
     })
-    .where(eq(guilds.guildId, guildId))
+    .where(
+      and(
+        eq(guilds.guildId, guildId),
+        exists(findGuildByGuildId(guildId, trx)),
+      ),
+    )
     .returning();
 }
 
