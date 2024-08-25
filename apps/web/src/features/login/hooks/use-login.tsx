@@ -1,5 +1,5 @@
 import { api } from "~/utils/api";
 
 export default function useLogin() {
-  return api.auth.login.useMutation();
+  return api.dashboard.auth.login.useMutation();
 }

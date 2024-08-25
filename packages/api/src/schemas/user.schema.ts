@@ -17,10 +17,6 @@ export const guildMeResponse = z.object({
 });
 export const guildsMeResponse = z.array(guildMeResponse);
 
-export const guildMeRequest = z.object({
-  id: z.string(),
-});
-
 export type UserMe = z.infer<typeof userMeResponse>;
 export type GuildMe = z.infer<typeof guildMeResponse>;
 export type GuildsMe = z.infer<typeof guildsMeResponse>;

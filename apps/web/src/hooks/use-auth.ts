@@ -1,10 +1,12 @@
 import { useRouter } from "next/router";
 
+import type { User } from "~/utils/types";
 import { api } from "~/utils/api";
 
-export default function useAuth() {
+export default function useAuth(initialData?: User) {
   const router = useRouter();
-  return api.user.me.useQuery(undefined, {
+  return api.dashboard.user.me.useQuery(undefined, {
+    initialData,
     staleTime: 1000 * 60 * 5, // 5 minutes
     retry(failureCount, error) {
       if (error.data?.code === "UNAUTHORIZED") {

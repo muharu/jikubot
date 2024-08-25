@@ -3,6 +3,8 @@ import type { ParsedUrlQuery } from "querystring";
 
 import { common } from "@giverve/api";
 
+import type { User } from "./types";
+
 interface AuthorizeServerSideParams {
   req: IncomingMessage;
   query: ParsedUrlQuery;
@@ -135,10 +137,18 @@ export async function checkIsLoggedInServerSide({
       common.utils.crypto.decryptString(refreshToken);
       const decryptedJwt = common.utils.crypto.decryptString(jwt);
 
-      await common.utils.jwt.verifyJWT(decryptedJwt);
+      const payload = await common.utils.jwt.verifyJWT(decryptedJwt);
+
+      const user: User = {
+        id: payload.id,
+        username: payload.username,
+        email: payload.email,
+        avatar: payload.avatar,
+        globalName: payload.globalName,
+      };
 
       return {
-        props: {},
+        props: { user },
       };
     } else {
       return {

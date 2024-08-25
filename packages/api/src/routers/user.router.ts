@@ -1,7 +1,8 @@
-import { common, repositories, schemas, services } from "../context";
-import { botProcedure, createTRPCRouter, dashboardProcedure } from "../trpc";
+import { schemas, services } from "../context";
+import { createTRPCRouter, dashboardProcedure } from "../trpc";
+import { botGuildsRouter } from "./sub-routers/guild.router";
 
-export const userRouter = createTRPCRouter({
+export const dashboardUserRouter = createTRPCRouter({
   me: dashboardProcedure
     .output(schemas.user.userMeResponse)
     .query(({ ctx }) => {
@@ -11,25 +12,14 @@ export const userRouter = createTRPCRouter({
   guilds: dashboardProcedure
     .output(schemas.user.guildsMeResponse)
     .query(async ({ ctx }) => {
-      const guilds = await services.user.getManagedGuilds(ctx.accessToken);
+      const guilds = await services.user.getManagedGuilds(
+        ctx.user.id,
+        ctx.accessToken,
+      );
       return guilds;
     }),
+});
 
-  botAddGuild: botProcedure
-    .input(schemas.user.guildMeRequest)
-    .mutation(async ({ input }) => {
-      await common.utils.transaction(async (trx) => {
-        const guild = await repositories.guild.findGuildById(
-          Number(input.id),
-          trx,
-        );
-
-        if (!guild) {
-          await repositories.guild.insertGuild(
-            { guildId: Number(input.id) },
-            trx,
-          );
-        }
-      });
-    }),
+export const botUserRouter = createTRPCRouter({
+  guilds: botGuildsRouter,
 });

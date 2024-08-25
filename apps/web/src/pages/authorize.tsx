@@ -13,7 +13,7 @@ export default function Authorization({
   const router = useRouter();
   const hasRun = useRef(false);
 
-  const { mutate } = api.auth.authorize.useMutation({
+  const { mutate } = api.dashboard.auth.authorize.useMutation({
     onSuccess: () => {
       void router.replace("/");
     },
