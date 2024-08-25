@@ -8,6 +8,7 @@ import { common, repositories } from "../context";
 import {
   findFirstUserGuildByDiscordId,
   findManyUserGuildsByDiscordId,
+  insertUserGuilds,
   updateUserGuildPermissionsByDiscordIdAndGuildId,
 } from "../repositories/user-guild.repository";
 
@@ -156,6 +157,7 @@ export async function syncUserGuilds(discordId: number, accessToken: string) {
     // Insert or update managed guilds
     for (const guild of managedGuildsData) {
       const guildId = Number(guild.id);
+      const permissions = Number(guild.permissions);
 
       const existingGuild = existingGuildsMap.get(guildId);
       if (existingGuild) {
@@ -177,11 +179,11 @@ export async function syncUserGuilds(discordId: number, accessToken: string) {
           });
         }
 
-        if (existingGuild.permissions !== Number(guild.permissions)) {
+        if (existingGuild.permissions !== permissions) {
           await updateUserGuildPermissionsByDiscordIdAndGuildId(
             discordId,
             guildId,
-            Number(guild.permissions),
+            permissions,
             trx,
           );
         }
@@ -189,10 +191,10 @@ export async function syncUserGuilds(discordId: number, accessToken: string) {
         // Remove the guild from the map to know which guilds need to be deleted
         existingGuildsMap.delete(guildId);
       } else {
-        await trx.insert(userGuilds).values({
+        await insertUserGuilds({
           discordId,
           guildId,
-          permissions: Number(guild.permissions),
+          permissions,
         });
       }
     }

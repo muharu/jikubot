@@ -31,3 +31,10 @@ export async function updateUserGuildPermissionsByDiscordIdAndGuildId(
       and(eq(userGuilds.discordId, discordId), eq(userGuilds.guildId, guildId)),
     );
 }
+
+export async function insertUserGuilds(data: InsertUserGuilds, trx = db) {
+  return trx.insert(userGuilds).values(data);
+}
+
+export type InsertUserGuilds = typeof userGuilds.$inferInsert;
+export type SelectUserGuilds = typeof userGuilds.$inferSelect;
