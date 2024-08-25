@@ -1,7 +1,7 @@
 import { db, tokens } from "@giverve/db";
 
 export async function upsertUserTokens(data: InsertTokens, trx = db) {
-  return await trx
+  return trx
     .insert(tokens)
     .values(data)
     .onConflictDoUpdate({

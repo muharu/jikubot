@@ -1,12 +1,10 @@
 import { and, db, eq, exists, guilds } from "@giverve/db";
 
 export async function findManyActiveGuilds(trx = db) {
-  return await trx.query.guilds.findMany({
-    where: (guilds, { eq }) => eq(guilds.isActive, true),
-  });
+  return trx.select().from(guilds).where(eq(guilds.isActive, true));
 }
 
-export function findGuildBGuildId(guildId: number, trx = db) {
+export function findGuildByGuildId(guildId: number, trx = db) {
   return trx.select().from(guilds).where(eq(guilds.guildId, guildId));
 }
 
@@ -15,7 +13,7 @@ export async function upsertGuildWithActiveStatus(
   isActive: boolean,
   trx = db,
 ) {
-  return await trx
+  return trx
     .insert(guilds)
     .values(data)
     .onConflictDoUpdate({
@@ -32,13 +30,16 @@ export async function updateGuildActiveStatusIfExists(
   isActive: boolean,
   trx = db,
 ) {
-  return await trx
+  return trx
     .update(guilds)
     .set({
       isActive,
     })
     .where(
-      and(eq(guilds.guildId, guildId), exists(findGuildBGuildId(guildId, trx))),
+      and(
+        eq(guilds.guildId, guildId),
+        exists(findGuildByGuildId(guildId, trx)),
+      ),
     )
     .returning();
 }

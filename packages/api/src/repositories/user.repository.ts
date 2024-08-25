@@ -1,7 +1,7 @@
 import { db, users } from "@giverve/db";
 
 export async function upsertUser(data: InsertUser, trx = db) {
-  return await trx
+  return trx
     .insert(users)
     .values(data)
     .onConflictDoUpdate({
