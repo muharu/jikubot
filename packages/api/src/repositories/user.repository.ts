@@ -1,24 +1,18 @@
-import { db, eq, users } from "@giverve/db";
+import { db, users } from "@giverve/db";
 
-export async function findUserByDiscordId(discordId: number, trx = db) {
-  return await trx.query.users.findFirst({
-    where: (users, { eq }) => eq(users.discordId, discordId),
-  });
-}
-
-export async function insertUser(data: InsertUser, trx = db) {
-  return await trx.insert(users).values(data).returning();
-}
-
-export async function updateUserByDiscordId(
-  discordId: number,
-  data: InsertUser,
-  trx = db,
-) {
+export async function upsertUser(data: InsertUser, trx = db) {
   return await trx
-    .update(users)
-    .set(data)
-    .where(eq(users.discordId, discordId))
+    .insert(users)
+    .values(data)
+    .onConflictDoUpdate({
+      target: users.discordId,
+      set: {
+        username: data.username,
+        email: data.email,
+        avatar: data.avatar,
+        globalName: data.globalName,
+      },
+    })
     .returning();
 }
 
