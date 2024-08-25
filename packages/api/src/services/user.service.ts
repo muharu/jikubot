@@ -118,12 +118,14 @@ export async function joinGuild(data: schemas.bot.BotSaveGuildRequest) {
 }
 
 export async function leaveGuild(guildId: number) {
-  await common.utils.transaction(async (trx) => {
-    const guild = await repositories.guild.findGuildById(guildId, trx);
-    if (guild) {
-      await repositories.guild.updateGuildActiveStatus(guildId, false, trx);
-    }
-  });
+  try {
+    await repositories.guild.updateGuildActiveStatusIfExists(guildId, false);
+  } catch (error) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      cause: process.env.NODE_ENV === "development" && error,
+    });
+  }
 }
 
 export async function syncUserGuilds(discordId: number, accessToken: string) {
