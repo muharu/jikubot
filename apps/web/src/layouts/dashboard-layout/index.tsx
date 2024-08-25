@@ -40,25 +40,31 @@ function Sidebar() {
   const router = useRouter();
   const guildId = String(router.query.guildId);
 
-  const isActive = (href: string) => router.pathname === href;
+  const isActive = (path: string) => {
+    const basePath = `/dashboard/${guildId}`;
+    if (path === "/") {
+      // Only return true if the path is exactly the basePath
+      return router.asPath === basePath;
+    }
+    // For other paths, ensure it starts with the basePath and the specific path
+    return router.asPath.startsWith(`${basePath}${path}`);
+  };
 
   return (
     <ScrollArea className="hidden h-[100dvh] w-[350px] rounded-md border-r bg-white p-4 lg:flex">
       <GuildCard />
 
-      <nav className="flex flex-col gap-y-3">
+      <nav className="mt-4 flex flex-col gap-y-3">
         <Link
           href={`/dashboard/${guildId}`}
           className={cn(
             buttonVariants({
-              variant: isActive(`/dashboard/[guildId]`)
-                ? "noShadow"
-                : "neutral",
+              variant: isActive("/") ? "noShadow" : "neutral",
             }),
             "w-[95%] justify-start font-semibold",
           )}
         >
-          <AiTwotoneDashboard className="mr-2 size-6" />
+          <AiTwotoneDashboard className="mr-2 h-6 w-6" />
           Dashboard
         </Link>
 
@@ -66,14 +72,12 @@ function Sidebar() {
           href={`/dashboard/${guildId}/events`}
           className={cn(
             buttonVariants({
-              variant: isActive(`/dashboard/[guildId]/events`)
-                ? "noShadow"
-                : "neutral",
+              variant: isActive("/events") ? "noShadow" : "neutral",
             }),
             "w-[95%] justify-start font-semibold",
           )}
         >
-          <BsCalendar2Week className="mr-2 size-6" />
+          <BsCalendar2Week className="mr-2 h-6 w-6" />
           Events
         </Link>
 
@@ -81,14 +85,12 @@ function Sidebar() {
           href={`/dashboard/${guildId}/lfg`}
           className={cn(
             buttonVariants({
-              variant: isActive(`/dashboard/[guildId]/lfg`)
-                ? "noShadow"
-                : "neutral",
+              variant: isActive("/lfg") ? "noShadow" : "neutral",
             }),
             "w-[95%] justify-start font-semibold",
           )}
         >
-          <HiUserGroup className="mr-2 size-6" />
+          <HiUserGroup className="mr-2 h-6 w-6" />
           Looking for Group
         </Link>
       </nav>
