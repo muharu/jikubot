@@ -50,15 +50,14 @@ export const dashboardAuthRouter = createTRPCRouter({
       );
       const encryptedJWT = common.utils.crypto.encryptString(jwt);
 
-      await services.auth.saveOrUpdateUser({
+      await services.auth.saveOrUpdateUser(user.id, {
         discordId: user.id,
         username: user.username,
         email: user.email,
         avatar: user.avatar,
         globalName: user.globalName,
       });
-
-      await services.auth.saveOrUpdateUserTokens({
+      await services.auth.saveOrUpdateUserTokens(user.id, {
         discordId: user.id,
         accessToken: tokens.access_token,
         refreshToken: tokens.refresh_token,

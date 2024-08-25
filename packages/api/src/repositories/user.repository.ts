@@ -22,16 +22,5 @@ export async function updateUserByDiscordId(
     .returning();
 }
 
-export async function upsertUser(data: InsertUser, trx = db) {
-  return await trx
-    .insert(users)
-    .values(data)
-    .onConflictDoUpdate({
-      target: users.discordId,
-      set: data,
-    })
-    .returning();
-}
-
 export type InsertUser = typeof users.$inferInsert;
 export type SelectUser = typeof users.$inferSelect;

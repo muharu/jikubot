@@ -22,16 +22,5 @@ export async function updateUserTokensByDiscordId(
     .returning();
 }
 
-export async function upsertUserTokens(data: InsertTokens, trx = db) {
-  return await trx
-    .insert(tokens)
-    .values(data)
-    .onConflictDoUpdate({
-      target: tokens.discordId,
-      set: data,
-    })
-    .returning();
-}
-
 export type InsertTokens = typeof tokens.$inferInsert;
 export type SelectTokens = typeof tokens.$inferSelect;

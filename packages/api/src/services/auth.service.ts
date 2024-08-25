@@ -137,9 +137,16 @@ export async function revokeAllTokens(
   }
 }
 
-export async function saveOrUpdateUser(data: InsertUser) {
+export async function saveOrUpdateUser(discordId: number, data: InsertUser) {
   try {
-    return await repositories.user.upsertUser(data);
+    return await common.utils.transaction(async function (trx) {
+      const user = await repositories.user.findUserByDiscordId(discordId, trx);
+      if (!user) {
+        await repositories.user.insertUser(data, trx);
+      } else {
+        await repositories.user.updateUserByDiscordId(discordId, data, trx);
+      }
+    });
   } catch (error) {
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
@@ -149,9 +156,26 @@ export async function saveOrUpdateUser(data: InsertUser) {
   }
 }
 
-export async function saveOrUpdateUserTokens(data: InsertTokens) {
+export async function saveOrUpdateUserTokens(
+  discordId: number,
+  data: InsertTokens,
+) {
   try {
-    return await repositories.token.upsertUserTokens(data);
+    return await common.utils.transaction(async function (trx) {
+      const user = await repositories.token.findUserTokensByDiscordId(
+        discordId,
+        trx,
+      );
+      if (!user) {
+        await repositories.token.insertUserTokens(data, trx);
+      } else {
+        await repositories.token.updateUserTokensByDiscordId(
+          discordId,
+          data,
+          trx,
+        );
+      }
+    });
   } catch (error) {
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",

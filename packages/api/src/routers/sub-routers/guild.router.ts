@@ -5,12 +5,12 @@ export const botGuildsRouter = createTRPCRouter({
   add: botProcedure
     .input(schemas.bot.botSaveGuildRequest)
     .mutation(async ({ input }) => {
-      return await services.user.joinGuild(input);
+      return await services.user.saveGuildOrUpdateActiveStatus(input);
     }),
 
   leave: botProcedure
-    .input(schemas.bot.botSaveGuildRequest)
+    .input(schemas.bot.botLeaveGuildRequest)
     .mutation(async ({ input }) => {
-      return await services.user.leaveGuild(input);
+      return await services.user.leaveGuild(input.guildId);
     }),
 });
