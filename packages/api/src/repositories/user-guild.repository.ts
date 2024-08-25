@@ -1,4 +1,4 @@
-import { and, db, eq, userGuilds } from "@giverve/db";
+import { and, db, eq, notInArray, userGuilds } from "@giverve/db";
 
 export async function findManyUserGuildsByDiscordId(
   discordId: number,
@@ -34,6 +34,21 @@ export async function updateUserGuildPermissionsByDiscordIdAndGuildId(
 
 export async function insertUserGuilds(data: InsertUserGuilds, trx = db) {
   return trx.insert(userGuilds).values(data);
+}
+
+export async function deleteUserGuildsByGuildIds(
+  discordId: number,
+  guildIds: number[],
+  trx = db,
+) {
+  return trx
+    .delete(userGuilds)
+    .where(
+      and(
+        eq(userGuilds.discordId, discordId),
+        notInArray(userGuilds.guildId, guildIds),
+      ),
+    );
 }
 
 export type InsertUserGuilds = typeof userGuilds.$inferInsert;

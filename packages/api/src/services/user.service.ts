@@ -1,11 +1,12 @@
 import type { RESTGetAPICurrentUserGuildsResult } from "discord-api-types/v10";
 import { TRPCError } from "@trpc/server";
 
-import { and, eq, guilds, notInArray, userGuilds } from "@giverve/db";
+import { guilds } from "@giverve/db";
 
 import type { schemas } from "../context";
 import { common, repositories } from "../context";
 import {
+  deleteUserGuildsByGuildIds,
   findFirstUserGuildByDiscordId,
   findManyUserGuildsByDiscordId,
   insertUserGuilds,
@@ -202,14 +203,7 @@ export async function syncUserGuilds(discordId: number, accessToken: string) {
     // Delete guilds that are no longer in the managed list
     if (existingGuildsMap.size > 0) {
       const guildIdsToDelete = Array.from(existingGuildsMap.keys());
-      await trx
-        .delete(userGuilds)
-        .where(
-          and(
-            eq(userGuilds.discordId, discordId),
-            notInArray(userGuilds.guildId, guildIdsToDelete),
-          ),
-        );
+      await deleteUserGuildsByGuildIds(discordId, guildIdsToDelete, trx);
     }
   });
 
