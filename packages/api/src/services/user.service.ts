@@ -1,5 +1,5 @@
-import type { RESTGetAPICurrentUserGuildsResult } from "discord-api-types/v10";
 import { TRPCError } from "@trpc/server";
+import type { RESTGetAPICurrentUserGuildsResult } from "discord-api-types/v10";
 
 import { and, eq, guilds, notInArray, userGuilds } from "@giverve/db";
 
@@ -99,7 +99,7 @@ export async function getManagedGuilds(
   const result = joinedGuilds.concat(unjoinedGuildsWithPermissions);
 
   // Cache the result
-  await common.utils.cache.inMemoryCache.set(cacheKey, result, 10_000);
+  await common.utils.cache.inMemoryCache.set(cacheKey, result, 8_000);
 
   return result;
 }
@@ -159,13 +159,17 @@ export async function syncUserGuilds(discordId: number, accessToken: string) {
 
       const existingGuild = existingGuildsMap.get(guildId);
       if (existingGuild) {
-        if (guild.owner) {
+        const isGuildExist = await trx.query.users.findFirst({
+          where: (user, { eq }) => eq(user.discordId, discordId),
+        });
+
+        if (guild.owner && isGuildExist) {
           await trx.update(guilds).set({
             name: guild.name,
             icon: guild.icon,
             ownerId: discordId,
           });
-        } else {
+        } else if (!guild.owner && isGuildExist) {
           await trx.update(guilds).set({
             name: guild.name,
             icon: guild.icon,
