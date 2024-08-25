@@ -5,6 +5,7 @@ import { and, eq, guilds, notInArray, userGuilds } from "@giverve/db";
 
 import type { schemas } from "../context";
 import { common, repositories } from "../context";
+import { findManyUserGuildsByDiscordId } from "../repositories/user-guild.repository";
 
 export async function getUserGuilds(
   accessToken: string,
@@ -141,9 +142,7 @@ export async function syncUserGuilds(discordId: number, accessToken: string) {
 
   await common.utils.transaction(async (trx) => {
     // Fetch existing guilds for the user
-    const existingGuilds = await trx.query.userGuilds.findMany({
-      where: eq(userGuilds.discordId, discordId),
-    });
+    const existingGuilds = await findManyUserGuildsByDiscordId(discordId, trx);
 
     // Create a map of existing guilds for quick lookup
     const existingGuildsMap = new Map<number, (typeof existingGuilds)[0]>(
