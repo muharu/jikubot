@@ -5,7 +5,7 @@ import { api } from "~/utils/api";
 
 export default function useAuth(initialData?: User) {
   const router = useRouter();
-  return api.user.me.useQuery(undefined, {
+  return api.dashboard.user.me.useQuery(undefined, {
     initialData,
     staleTime: 1000 * 60 * 5, // 5 minutes
     retry(failureCount, error) {

@@ -1,7 +1,8 @@
 import { schemas, services } from "../context";
 import { createTRPCRouter, dashboardProcedure } from "../trpc";
+import { botGuildsRouter } from "./sub-routers/guild.router";
 
-export const userRouter = createTRPCRouter({
+export const dashboardUserRouter = createTRPCRouter({
   me: dashboardProcedure
     .output(schemas.user.userMeResponse)
     .query(({ ctx }) => {
@@ -17,4 +18,8 @@ export const userRouter = createTRPCRouter({
       );
       return guilds;
     }),
+});
+
+export const botUserRouter = createTRPCRouter({
+  guilds: botGuildsRouter,
 });

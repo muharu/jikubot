@@ -1,7 +1,7 @@
 import { common, schemas, services } from "../context";
 import { createTRPCRouter, dashboardProcedure, publicProcedure } from "../trpc";
 
-export const authRouter = createTRPCRouter({
+export const dashboardAuthRouter = createTRPCRouter({
   login: publicProcedure
     .output(schemas.auth.loginResponse)
     .mutation(({ ctx }) => {
