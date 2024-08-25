@@ -1,8 +1,24 @@
-import DrawerCreateEvent from "~/features/dashboard/[guildId]/events/components/drawer-create-event";
-import ModalCreateEvent from "~/features/dashboard/[guildId]/events/components/modal-create-event";
+import dynamic from "next/dynamic";
+
 import useDashboardCheck from "~/hooks/use-dashboard-check";
 import DashboardLayout from "~/layouts/dashboard-layout";
 import GlobalLoading from "~/layouts/global-loading";
+
+const DrawerCreateEvent = dynamic(
+  () =>
+    import(
+      "~/features/dashboard/[guildId]/events/components/drawer-create-event"
+    ),
+  { ssr: false },
+);
+
+const ModalCreateEvent = dynamic(
+  () =>
+    import(
+      "~/features/dashboard/[guildId]/events/components/modal-create-event"
+    ),
+  { ssr: false },
+);
 
 export default function Dashboard() {
   const { isLoading, isInGuilds } = useDashboardCheck();
