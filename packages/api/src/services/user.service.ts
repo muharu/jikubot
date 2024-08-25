@@ -106,27 +106,20 @@ export async function getManagedGuilds(
   return result;
 }
 
-export async function saveGuildOrUpdateActiveStatus(
-  data: schemas.bot.BotSaveGuildRequest,
-) {
-  await common.utils.transaction(async (trx) => {
-    const guild = await repositories.guild.findGuildById(
-      Number(data.guildId),
-      trx,
-    );
-
-    if (!guild) {
-      await repositories.guild.insertGuild(data, trx);
-    } else {
-      await repositories.guild.updateGuildActiveStatus(data.guildId, true, trx);
-    }
-  });
+export async function joinGuild(data: schemas.bot.BotSaveGuildRequest) {
+  try {
+    await repositories.guild.upsertGuildWithActiveStatus(data, true);
+  } catch (error) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      cause: process.env.NODE_ENV === "development" && error,
+    });
+  }
 }
 
 export async function leaveGuild(guildId: number) {
   await common.utils.transaction(async (trx) => {
     const guild = await repositories.guild.findGuildById(guildId, trx);
-
     if (guild) {
       await repositories.guild.updateGuildActiveStatus(guildId, false, trx);
     }

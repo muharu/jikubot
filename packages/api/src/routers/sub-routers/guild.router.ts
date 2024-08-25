@@ -2,10 +2,10 @@ import { schemas, services } from "../../context";
 import { botProcedure, createTRPCRouter } from "../../trpc";
 
 export const botGuildsRouter = createTRPCRouter({
-  add: botProcedure
+  join: botProcedure
     .input(schemas.bot.botSaveGuildRequest)
     .mutation(async ({ input }) => {
-      return await services.user.saveGuildOrUpdateActiveStatus(input);
+      return await services.user.joinGuild(input);
     }),
 
   leave: botProcedure
