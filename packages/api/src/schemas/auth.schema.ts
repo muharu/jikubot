@@ -12,7 +12,7 @@ export const authorizeRequest = z.object({
 export const authorizeResponse = z.object({
   id: z.string(),
   username: z.string(),
-  email: z.string().email().nullable(),
-  globalName: z.string().nullable(),
-  avatar: z.string().nullable(),
+  email: z.string().email().nullable().optional(),
+  globalName: z.string().nullable().optional(),
+  avatar: z.string().nullable().optional(),
 });
