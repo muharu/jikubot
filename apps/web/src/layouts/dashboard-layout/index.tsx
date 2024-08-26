@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { AiTwotoneDashboard } from "react-icons/ai";
-import { BsCalendar2Week } from "react-icons/bs";
-import { HiUserGroup } from "react-icons/hi2";
+import {
+  AiTwotoneCalendar,
+  AiTwotoneDashboard,
+  AiTwotoneSmile,
+} from "react-icons/ai";
 
 import { cn } from "@giverve/ui";
 import { buttonVariants } from "@giverve/ui/button";
@@ -63,6 +65,7 @@ function Sidebar() {
               variant: isActive("/") ? "noShadow" : "neutral",
             }),
             "w-[95%] justify-start font-semibold",
+            isActive("/") && "font-bold",
           )}
         >
           <AiTwotoneDashboard className="mr-2 h-6 w-6" />
@@ -77,9 +80,10 @@ function Sidebar() {
               variant: isActive("/events") ? "noShadow" : "neutral",
             }),
             "w-[95%] justify-start font-semibold",
+            isActive("/events") && "font-bold",
           )}
         >
-          <BsCalendar2Week className="mr-2 h-6 w-6" />
+          <AiTwotoneCalendar className="mr-2 h-6 w-6" />
           Events
         </Link>
 
@@ -91,9 +95,10 @@ function Sidebar() {
               variant: isActive("/lfg") ? "noShadow" : "neutral",
             }),
             "w-[95%] justify-start font-semibold",
+            isActive("/lfg") && "font-bold",
           )}
         >
-          <HiUserGroup className="mr-2 h-6 w-6" />
+          <AiTwotoneSmile className="mr-2 h-6 w-6" />
           Looking for Group
         </Link>
       </nav>
