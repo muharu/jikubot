@@ -3,9 +3,11 @@ import { createTRPCRouter, dashboardProcedure } from "../trpc";
 import { botGuildsRouter } from "./sub-routers/guild.router";
 
 export const dashboardUserRouter = createTRPCRouter({
-  me: dashboardProcedure.query(({ ctx }) => {
-    return ctx.user;
-  }),
+  me: dashboardProcedure
+    .output(schemas.user.userMeResponse)
+    .query(({ ctx }) => {
+      return ctx.user;
+    }),
 
   guilds: dashboardProcedure
     .output(schemas.user.guildsMeResponse)

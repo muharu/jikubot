@@ -3,10 +3,10 @@ import type { JWTPayload } from "jose";
 
 import type { guilds, tokens, userGuilds, users } from "@giverve/db";
 
-export type User = Pick<
-  APIUser,
-  "id" | "username" | "email" | "avatar" | "global_name"
->;
+export interface User
+  extends Pick<APIUser, "id" | "username" | "email" | "avatar"> {
+  globalName: string | null | undefined;
+}
 
 export interface ExtendedJWTPayload extends User, Pick<JWTPayload, "exp"> {}
 

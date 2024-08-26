@@ -3,7 +3,7 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import type { ExtendedJWTPayload } from "./common/types";
+import type { ExtendedJWTPayload, User } from "./common/types";
 import { common } from "./context";
 
 export const createTRPCContext = ({
@@ -78,11 +78,19 @@ const authMiddleware = t.middleware(async ({ ctx: { req }, next }) => {
       const jwtPayload =
         await common.utils.jwt.verifyJWT<ExtendedJWTPayload>(decryptedJwt);
 
+      const user: User = {
+        id: jwtPayload.id,
+        username: jwtPayload.username,
+        email: jwtPayload.email,
+        globalName: jwtPayload.globalName,
+        avatar: jwtPayload.avatar,
+      };
+
       return await next({
         ctx: {
           accessToken,
           refreshToken,
-          user: jwtPayload,
+          user,
         },
       });
     } else {
