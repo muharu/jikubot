@@ -1,6 +1,7 @@
 import type { RESTGetAPICurrentUserGuildsResult } from "discord-api-types/v10";
 import { TRPCError } from "@trpc/server";
 
+import type { InsertGuild } from "../common/types";
 import type { schemas } from "../context";
 import { common, repositories } from "../context";
 
@@ -41,7 +42,7 @@ export async function getBotGuilds(): Promise<RESTGetAPICurrentUserGuildsResult>
 }
 
 export async function getManagedGuilds(
-  discordId: number,
+  discordId: bigint,
   accessToken: string,
 ): Promise<schemas.user.GuildsMe> {
   const cacheKey = `managedGuilds:${accessToken}`;
@@ -69,7 +70,7 @@ export async function getManagedGuilds(
       Number(guild.permissions),
       "MANAGE_GUILD",
     );
-    const isJoined = botGuildSet.has(Number(guild.id));
+    const isJoined = botGuildSet.has(BigInt(guild.id));
 
     return {
       ...guild,
@@ -104,7 +105,7 @@ export async function getManagedGuilds(
   return result;
 }
 
-export async function joinGuild(data: schemas.bot.BotSaveGuildRequest) {
+export async function joinGuild(data: InsertGuild) {
   try {
     await repositories.guild.upsertGuildWithActiveStatus(data, true);
   } catch (error) {
@@ -115,7 +116,7 @@ export async function joinGuild(data: schemas.bot.BotSaveGuildRequest) {
   }
 }
 
-export async function leaveGuild(guildId: number) {
+export async function leaveGuild(guildId: bigint) {
   try {
     await repositories.guild.updateGuildActiveStatusIfExists(guildId, false);
   } catch (error) {
@@ -126,7 +127,7 @@ export async function leaveGuild(guildId: number) {
   }
 }
 
-export async function syncUserGuilds(discordId: number, accessToken: string) {
+export async function syncUserGuilds(discordId: bigint, accessToken: string) {
   const userGuildsData = await getUserGuilds(accessToken);
 
   // Filter only the guilds that are managed
@@ -146,14 +147,14 @@ export async function syncUserGuilds(discordId: number, accessToken: string) {
       );
 
     // Create a map of existing guilds for quick lookup
-    const existingGuildsMap = new Map<number, (typeof existingGuilds)[0]>(
+    const existingGuildsMap = new Map<bigint, (typeof existingGuilds)[0]>(
       existingGuilds.map((guild) => [guild.guildId, guild]),
     );
 
     // Insert or update managed guilds
     for (const guild of managedGuildsData) {
-      const guildId = Number(guild.id);
-      const permissions = Number(guild.permissions);
+      const guildId = BigInt(guild.id);
+      const permissions = BigInt(guild.permissions);
 
       const existingGuild = existingGuildsMap.get(guildId);
       if (existingGuild) {
