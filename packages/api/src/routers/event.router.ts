@@ -16,9 +16,9 @@ export const dashboardEventRouter = createTRPCRouter({
       const [event] = await db
         .insert(events)
         .values({
+          discordId: BigInt(ctx.user.id),
           title: input.title,
           description: input.description,
-          discordId: ctx.user.id,
         })
         .returning({
           id: events.id,
