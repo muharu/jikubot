@@ -1,8 +1,4 @@
-import { z } from "zod";
-
-export const unused = z.string().describe(
-  `This lib is currently not used as we use drizzle-zod for simple schemas
-   But as your application grows and you need other validators to share
-   with back and frontend, you can put them in here
-  `,
-);
+export * as auth from "./auth";
+export * as bot from "./bot";
+export * as event from "./event";
+export * as user from "./user";
