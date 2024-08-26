@@ -4,11 +4,11 @@ import { bigint, boolean, index, pgTable, varchar } from "drizzle-orm/pg-core";
 import { snowflake } from "./generate";
 
 export const users = pgTable("users", {
-  id: bigint("id", { mode: "number" })
+  id: bigint("id", { mode: "bigint" })
     .primaryKey()
     .notNull()
-    .$defaultFn(() => Number(snowflake.generateId())),
-  discordId: bigint("discord_id", { mode: "number" }).notNull().unique(),
+    .$defaultFn(() => BigInt(snowflake.generateId())),
+  discordId: bigint("discord_id", { mode: "bigint" }).notNull().unique(),
   username: varchar("username", { length: 100 }).notNull(),
   email: varchar("email", { length: 100 }),
   avatar: varchar("avatar", { length: 100 }),
@@ -19,11 +19,11 @@ export const users = pgTable("users", {
 });
 
 export const tokens = pgTable("tokens", {
-  id: bigint("id", { mode: "number" })
+  id: bigint("id", { mode: "bigint" })
     .primaryKey()
     .notNull()
-    .$defaultFn(() => Number(snowflake.generateId())),
-  discordId: bigint("discord_id", { mode: "number" })
+    .$defaultFn(() => BigInt(snowflake.generateId())),
+  discordId: bigint("discord_id", { mode: "bigint" })
     .notNull()
     .unique()
     .references(() => users.discordId),

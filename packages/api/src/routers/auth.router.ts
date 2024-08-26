@@ -31,8 +31,8 @@ export const dashboardAuthRouter = createTRPCRouter({
         await services.auth.exchangeAccessTokenForUserInfo(tokens.access_token);
 
       const user = {
-        id: parseInt(userInfoFromDiscord.id),
-        username: String(userInfoFromDiscord.username),
+        id: userInfoFromDiscord.id,
+        username: userInfoFromDiscord.username,
         email: String(userInfoFromDiscord.email),
         avatar: String(userInfoFromDiscord.avatar),
         globalName: String(userInfoFromDiscord.global_name),
@@ -51,14 +51,14 @@ export const dashboardAuthRouter = createTRPCRouter({
       const encryptedJWT = common.utils.crypto.encryptString(jwt);
 
       await services.auth.saveOrUpdateUser({
-        discordId: user.id,
+        discordId: BigInt(user.id),
         username: user.username,
         email: user.email,
         avatar: user.avatar,
-        globalName: user.globalName,
+        globalName: String(user.globalName),
       });
       await services.auth.saveOrUpdateUserTokens({
-        discordId: user.id,
+        discordId: BigInt(user.id),
         accessToken: tokens.access_token,
         refreshToken: tokens.refresh_token,
       });
