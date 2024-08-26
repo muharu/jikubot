@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const userMeResponse = z.object({
+export const userMeResponseValidator = z.object({
   id: z.string(),
   username: z.string(),
   email: z.string().email().nullable().optional(),
@@ -8,11 +8,11 @@ export const userMeResponse = z.object({
   avatar: z.string().nullable().optional(),
 });
 
-export const guildMeResponse = z.object({
+export const guildMeResponseValidator = z.object({
   id: z.string(),
   name: z.string(),
   permissions: z.string(),
   icon: z.string().nullable().optional(),
   isJoined: z.boolean(),
 });
-export const guildsMeResponse = z.array(guildMeResponse);
+export const guildsMeResponseValidator = z.array(guildMeResponseValidator);
