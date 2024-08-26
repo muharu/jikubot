@@ -1,15 +1,15 @@
 import { z } from "zod";
 
-export const loginResponse = z.object({
-  url: z.string(),
+export const loginResponseValidator = z.object({
+  url: z.string().url(),
 });
 
-export const authorizeRequest = z.object({
+export const authorizeRequestValidator = z.object({
   code: z.string(),
   state: z.string(),
 });
 
-export const authorizeResponse = z.object({
+export const authorizeResponseValidator = z.object({
   id: z.string(),
   username: z.string(),
   email: z.string().email().nullable().optional(),
