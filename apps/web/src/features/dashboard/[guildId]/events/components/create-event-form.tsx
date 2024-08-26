@@ -1,8 +1,8 @@
+import type { z } from "zod";
 import { useRouter } from "next/router";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { LuLoader2 } from "react-icons/lu";
-import { z } from "zod";
 
 import { Button } from "@giverve/ui/button";
 import { DialogClose, DialogFooter } from "@giverve/ui/dialog";
@@ -16,14 +16,11 @@ import {
 } from "@giverve/ui/form";
 import { Input } from "@giverve/ui/input";
 import { Textarea } from "@giverve/ui/textarea";
+import { createEventRequestValidator } from "@giverve/validators";
 
 import { api } from "~/utils/api";
 
-const formSchema = z.object({
-  guildId: z.string(),
-  title: z.string().min(3).max(50),
-  description: z.string().max(150),
-});
+const formSchema = createEventRequestValidator;
 
 export default function CreateEventForm({
   type,
@@ -31,6 +28,7 @@ export default function CreateEventForm({
   type: "dialog" | "drawer";
 }>) {
   const router = useRouter();
+  const utils = api.useUtils();
   const guildId = String(router.query.guildId);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -43,9 +41,17 @@ export default function CreateEventForm({
   });
 
   const { mutate, isPending } = api.dashboard.event.create.useMutation({
-    onSuccess: ({ eventId }) => {
+    onSuccess: (data) => {
       form.reset();
-      void router.push(`/dashboard/${guildId}/events/${eventId}`);
+      utils.dashboard.event.getOne.setData(
+        { eventId: String(data.eventId) },
+        {
+          eventId: String(data.eventId),
+          title: String(data.title),
+          description: String(data.description),
+        },
+      );
+      void router.push(`/dashboard/${guildId}/events/${data.eventId}`);
     },
   });
 

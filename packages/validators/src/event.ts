@@ -8,4 +8,22 @@ export const createEventRequestValidator = z.object({
 
 export const createEventResponseValidator = z.object({
   eventId: z.string(),
+  title: z.string(),
+  description: z.string().nullable().optional(),
+});
+
+export const getEventRequestValidator = z.object({
+  eventId: z.string(),
+});
+
+export const getEventResponseValidator = z.object({
+  eventId: z.string(),
+  title: z.string(),
+  description: z.string().nullable().optional(),
+});
+
+export const addEventSetupRequestValidator = z.object({
+  guildId: z.string(),
+  title: z.string().min(3).max(50),
+  description: z.string().max(150),
 });

@@ -16,16 +16,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@giverve/ui/card";
-import { Input } from "@giverve/ui/input";
 
+import EventSetupForm from "~/features/dashboard/[guildId]/events/[eventId]/components/event-setup-form";
+import useGetEvent from "~/features/dashboard/[guildId]/events/[eventId]/hooks/use-get-event";
 import useDashboardCheck from "~/hooks/use-dashboard-check";
 import DashboardLayout from "~/layouts/dashboard-layout";
 import GlobalLoading from "~/layouts/global-loading";
 
 export default function EventPage() {
   const { isLoading, isInGuilds } = useDashboardCheck();
+  const { isLoading: isEventLoading } = useGetEvent();
 
-  if (isLoading || !isInGuilds) {
+  if (isLoading || !isInGuilds || isEventLoading) {
     return <GlobalLoading />;
   }
 
@@ -85,7 +87,7 @@ export default function EventPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Input placeholder="Event title" />
+            <EventSetupForm />
           </CardContent>
         </Card>
       </div>
