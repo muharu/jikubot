@@ -1,4 +1,5 @@
 export * from "./auth";
-export * from "./bot";
 export * from "./event";
+export * from "./guild";
 export * from "./user";
+

@@ -1,12 +1,12 @@
 import { z } from "zod";
 
-export const botSaveGuildRequest = z.object({
+export const joinGuildRequestValidator = z.object({
   guildId: z.string(),
   ownerId: z.string(),
   name: z.string(),
   icon: z.string().nullable().optional(),
 });
 
-export const botLeaveGuildRequest = z.object({
+export const leaveGuildRequestValidator = z.object({
   guildId: z.string(),
 });

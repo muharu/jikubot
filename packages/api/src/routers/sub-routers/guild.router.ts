@@ -1,9 +1,14 @@
-import { schemas, services } from "../../context";
+import {
+  joinGuildRequestValidator,
+  leaveGuildRequestValidator,
+} from "@giverve/validators";
+
+import { services } from "../../context";
 import { botProcedure, createTRPCRouter } from "../../trpc";
 
 export const botGuildsRouter = createTRPCRouter({
   join: botProcedure
-    .input(schemas.bot.botSaveGuildRequest)
+    .input(joinGuildRequestValidator)
     .mutation(async ({ input }) => {
       return await services.user.joinGuild({
         ...input,
@@ -13,7 +18,7 @@ export const botGuildsRouter = createTRPCRouter({
     }),
 
   leave: botProcedure
-    .input(schemas.bot.botLeaveGuildRequest)
+    .input(leaveGuildRequestValidator)
     .mutation(async ({ input }) => {
       return await services.user.leaveGuild(BigInt(input.guildId));
     }),
