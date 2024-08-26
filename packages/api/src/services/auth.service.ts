@@ -4,8 +4,7 @@ import type {
 } from "discord-api-types/v10";
 import { TRPCError } from "@trpc/server";
 
-import type { InsertTokens } from "../repositories/token.repository";
-import type { InsertUser } from "../repositories/user.repository";
+import type { InsertTokens, InsertUser } from "../common/types";
 import { common, repositories } from "../context";
 
 export async function exchangeAuthorizationCodeForToken(

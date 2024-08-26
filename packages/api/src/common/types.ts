@@ -1,7 +1,7 @@
 import type { APIUser } from "discord-api-types/v10";
 import type { JWTPayload } from "jose";
 
-import type { guilds, tokens, userGuilds } from "@giverve/db";
+import type { guilds, tokens, userGuilds, users } from "@giverve/db";
 
 export type User = Pick<
   APIUser,
@@ -9,6 +9,9 @@ export type User = Pick<
 >;
 
 export interface ExtendedJWTPayload extends User, Pick<JWTPayload, "exp"> {}
+
+export type InsertUser = typeof users.$inferInsert;
+export type SelectUser = typeof users.$inferSelect;
 
 export type InsertGuild = typeof guilds.$inferInsert;
 export type SelectGuild = typeof guilds.$inferSelect;
