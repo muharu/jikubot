@@ -1,8 +1,9 @@
 import type { RESTGetAPICurrentUserGuildsResult } from "discord-api-types/v10";
 import { TRPCError } from "@trpc/server";
 
+import type { GuildsMe } from "@giverve/validators";
+
 import type { InsertGuild } from "../common/types";
-import type { schemas } from "../context";
 import { common, repositories } from "../context";
 
 export async function getUserGuilds(
@@ -44,10 +45,10 @@ export async function getBotGuilds(): Promise<RESTGetAPICurrentUserGuildsResult>
 export async function getManagedGuilds(
   discordId: bigint,
   accessToken: string,
-): Promise<schemas.user.GuildsMe> {
+): Promise<GuildsMe> {
   const cacheKey = `managedGuilds:${accessToken}`;
   const cachedGuilds =
-    await common.utils.cache.inMemoryCache.get<schemas.user.GuildsMe>(cacheKey);
+    await common.utils.cache.inMemoryCache.get<GuildsMe>(cacheKey);
 
   if (cachedGuilds) {
     return cachedGuilds;
