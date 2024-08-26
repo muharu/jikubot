@@ -5,12 +5,16 @@ import {
   SignJWT,
 } from "jose";
 
+import type { ExtendedJWTPayload } from "../types";
+
 const DEFAULT_JWT_ALGORITHM: JWTHeaderParameters["alg"] = "HS256";
 const DEFAULT_JWT_MAX_AGE = "1h";
 const DEFAULT_AUTH_SECRET = String(process.env.AUTH_SECRET);
 
-export async function signJWT<T extends JWTPayload>(
-  payload: T,
+export type MaxAgeFormat = string | number | Date;
+
+export async function signJWT(
+  payload: JWTPayload,
   maxAge: MaxAgeFormat = DEFAULT_JWT_MAX_AGE,
   secret: string = DEFAULT_AUTH_SECRET,
   algorithm: JWTHeaderParameters["alg"] = DEFAULT_JWT_ALGORITHM,
@@ -22,7 +26,7 @@ export async function signJWT<T extends JWTPayload>(
   return jwt;
 }
 
-export async function verifyJWT<T extends JWTPayload = ExtendedPayload>(
+export async function verifyJWT<T = ExtendedJWTPayload>(
   token: string,
   secret: string = DEFAULT_AUTH_SECRET,
   algorithm: JWTHeaderParameters["alg"] = DEFAULT_JWT_ALGORITHM,
@@ -37,19 +41,7 @@ export async function verifyJWT<T extends JWTPayload = ExtendedPayload>(
   return payload as T;
 }
 
-export function decodeJWT<T extends JWTPayload = ExtendedPayload>(
-  token: string,
-): T | null {
+export function decodeJWT<T = ExtendedJWTPayload>(token: string): T | null {
   const decoded = joseDecodeJwt(token);
   return decoded as T;
-}
-
-export type MaxAgeFormat = string | number | Date;
-
-export interface ExtendedPayload extends JWTPayload {
-  id: number;
-  username: string;
-  email: string;
-  avatar: string;
-  globalName: string;
 }

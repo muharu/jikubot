@@ -3,6 +3,7 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
+import type { ExtendedJWTPayload, User } from "./common/types";
 import { common } from "./context";
 
 export const createTRPCContext = ({
@@ -74,7 +75,16 @@ const authMiddleware = t.middleware(async ({ ctx: { req }, next }) => {
       );
       const decryptedJwt = common.utils.crypto.decryptString(jwtFromCookie);
 
-      const user = await common.utils.jwt.verifyJWT(decryptedJwt);
+      const jwtPayload =
+        await common.utils.jwt.verifyJWT<ExtendedJWTPayload>(decryptedJwt);
+
+      const user: User = {
+        id: jwtPayload.id,
+        username: jwtPayload.username,
+        email: jwtPayload.email,
+        globalName: jwtPayload.globalName,
+        avatar: jwtPayload.avatar,
+      };
 
       return await next({
         ctx: {
@@ -97,17 +107,14 @@ const authMiddleware = t.middleware(async ({ ctx: { req }, next }) => {
 });
 
 const botMiddleware = t.middleware(async ({ next, ctx }) => {
-  // get the Authorization header
   const authorization = ctx.req.headers.authorization;
 
-  // check if the Authorization header is present
   if (!authorization) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
     });
   }
 
-  // check if the Authorization header is a valid bearer token
   const [type, token] = authorization.split(" ");
   if (type !== "Bearer" || !token) {
     throw new TRPCError({
@@ -115,15 +122,13 @@ const botMiddleware = t.middleware(async ({ next, ctx }) => {
     });
   }
 
-  // check if the token is the same as the bot token
   if (token !== process.env.BOT_DISCORD_TOKEN) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
     });
   }
 
-  const result = await next();
-  return result;
+  return await next();
 });
 
 export const publicProcedure = t.procedure.use(timingMiddleware);

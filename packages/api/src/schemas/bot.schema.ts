@@ -1,15 +1,12 @@
 import { z } from "zod";
 
 export const botSaveGuildRequest = z.object({
-  guildId: z.number(),
-  ownerId: z.number(),
+  guildId: z.string(),
+  ownerId: z.string(),
   name: z.string(),
-  icon: z.string().nullable(),
+  icon: z.string().nullable().optional(),
 });
 
 export const botLeaveGuildRequest = z.object({
-  guildId: z.number(),
+  guildId: z.string(),
 });
-
-export type BotSaveGuildRequest = z.infer<typeof botSaveGuildRequest>;
-export type BotLeaveGuildRequest = z.infer<typeof botLeaveGuildRequest>;

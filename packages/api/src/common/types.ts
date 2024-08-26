@@ -1,0 +1,23 @@
+import type { APIUser } from "discord-api-types/v10";
+import type { JWTPayload } from "jose";
+
+import type { guilds, tokens, userGuilds, users } from "@giverve/db";
+
+export interface User
+  extends Pick<APIUser, "id" | "username" | "email" | "avatar"> {
+  globalName: string | null | undefined;
+}
+
+export interface ExtendedJWTPayload extends User, Pick<JWTPayload, "exp"> {}
+
+export type InsertUser = typeof users.$inferInsert;
+export type SelectUser = typeof users.$inferSelect;
+
+export type InsertGuild = typeof guilds.$inferInsert;
+export type SelectGuild = typeof guilds.$inferSelect;
+
+export type InsertTokens = typeof tokens.$inferInsert;
+export type SelectTokens = typeof tokens.$inferSelect;
+
+export type InsertUserGuilds = typeof userGuilds.$inferInsert;
+export type SelectUserGuilds = typeof userGuilds.$inferSelect;

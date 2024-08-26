@@ -13,7 +13,7 @@ export const dashboardUserRouter = createTRPCRouter({
     .output(schemas.user.guildsMeResponse)
     .query(async ({ ctx }) => {
       const guilds = await services.user.getManagedGuilds(
-        ctx.user.id,
+        BigInt(ctx.user.id),
         ctx.accessToken,
       );
       return guilds;

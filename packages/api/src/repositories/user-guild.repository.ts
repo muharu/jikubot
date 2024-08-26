@@ -1,7 +1,9 @@
 import { and, db, eq, notInArray, userGuilds } from "@giverve/db";
 
+import type { InsertUserGuilds } from "../common/types";
+
 export async function findManyUserGuildsByDiscordId(
-  discordId: number,
+  discordId: bigint,
   trx = db,
 ) {
   return trx.query.userGuilds.findMany({
@@ -10,7 +12,7 @@ export async function findManyUserGuildsByDiscordId(
 }
 
 export async function findFirstUserGuildByDiscordId(
-  discordId: number,
+  discordId: bigint,
   trx = db,
 ) {
   return trx.query.users.findFirst({
@@ -19,9 +21,9 @@ export async function findFirstUserGuildByDiscordId(
 }
 
 export async function updateUserGuildPermissionsByDiscordIdAndGuildId(
-  discordId: number,
-  guildId: number,
-  permissions: number,
+  discordId: bigint,
+  guildId: bigint,
+  permissions: bigint,
   trx = db,
 ) {
   return trx
@@ -37,8 +39,8 @@ export async function insertUserGuilds(data: InsertUserGuilds, trx = db) {
 }
 
 export async function deleteUserGuildsByGuildIds(
-  discordId: number,
-  guildIds: number[],
+  discordId: bigint,
+  guildIds: bigint[],
   trx = db,
 ) {
   return trx
@@ -50,6 +52,3 @@ export async function deleteUserGuildsByGuildIds(
       ),
     );
 }
-
-export type InsertUserGuilds = typeof userGuilds.$inferInsert;
-export type SelectUserGuilds = typeof userGuilds.$inferSelect;
