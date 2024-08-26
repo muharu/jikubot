@@ -7,8 +7,8 @@ export default async (guild: Guild) => {
   try {
     await retry(() =>
       trpc.bot.user.guilds.join.mutate({
-        guildId: Number(guild.id),
-        ownerId: Number(guild.ownerId),
+        guildId: guild.id,
+        ownerId: guild.ownerId,
         name: guild.name,
         icon: guild.icon,
       }),
