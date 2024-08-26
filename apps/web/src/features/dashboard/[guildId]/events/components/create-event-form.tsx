@@ -20,8 +20,9 @@ import { Textarea } from "@giverve/ui/textarea";
 import { api } from "~/utils/api";
 
 const formSchema = z.object({
-  title: z.string().min(3),
-  description: z.string(),
+  guildId: z.string(),
+  title: z.string().min(3).max(50),
+  description: z.string().max(150),
 });
 
 export default function CreateEventForm({
@@ -35,13 +36,14 @@ export default function CreateEventForm({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      guildId,
       title: "",
       description: "",
     },
   });
 
   const { mutate, isPending } = api.dashboard.event.create.useMutation({
-    onSuccess: (eventId) => {
+    onSuccess: ({ eventId }) => {
       form.reset();
       void router.push(`/dashboard/${guildId}/events/${eventId}`);
     },

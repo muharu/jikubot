@@ -72,6 +72,7 @@ export const events = pgTable("events", {
     .primaryKey()
     .notNull()
     .$defaultFn(() => BigInt(snowflake.generateId())),
+  guildId: bigint("guild_id", { mode: "bigint" }).notNull(),
   discordId: bigint("discord_id", { mode: "bigint" }).notNull(),
   messageId: bigint("message_id", { mode: "bigint" }),
   title: varchar("name", { length: 50 }).notNull(),

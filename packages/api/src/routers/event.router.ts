@@ -1,21 +1,17 @@
-import { z } from "zod";
-
 import { db, events } from "@giverve/db";
 
+import { schemas } from "../context";
 import { createTRPCRouter, dashboardProcedure } from "../trpc";
 
 export const dashboardEventRouter = createTRPCRouter({
   create: dashboardProcedure
-    .input(
-      z.object({
-        title: z.string().min(3).max(50),
-        description: z.string().max(150),
-      }),
-    )
+    .input(schemas.event.eventCreateRequest)
+    .output(schemas.event.eventCreateResponse)
     .mutation(async ({ input, ctx }) => {
       const [event] = await db
         .insert(events)
         .values({
+          guildId: BigInt(input.guildId),
           discordId: BigInt(ctx.user.id),
           title: input.title,
           description: input.description,
@@ -23,6 +19,9 @@ export const dashboardEventRouter = createTRPCRouter({
         .returning({
           id: events.id,
         });
-      return event?.id;
+
+      return {
+        eventId: String(event?.id),
+      };
     }),
 });
