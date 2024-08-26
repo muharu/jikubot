@@ -6,7 +6,7 @@ import { retry } from "../../utils";
 export default async (guild: Guild) => {
   try {
     await retry(() =>
-      trpc.bot.user.guilds.join.mutate({
+      trpc.bot.guilds.join.mutate({
         guildId: guild.id,
         ownerId: guild.ownerId,
         name: guild.name,
