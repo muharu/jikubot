@@ -22,7 +22,7 @@ export async function signJWT<T extends JWTPayload>(
   return jwt;
 }
 
-export async function verifyJWT<T extends JWTPayload = ExtendedPayload>(
+export async function verifyJWT<T>(
   token: string,
   secret: string = DEFAULT_AUTH_SECRET,
   algorithm: JWTHeaderParameters["alg"] = DEFAULT_JWT_ALGORITHM,
@@ -37,19 +37,9 @@ export async function verifyJWT<T extends JWTPayload = ExtendedPayload>(
   return payload as T;
 }
 
-export function decodeJWT<T extends JWTPayload = ExtendedPayload>(
-  token: string,
-): T | null {
+export function decodeJWT<T>(token: string): T | null {
   const decoded = joseDecodeJwt(token);
   return decoded as T;
 }
 
 export type MaxAgeFormat = string | number | Date;
-
-export interface ExtendedPayload extends JWTPayload {
-  id: number;
-  username: string;
-  email: string;
-  avatar: string;
-  globalName: string;
-}
