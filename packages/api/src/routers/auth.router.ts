@@ -1,27 +1,30 @@
-import { common, schemas, services } from "../context";
+import {
+  authorizeRequestValidator,
+  authorizeResponseValidator,
+  loginResponseValidator,
+} from "@giverve/validators";
+
+import { common, services } from "../context";
 import { createTRPCRouter, dashboardProcedure, publicProcedure } from "../trpc";
 
 export const dashboardAuthRouter = createTRPCRouter({
-  login: publicProcedure
-    .output(schemas.auth.loginResponse)
-    .mutation(({ ctx }) => {
-      const authState = common.utils.crypto.generateRandomString(43);
-      const url =
-        common.utils.discord.generateDiscordAuthorizationUrl(authState);
+  login: publicProcedure.output(loginResponseValidator).mutation(({ ctx }) => {
+    const authState = common.utils.crypto.generateRandomString(43);
+    const url = common.utils.discord.generateDiscordAuthorizationUrl(authState);
 
-      common.utils.cookies.setCookie(
-        ctx.res,
-        common.constants.COOKIE_OAUTH_STATE_NAME,
-        authState,
-        { maxAge: 60 * 60 },
-      );
+    common.utils.cookies.setCookie(
+      ctx.res,
+      common.constants.COOKIE_OAUTH_STATE_NAME,
+      authState,
+      { maxAge: 60 * 60 },
+    );
 
-      return { url };
-    }),
+    return { url };
+  }),
 
   authorize: publicProcedure
-    .input(schemas.auth.authorizeRequest)
-    .output(schemas.auth.authorizeResponse)
+    .input(authorizeRequestValidator)
+    .output(authorizeResponseValidator)
     .mutation(async ({ ctx, input }) => {
       const tokens = await services.auth.exchangeAuthorizationCodeForToken(
         input.code,

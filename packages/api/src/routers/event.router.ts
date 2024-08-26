@@ -1,12 +1,15 @@
 import { db, events } from "@giverve/db";
+import {
+  createEventRequestValidator,
+  createEventResponseValidator,
+} from "@giverve/validators";
 
-import { schemas } from "../context";
 import { createTRPCRouter, dashboardProcedure } from "../trpc";
 
 export const dashboardEventRouter = createTRPCRouter({
   create: dashboardProcedure
-    .input(schemas.event.eventCreateRequest)
-    .output(schemas.event.eventCreateResponse)
+    .input(createEventRequestValidator)
+    .output(createEventResponseValidator)
     .mutation(async ({ input, ctx }) => {
       const [event] = await db
         .insert(events)
