@@ -17,10 +17,9 @@ export async function getUserGuilds(
       .headers({ Authorization: `Bearer ${accessToken}` })
       .get()
       .json<RESTGetAPICurrentUserGuildsResult>();
-  } catch (error) {
+  } catch {
     throw new TRPCError({
       code: "SERVICE_UNAVAILABLE",
-      cause: process.env.NODE_ENV === "development" && error,
     });
   }
 }
@@ -34,10 +33,9 @@ export async function getBotGuilds(): Promise<RESTGetAPICurrentUserGuildsResult>
       .headers({ Authorization: `Bot ${process.env.BOT_DISCORD_TOKEN}` })
       .get()
       .json<RESTGetAPICurrentUserGuildsResult>();
-  } catch (error) {
+  } catch {
     throw new TRPCError({
       code: "SERVICE_UNAVAILABLE",
-      cause: process.env.NODE_ENV === "development" && error,
     });
   }
 }
@@ -109,10 +107,9 @@ export async function getManagedGuilds(
 export async function joinGuild(data: InsertGuild) {
   try {
     await repositories.guild.upsertGuildWithActiveStatus(data, true);
-  } catch (error) {
+  } catch {
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
-      cause: process.env.NODE_ENV === "development" && error,
     });
   }
 }
@@ -120,10 +117,9 @@ export async function joinGuild(data: InsertGuild) {
 export async function leaveGuild(guildId: bigint) {
   try {
     await repositories.guild.updateGuildActiveStatusIfExists(guildId, false);
-  } catch (error) {
+  } catch {
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
-      cause: process.env.NODE_ENV === "development" && error,
     });
   }
 }
