@@ -9,14 +9,8 @@ import { RiArrowLeftSLine } from "react-icons/ri";
 
 import { cn } from "@giverve/ui";
 import { Button, buttonVariants } from "@giverve/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@giverve/ui/card";
 
+import EventCard from "~/features/dashboard/[guildId]/events/[eventId]/components/event-setup-card";
 import EventSetupForm from "~/features/dashboard/[guildId]/events/[eventId]/components/event-setup-form";
 import useGetEvent from "~/features/dashboard/[guildId]/events/[eventId]/hooks/use-get-event";
 import useDashboardCheck from "~/hooks/use-dashboard-check";
@@ -79,17 +73,9 @@ export default function EventPage() {
           </Button>
         </aside>
 
-        <Card className="flex-1 bg-white">
-          <CardHeader>
-            <CardTitle>Event Setup</CardTitle>
-            <CardDescription>
-              Set up your event by filling in the details below
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <EventSetupForm />
-          </CardContent>
-        </Card>
+        <EventCard>
+          <EventSetupForm />
+        </EventCard>
       </div>
     </DashboardLayout>
   );
