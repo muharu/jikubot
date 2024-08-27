@@ -15,19 +15,21 @@ const BlurFade = dynamic(
   },
 );
 
-export default function EventCard({
+export default function EditEventCard({
   children,
+  title,
+  description,
 }: Readonly<{
   children: React.ReactNode;
+  title: string;
+  description: string;
 }>) {
   return (
     <BlurFade className="w-full">
       <Card className="flex-1 bg-white">
         <CardHeader>
-          <CardTitle>Event Setup</CardTitle>
-          <CardDescription>
-            Set up your event by filling in the details below
-          </CardDescription>
+          <CardTitle>{title}</CardTitle>
+          <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardContent>{children}</CardContent>
       </Card>

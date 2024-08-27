@@ -25,6 +25,7 @@ const formSchema = addEventSetupRequestValidator;
 export default function EventSetupForm() {
   const router = useRouter();
   const guildId = String(router.query.guildId);
+  const eventId = String(router.query.eventId);
 
   const { data, isLoading } = useGetEvent();
 
@@ -37,8 +38,8 @@ export default function EventSetupForm() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  function onSubmit(_: z.infer<typeof formSchema>) {
+    void router.push(`/dashboard/${guildId}/events/${eventId}/interactions`);
   }
 
   return (
