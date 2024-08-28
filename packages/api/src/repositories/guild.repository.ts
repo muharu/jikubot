@@ -1,4 +1,4 @@
-import { and, db, eq, exists, guilds } from "@giverve/db";
+import { and, db, eq, exists, guilds, userGuilds } from "@giverve/db";
 
 import type { InsertGuild } from "../common/types";
 
@@ -8,6 +8,19 @@ export async function findManyActiveGuilds(trx = db) {
 
 export function findGuildByGuildId(guildId: bigint, trx = db) {
   return trx.select().from(guilds).where(eq(guilds.guildId, guildId));
+}
+
+export function findOneGuildWithPermissions(trx = db) {
+  return trx
+    .select({
+      id: guilds.id,
+      name: guilds.name,
+      permissions: userGuilds.permissions,
+      icon: guilds.icon,
+      isJoined: guilds.isActive,
+    })
+    .from(guilds)
+    .leftJoin(userGuilds, eq(guilds.guildId, userGuilds.guildId));
 }
 
 export async function upsertGuildWithActiveStatus(

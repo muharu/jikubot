@@ -11,6 +11,10 @@ export const leaveGuildRequestValidator = z.object({
   guildId: z.string(),
 });
 
+export const guildMeRequestValidator = z.object({
+  guildId: z.string(),
+});
+
 export const guildMeResponseValidator = z.object({
   id: z.string(),
   name: z.string(),
