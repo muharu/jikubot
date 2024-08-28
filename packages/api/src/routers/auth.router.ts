@@ -1,27 +1,30 @@
-import { common, schemas, services } from "../context";
+import {
+  authorizeRequestValidator,
+  authorizeResponseValidator,
+  loginResponseValidator,
+} from "@giverve/validators";
+
+import { common, services } from "../context";
 import { createTRPCRouter, dashboardProcedure, publicProcedure } from "../trpc";
 
 export const dashboardAuthRouter = createTRPCRouter({
-  login: publicProcedure
-    .output(schemas.auth.loginResponse)
-    .mutation(({ ctx }) => {
-      const authState = common.utils.crypto.generateRandomString(43);
-      const url =
-        common.utils.discord.generateDiscordAuthorizationUrl(authState);
+  login: publicProcedure.output(loginResponseValidator).mutation(({ ctx }) => {
+    const authState = common.utils.crypto.generateRandomString(43);
+    const url = common.utils.discord.generateDiscordAuthorizationUrl(authState);
 
-      common.utils.cookies.setCookie(
-        ctx.res,
-        common.constants.COOKIE_OAUTH_STATE_NAME,
-        authState,
-        { maxAge: 60 * 60 },
-      );
+    common.utils.cookies.setCookie(
+      ctx.res,
+      common.constants.COOKIE_OAUTH_STATE_NAME,
+      authState,
+      { maxAge: 60 * 60 },
+    );
 
-      return { url };
-    }),
+    return { url };
+  }),
 
   authorize: publicProcedure
-    .input(schemas.auth.authorizeRequest)
-    .output(schemas.auth.authorizeResponse)
+    .input(authorizeRequestValidator)
+    .output(authorizeResponseValidator)
     .mutation(async ({ ctx, input }) => {
       const tokens = await services.auth.exchangeAuthorizationCodeForToken(
         input.code,
@@ -31,8 +34,8 @@ export const dashboardAuthRouter = createTRPCRouter({
         await services.auth.exchangeAccessTokenForUserInfo(tokens.access_token);
 
       const user = {
-        id: parseInt(userInfoFromDiscord.id),
-        username: String(userInfoFromDiscord.username),
+        id: userInfoFromDiscord.id,
+        username: userInfoFromDiscord.username,
         email: String(userInfoFromDiscord.email),
         avatar: String(userInfoFromDiscord.avatar),
         globalName: String(userInfoFromDiscord.global_name),
@@ -51,14 +54,14 @@ export const dashboardAuthRouter = createTRPCRouter({
       const encryptedJWT = common.utils.crypto.encryptString(jwt);
 
       await services.auth.saveOrUpdateUser({
-        discordId: user.id,
+        discordId: BigInt(user.id),
         username: user.username,
         email: user.email,
         avatar: user.avatar,
-        globalName: user.globalName,
+        globalName: String(user.globalName),
       });
       await services.auth.saveOrUpdateUserTokens({
-        discordId: user.id,
+        discordId: BigInt(user.id),
         accessToken: tokens.access_token,
         refreshToken: tokens.refresh_token,
       });

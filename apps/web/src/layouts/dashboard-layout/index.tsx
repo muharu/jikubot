@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { AiTwotoneDashboard } from "react-icons/ai";
-import { BsCalendar2Week } from "react-icons/bs";
-import { HiUserGroup } from "react-icons/hi2";
+import {
+  AiTwotoneCalendar,
+  AiTwotoneDashboard,
+  AiTwotoneSmile,
+} from "react-icons/ai";
 
 import { cn } from "@giverve/ui";
 import { buttonVariants } from "@giverve/ui/button";
@@ -40,55 +42,63 @@ function Sidebar() {
   const router = useRouter();
   const guildId = String(router.query.guildId);
 
-  const isActive = (href: string) => router.pathname === href;
+  const isActive = (path: string) => {
+    const basePath = `/dashboard/${guildId}`;
+    if (path === "/") {
+      // Only return true if the path is exactly the basePath
+      return router.asPath === basePath;
+    }
+    // For other paths, ensure it starts with the basePath and the specific path
+    return router.asPath.startsWith(`${basePath}${path}`);
+  };
 
   return (
     <ScrollArea className="hidden h-[100dvh] w-[350px] rounded-md border-r bg-white p-4 lg:flex">
       <GuildCard />
 
-      <nav className="flex flex-col gap-y-3">
+      <nav className="mt-4 flex flex-col gap-y-3">
         <Link
+          prefetch={false}
           href={`/dashboard/${guildId}`}
           className={cn(
             buttonVariants({
-              variant: isActive(`/dashboard/[guildId]`)
-                ? "noShadow"
-                : "neutral",
+              variant: isActive("/") ? "noShadow" : "neutral",
             }),
             "w-[95%] justify-start font-semibold",
+            isActive("/") && "font-bold",
           )}
         >
-          <AiTwotoneDashboard className="mr-2 size-6" />
+          <AiTwotoneDashboard className="mr-2 h-6 w-6" />
           Dashboard
         </Link>
 
         <Link
+          prefetch={false}
           href={`/dashboard/${guildId}/events`}
           className={cn(
             buttonVariants({
-              variant: isActive(`/dashboard/[guildId]/events`)
-                ? "noShadow"
-                : "neutral",
+              variant: isActive("/events") ? "noShadow" : "neutral",
             }),
             "w-[95%] justify-start font-semibold",
+            isActive("/events") && "font-bold",
           )}
         >
-          <BsCalendar2Week className="mr-2 size-6" />
+          <AiTwotoneCalendar className="mr-2 h-6 w-6" />
           Events
         </Link>
 
         <Link
+          prefetch={false}
           href={`/dashboard/${guildId}/lfg`}
           className={cn(
             buttonVariants({
-              variant: isActive(`/dashboard/[guildId]/lfg`)
-                ? "noShadow"
-                : "neutral",
+              variant: isActive("/lfg") ? "noShadow" : "neutral",
             }),
             "w-[95%] justify-start font-semibold",
+            isActive("/lfg") && "font-bold",
           )}
         >
-          <HiUserGroup className="mr-2 size-6" />
+          <AiTwotoneSmile className="mr-2 h-6 w-6" />
           Looking for Group
         </Link>
       </nav>

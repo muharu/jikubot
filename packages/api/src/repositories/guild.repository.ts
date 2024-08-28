@@ -1,10 +1,12 @@
 import { and, db, eq, exists, guilds } from "@giverve/db";
 
+import type { InsertGuild } from "../common/types";
+
 export async function findManyActiveGuilds(trx = db) {
   return trx.select().from(guilds).where(eq(guilds.isActive, true));
 }
 
-export function findGuildByGuildId(guildId: number, trx = db) {
+export function findGuildByGuildId(guildId: bigint, trx = db) {
   return trx.select().from(guilds).where(eq(guilds.guildId, guildId));
 }
 
@@ -37,7 +39,7 @@ export async function updateGuildByGuildId(data: InsertGuild, trx = db) {
 }
 
 export async function updateGuildActiveStatusIfExists(
-  guildId: number,
+  guildId: bigint,
   isActive: boolean,
   trx = db,
 ) {
@@ -54,6 +56,3 @@ export async function updateGuildActiveStatusIfExists(
     )
     .returning();
 }
-
-export type InsertGuild = typeof guilds.$inferInsert;
-export type SelectGuild = typeof guilds.$inferSelect;

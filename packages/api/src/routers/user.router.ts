@@ -1,25 +1,9 @@
-import { schemas, services } from "../context";
+import { userMeResponseValidator } from "@giverve/validators";
+
 import { createTRPCRouter, dashboardProcedure } from "../trpc";
-import { botGuildsRouter } from "./sub-routers/guild.router";
 
 export const dashboardUserRouter = createTRPCRouter({
-  me: dashboardProcedure
-    .output(schemas.user.userMeResponse)
-    .query(({ ctx }) => {
-      return ctx.user;
-    }),
-
-  guilds: dashboardProcedure
-    .output(schemas.user.guildsMeResponse)
-    .query(async ({ ctx }) => {
-      const guilds = await services.user.getManagedGuilds(
-        ctx.user.id,
-        ctx.accessToken,
-      );
-      return guilds;
-    }),
-});
-
-export const botUserRouter = createTRPCRouter({
-  guilds: botGuildsRouter,
+  me: dashboardProcedure.output(userMeResponseValidator).query(({ ctx }) => {
+    return ctx.user;
+  }),
 });

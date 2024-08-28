@@ -1,7 +1,9 @@
 import type { RESTGetAPICurrentUserGuildsResult } from "discord-api-types/v10";
 import { TRPCError } from "@trpc/server";
 
-import type { schemas } from "../context";
+import type { GuildsMe } from "@giverve/validators";
+
+import type { InsertGuild } from "../common/types";
 import { common, repositories } from "../context";
 
 export async function getUserGuilds(
@@ -15,10 +17,9 @@ export async function getUserGuilds(
       .headers({ Authorization: `Bearer ${accessToken}` })
       .get()
       .json<RESTGetAPICurrentUserGuildsResult>();
-  } catch (error) {
+  } catch {
     throw new TRPCError({
       code: "SERVICE_UNAVAILABLE",
-      cause: process.env.NODE_ENV === "development" && error,
     });
   }
 }
@@ -32,21 +33,20 @@ export async function getBotGuilds(): Promise<RESTGetAPICurrentUserGuildsResult>
       .headers({ Authorization: `Bot ${process.env.BOT_DISCORD_TOKEN}` })
       .get()
       .json<RESTGetAPICurrentUserGuildsResult>();
-  } catch (error) {
+  } catch {
     throw new TRPCError({
       code: "SERVICE_UNAVAILABLE",
-      cause: process.env.NODE_ENV === "development" && error,
     });
   }
 }
 
 export async function getManagedGuilds(
-  discordId: number,
+  discordId: bigint,
   accessToken: string,
-): Promise<schemas.user.GuildsMe> {
+): Promise<GuildsMe> {
   const cacheKey = `managedGuilds:${accessToken}`;
   const cachedGuilds =
-    await common.utils.cache.inMemoryCache.get<schemas.user.GuildsMe>(cacheKey);
+    await common.utils.cache.inMemoryCache.get<GuildsMe>(cacheKey);
 
   if (cachedGuilds) {
     return cachedGuilds;
@@ -69,7 +69,7 @@ export async function getManagedGuilds(
       Number(guild.permissions),
       "MANAGE_GUILD",
     );
-    const isJoined = botGuildSet.has(Number(guild.id));
+    const isJoined = botGuildSet.has(BigInt(guild.id));
 
     return {
       ...guild,
@@ -104,29 +104,27 @@ export async function getManagedGuilds(
   return result;
 }
 
-export async function joinGuild(data: schemas.bot.BotSaveGuildRequest) {
+export async function joinGuild(data: InsertGuild) {
   try {
     await repositories.guild.upsertGuildWithActiveStatus(data, true);
-  } catch (error) {
+  } catch {
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
-      cause: process.env.NODE_ENV === "development" && error,
     });
   }
 }
 
-export async function leaveGuild(guildId: number) {
+export async function leaveGuild(guildId: bigint) {
   try {
     await repositories.guild.updateGuildActiveStatusIfExists(guildId, false);
-  } catch (error) {
+  } catch {
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
-      cause: process.env.NODE_ENV === "development" && error,
     });
   }
 }
 
-export async function syncUserGuilds(discordId: number, accessToken: string) {
+export async function syncUserGuilds(discordId: bigint, accessToken: string) {
   const userGuildsData = await getUserGuilds(accessToken);
 
   // Filter only the guilds that are managed
@@ -146,14 +144,14 @@ export async function syncUserGuilds(discordId: number, accessToken: string) {
       );
 
     // Create a map of existing guilds for quick lookup
-    const existingGuildsMap = new Map<number, (typeof existingGuilds)[0]>(
+    const existingGuildsMap = new Map<bigint, (typeof existingGuilds)[0]>(
       existingGuilds.map((guild) => [guild.guildId, guild]),
     );
 
     // Insert or update managed guilds
     for (const guild of managedGuildsData) {
-      const guildId = Number(guild.id);
-      const permissions = Number(guild.permissions);
+      const guildId = BigInt(guild.id);
+      const permissions = BigInt(guild.permissions);
 
       const existingGuild = existingGuildsMap.get(guildId);
       if (existingGuild) {

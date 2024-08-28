@@ -1,5 +1,7 @@
 import { db, users } from "@giverve/db";
 
+import type { InsertUser } from "../common/types";
+
 export async function upsertUser(data: InsertUser, trx = db) {
   return trx
     .insert(users)
@@ -15,6 +17,3 @@ export async function upsertUser(data: InsertUser, trx = db) {
     })
     .returning();
 }
-
-export type InsertUser = typeof users.$inferInsert;
-export type SelectUser = typeof users.$inferSelect;

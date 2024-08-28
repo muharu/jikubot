@@ -4,8 +4,7 @@ import type {
 } from "discord-api-types/v10";
 import { TRPCError } from "@trpc/server";
 
-import type { InsertTokens } from "../repositories/token.repository";
-import type { InsertUser } from "../repositories/user.repository";
+import type { InsertTokens, InsertUser } from "../common/types";
 import { common, repositories } from "../context";
 
 export async function exchangeAuthorizationCodeForToken(
@@ -23,11 +22,10 @@ export async function exchangeAuthorizationCodeForToken(
       .body(params)
       .post()
       .json<RESTPostOAuth2AccessTokenResult>();
-  } catch (error) {
+  } catch {
     throw new TRPCError({
       code: "SERVICE_UNAVAILABLE",
       message: "Failed to exchange authorization code with Discord.",
-      cause: process.env.NODE_ENV !== "production" && error,
     });
   }
 }
@@ -45,11 +43,10 @@ export async function exchangeAccessTokenForUserInfo(
       })
       .get()
       .json<RESTGetAPIUserResult>();
-  } catch (error) {
+  } catch {
     throw new TRPCError({
       code: "SERVICE_UNAVAILABLE",
       message: "Failed to fetch user info from Discord.",
-      cause: process.env.NODE_ENV !== "production" && error,
     });
   }
 }
@@ -66,11 +63,10 @@ export async function getNewTokens(refreshToken: string) {
       .body(params)
       .post()
       .json<RESTPostOAuth2AccessTokenResult>();
-  } catch (error) {
+  } catch {
     throw new TRPCError({
       code: "SERVICE_UNAVAILABLE",
       message: "Failed to refresh access token with Discord.",
-      cause: process.env.NODE_ENV !== "production" && error,
     });
   }
 }
@@ -88,11 +84,10 @@ export async function revokeAccessToken(accessToken: string) {
       .body(params)
       .post()
       .json();
-  } catch (error) {
+  } catch {
     throw new TRPCError({
       code: "SERVICE_UNAVAILABLE",
       message: "Failed to revoke token with Discord.",
-      cause: process.env.NODE_ENV !== "production" && error,
     });
   }
 }
@@ -110,11 +105,10 @@ export async function revokeRefreshToken(refreshToken: string) {
       .body(params)
       .post()
       .json();
-  } catch (error) {
+  } catch {
     throw new TRPCError({
       code: "SERVICE_UNAVAILABLE",
       message: "Failed to revoke token with Discord.",
-      cause: process.env.NODE_ENV !== "production" && error,
     });
   }
 }
@@ -128,11 +122,10 @@ export async function revokeAllTokens(
       revokeAccessToken(accessToken),
       revokeRefreshToken(refreshToken),
     ]);
-  } catch (error) {
+  } catch {
     throw new TRPCError({
       code: "SERVICE_UNAVAILABLE",
       message: "Failed to revoke all tokens with Discord.",
-      cause: process.env.NODE_ENV !== "production" && error,
     });
   }
 }
@@ -140,11 +133,10 @@ export async function revokeAllTokens(
 export async function saveOrUpdateUser(data: InsertUser) {
   try {
     return await repositories.user.upsertUser(data);
-  } catch (error) {
+  } catch {
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
       message: "Failed to save or update credentials",
-      cause: process.env.NODE_ENV !== "production" && error,
     });
   }
 }
@@ -152,11 +144,10 @@ export async function saveOrUpdateUser(data: InsertUser) {
 export async function saveOrUpdateUserTokens(data: InsertTokens) {
   try {
     return await repositories.token.upsertUserTokens(data);
-  } catch (error) {
+  } catch {
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
       message: "Failed to save or update credentials",
-      cause: process.env.NODE_ENV !== "production" && error,
     });
   }
 }

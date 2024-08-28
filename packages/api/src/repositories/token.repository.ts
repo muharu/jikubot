@@ -1,5 +1,7 @@
 import { db, tokens } from "@giverve/db";
 
+import type { InsertTokens } from "../common/types";
+
 export async function upsertUserTokens(data: InsertTokens, trx = db) {
   return trx
     .insert(tokens)
@@ -13,6 +15,3 @@ export async function upsertUserTokens(data: InsertTokens, trx = db) {
     })
     .returning();
 }
-
-export type InsertTokens = typeof tokens.$inferInsert;
-export type SelectTokens = typeof tokens.$inferSelect;
