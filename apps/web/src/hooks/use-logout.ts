@@ -1,8 +1,8 @@
-import { api } from "~/utils/api";
+import { trpc } from "~/utils/trpc";
 
 export default function useLogout() {
-  const utils = api.useUtils();
-  return api.dashboard.auth.logout.useMutation({
+  const utils = trpc.useUtils();
+  return trpc.dashboard.auth.logout.useMutation({
     onSuccess: () => utils.invalidate(),
   });
 }

@@ -20,20 +20,20 @@ import { Input } from "@giverve/ui/input";
 import { Textarea } from "@giverve/ui/textarea";
 import { patchEventRequestValidator } from "@giverve/validators";
 
-import { api } from "~/utils/api";
+import { trpc } from "~/utils/trpc";
 import useGetEvent from "../hooks/use-get-event";
 
 const formSchema = patchEventRequestValidator;
 
 export default function EventSetupForm() {
   const router = useRouter();
-  const utils = api.useUtils();
+  const utils = trpc.useUtils();
   const guildId = String(router.query.guildId);
   const eventId = String(router.query.eventId);
 
   const { data, isLoading } = useGetEvent();
 
-  const { mutate, isPending } = api.dashboard.event.patch.useMutation({
+  const { mutate, isPending } = trpc.dashboard.event.patch.useMutation({
     onSuccess: (data) => {
       utils.dashboard.event.getOne.setData(
         { eventId: data.eventId },

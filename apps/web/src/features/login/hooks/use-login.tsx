@@ -1,5 +1,5 @@
-import { api } from "~/utils/api";
+import { trpc } from "~/utils/trpc";
 
 export default function useLogin() {
-  return api.dashboard.auth.login.useMutation();
+  return trpc.dashboard.auth.login.useMutation();
 }

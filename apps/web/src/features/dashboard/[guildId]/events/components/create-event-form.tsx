@@ -18,7 +18,7 @@ import { Input } from "@giverve/ui/input";
 import { Textarea } from "@giverve/ui/textarea";
 import { createEventRequestValidator } from "@giverve/validators";
 
-import { api } from "~/utils/api";
+import { trpc } from "~/utils/trpc";
 
 const formSchema = createEventRequestValidator;
 
@@ -28,7 +28,7 @@ export default function CreateEventForm({
   type: "dialog" | "drawer";
 }>) {
   const router = useRouter();
-  const utils = api.useUtils();
+  const utils = trpc.useUtils();
   const guildId = String(router.query.guildId);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -40,7 +40,7 @@ export default function CreateEventForm({
     },
   });
 
-  const { mutate, isPending } = api.dashboard.event.create.useMutation({
+  const { mutate, isPending } = trpc.dashboard.event.create.useMutation({
     onSuccess: (data) => {
       form.reset();
       utils.dashboard.event.getOne.setData(

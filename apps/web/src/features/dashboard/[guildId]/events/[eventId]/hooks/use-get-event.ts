@@ -1,11 +1,11 @@
 import { useRouter } from "next/router";
 
-import { api } from "~/utils/api";
+import { trpc } from "~/utils/trpc";
 
 export default function useGetEvent(eventId?: string) {
   const router = useRouter();
   const guildId = String(router.query.guildId);
-  return api.dashboard.event.getOne.useQuery(
+  return trpc.dashboard.event.getOne.useQuery(
     {
       eventId: eventId ?? String(router.query.eventId),
     },

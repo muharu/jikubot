@@ -3,8 +3,8 @@ import { useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 
 import GlobalLoading from "~/layouts/global-loading";
-import { api } from "~/utils/api";
 import { checkAuthorizeServerSide } from "~/utils/gssp";
+import { trpc } from "~/utils/trpc";
 
 export default function Authorization({
   code,
@@ -13,7 +13,7 @@ export default function Authorization({
   const router = useRouter();
   const hasRun = useRef(false);
 
-  const { mutate } = api.dashboard.auth.authorize.useMutation({
+  const { mutate } = trpc.dashboard.auth.authorize.useMutation({
     onSuccess: () => {
       void router.replace("/");
     },
