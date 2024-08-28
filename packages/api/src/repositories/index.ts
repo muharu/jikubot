@@ -1,3 +1,4 @@
+export * as event from "./event.repository";
 export * as guild from "./guild.repository";
 export * as token from "./token.repository";
 export * as userGuild from "./user-guild.repository";

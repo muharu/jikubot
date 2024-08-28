@@ -1,15 +1,15 @@
 import { TRPCError } from "@trpc/server";
 
-import { db, eq, events } from "@giverve/db";
 import {
   createEventRequestValidator,
   createEventResponseValidator,
   getEventRequestValidator,
   getEventResponseValidator,
-  patchEventRequestValidator,
-  patchEventResponseValidator,
+  updateEventRequestValidator,
+  updateEventResponseValidator,
 } from "@giverve/validators";
 
+import { services } from "../context";
 import { createTRPCRouter, dashboardProcedure } from "../trpc";
 
 export const dashboardEventRouter = createTRPCRouter({
@@ -17,103 +17,43 @@ export const dashboardEventRouter = createTRPCRouter({
     .input(createEventRequestValidator)
     .output(createEventResponseValidator)
     .mutation(async ({ input, ctx }) => {
-      const [event] = await db
-        .insert(events)
-        .values({
-          guildId: BigInt(input.guildId),
-          discordId: BigInt(ctx.user.id),
-          title: input.title,
-          description: input.description,
-        })
-        .returning({
-          id: events.id,
-          title: events.title,
-          description: events.description,
-        });
-
-      return {
-        eventId: String(event?.id),
-        title: String(event?.title),
-        description: String(event?.description),
-      };
+      return await services.event.createEvent({
+        guildId: BigInt(input.guildId),
+        discordId: BigInt(ctx.user.id),
+        title: input.title,
+        description: input.description,
+      });
     }),
 
   patch: dashboardProcedure
-    .input(patchEventRequestValidator)
-    .output(patchEventResponseValidator)
+    .input(updateEventRequestValidator)
+    .output(updateEventResponseValidator)
     .mutation(async ({ input, ctx }) => {
-      const event = await db.query.events.findFirst({
-        where: (events, { eq }) => eq(events.id, BigInt(input.eventId)),
-        columns: {
-          id: true,
-          discordId: true,
-          title: true,
-          description: true,
-        },
+      return await services.event.updateEvent({
+        eventId: BigInt(input.eventId),
+        discordId: BigInt(ctx.user.id),
+        title: input.title,
+        description: input.description,
       });
-
-      if (!event) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-        });
-      }
-
-      if (event.discordId !== BigInt(ctx.user.id)) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-        });
-      }
-
-      const [updatedEvent] = await db
-        .update(events)
-        .set({
-          title: input.title,
-          description: input.description,
-        })
-        .where(eq(events.id, BigInt(input.eventId)))
-        .returning({
-          id: events.id,
-          title: events.title,
-          description: events.description,
-        });
-
-      return {
-        eventId: String(updatedEvent?.id),
-        title: String(updatedEvent?.title),
-        description: String(updatedEvent?.description),
-      };
     }),
 
   getOne: dashboardProcedure
     .input(getEventRequestValidator)
     .output(getEventResponseValidator)
     .query(async ({ ctx, input }) => {
-      const event = await db.query.events.findFirst({
-        where: (events, { eq }) => eq(events.id, BigInt(input.eventId)),
-        columns: {
-          id: true,
-          discordId: true,
-          title: true,
-          description: true,
-        },
+      const event = await services.event.getEvent({
+        discordId: BigInt(ctx.user.id),
+        eventId: BigInt(input.eventId),
       });
-
-      if (!event) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-        });
-      }
-
-      if (event.discordId !== BigInt(ctx.user.id)) {
+      if (event.discordId !== ctx.user.id) {
         throw new TRPCError({
           code: "FORBIDDEN",
         });
       }
-
       return {
-        eventId: String(event.id),
-        title: String(event.title),
-        description: String(event.description),
+        eventId: event.eventId,
+        title: event.title,
+        description: event.description,
       };
     }),
 });

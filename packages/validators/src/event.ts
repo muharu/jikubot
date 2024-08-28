@@ -10,6 +10,7 @@ export const createEventResponseValidator = z.object({
   title: z.string(),
   description: z.string().nullable().optional(),
 });
+export type CreateEventResponse = z.infer<typeof createEventResponseValidator>;
 
 export const getEventRequestValidator = z.object({
   eventId: z.string(),
@@ -19,14 +20,16 @@ export const getEventResponseValidator = z.object({
   title: z.string(),
   description: z.string().nullable().optional(),
 });
+export type GetEventResponse = z.infer<typeof getEventResponseValidator>;
 
-export const patchEventRequestValidator = z.object({
+export const updateEventRequestValidator = z.object({
   eventId: z.string(),
-  title: z.string().min(3).max(50).optional(),
+  title: z.string().min(3).max(50),
   description: z.string().max(150).optional(),
 });
-export const patchEventResponseValidator = z.object({
+export const updateEventResponseValidator = z.object({
   eventId: z.string(),
   title: z.string(),
   description: z.string().nullable().optional(),
 });
+export type UpdateEventResponse = z.infer<typeof updateEventResponseValidator>;

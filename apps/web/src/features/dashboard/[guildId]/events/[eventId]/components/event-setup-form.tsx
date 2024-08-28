@@ -18,12 +18,12 @@ import {
 } from "@giverve/ui/form";
 import { Input } from "@giverve/ui/input";
 import { Textarea } from "@giverve/ui/textarea";
-import { patchEventRequestValidator } from "@giverve/validators";
+import { updateEventRequestValidator } from "@giverve/validators";
 
 import { trpc } from "~/utils/trpc";
 import useGetEvent from "../hooks/use-get-event";
 
-const formSchema = patchEventRequestValidator;
+const formSchema = updateEventRequestValidator;
 
 export default function EventSetupForm() {
   const router = useRouter();

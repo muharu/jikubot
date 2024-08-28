@@ -1,7 +1,7 @@
 import type { APIUser } from "discord-api-types/v10";
 import type { JWTPayload } from "jose";
 
-import type { guilds, tokens, userGuilds, users } from "@giverve/db";
+import type { events, guilds, tokens, userGuilds, users } from "@giverve/db";
 
 export interface User
   extends Pick<APIUser, "id" | "username" | "email" | "avatar"> {
@@ -21,3 +21,15 @@ export type SelectTokens = typeof tokens.$inferSelect;
 
 export type InsertUserGuilds = typeof userGuilds.$inferInsert;
 export type SelectUserGuilds = typeof userGuilds.$inferSelect;
+
+export type InsertEvent = typeof events.$inferInsert;
+export type SelectEvent = typeof events.$inferSelect;
+export type GetEventByDiscordIdAndEventId = Pick<SelectEvent, "discordId"> & {
+  eventId: SelectEvent["id"];
+};
+export type UpdateEventByDiscordIdAndEventId = Pick<
+  InsertEvent,
+  "discordId" | "title" | "description"
+> & {
+  eventId: SelectEvent["id"];
+};

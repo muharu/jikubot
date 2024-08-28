@@ -44,7 +44,7 @@ export async function getManagedGuilds(
   discordId: bigint,
   accessToken: string,
 ): Promise<GuildsMe> {
-  const cacheKey = `managedGuilds:${accessToken}`;
+  const cacheKey = `guilds:${accessToken}`;
   const cachedGuilds =
     await common.utils.cache.inMemoryCache.get<GuildsMe>(cacheKey);
 
