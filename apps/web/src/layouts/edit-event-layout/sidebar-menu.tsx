@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { useRouter } from "next/router";
 import {
   AiTwotoneBell,
@@ -7,9 +8,9 @@ import {
 } from "react-icons/ai";
 
 import { cn } from "@giverve/ui";
-import { Button, buttonVariants } from "@giverve/ui/button";
+import { buttonVariants } from "@giverve/ui/button";
 
-export default function EventEditSidebarMenu() {
+export default function EventEditSidebaMenu() {
   const router = useRouter();
   const guildId = String(router.query.guildId);
   const eventId = String(router.query.eventId);
@@ -17,23 +18,22 @@ export default function EventEditSidebarMenu() {
 
   return (
     <aside className="-mt-1 hidden min-w-52 flex-col gap-y-2.5 lg:flex">
-      <Button
-        onClick={() => router.push(`/dashboard/${guildId}/events/${eventId}`)}
-        variant={lastPath === eventId ? "noShadow" : "default"}
+      <Link
+        href={`/dashboard/${guildId}/events/${eventId}`}
         className={cn(
+          buttonVariants({
+            variant: lastPath === eventId ? "noShadow" : "default",
+          }),
           "h-10 w-full justify-start border text-lg font-bold",
           lastPath !== eventId ? "bg-white font-medium" : "",
         )}
       >
         <AiTwotoneEdit className="mr-1.5 size-7" />
         Event Setup
-      </Button>
+      </Link>
 
-      <Button
-        onClick={() =>
-          router.push(`/dashboard/${guildId}/events/${eventId}/interactions`)
-        }
-        variant={lastPath === "interactions" ? "noShadow" : "default"}
+      <Link
+        href={`/dashboard/${guildId}/events/${eventId}/interactions`}
         className={cn(
           buttonVariants({
             variant: lastPath === "interactions" ? "noShadow" : "default",
@@ -44,14 +44,10 @@ export default function EventEditSidebarMenu() {
       >
         <AiTwotoneLike className="mr-1.5 size-6" />
         Interactions
-      </Button>
+      </Link>
 
-      <Button
-        disabled
-        onClick={() =>
-          router.push(`/dashboard/${guildId}/events/${eventId}/limits`)
-        }
-        variant={lastPath === "limits" ? "noShadow" : "default"}
+      <Link
+        href={`/dashboard/${guildId}/events/${eventId}/limits`}
         className={cn(
           buttonVariants({
             variant: lastPath === "limits" ? "noShadow" : "default",
@@ -62,14 +58,10 @@ export default function EventEditSidebarMenu() {
       >
         <AiTwotoneStop className="mr-1.5 size-6" />
         Limits
-      </Button>
+      </Link>
 
-      <Button
-        disabled
-        onClick={() =>
-          router.push(`/dashboard/${guildId}/events/${eventId}/notifications`)
-        }
-        variant={lastPath === "notifications" ? "noShadow" : "default"}
+      <Link
+        href={`/dashboard/${guildId}/events/${eventId}/notifications`}
         className={cn(
           buttonVariants({
             variant: lastPath === "notifications" ? "noShadow" : "default",
@@ -80,7 +72,7 @@ export default function EventEditSidebarMenu() {
       >
         <AiTwotoneBell className="mr-1.5 size-6" />
         Notifications
-      </Button>
+      </Link>
     </aside>
   );
 }
