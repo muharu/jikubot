@@ -1,9 +1,10 @@
-import type { z } from "zod";
-import { useRouter } from "next/router";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { AiTwotoneSave } from "react-icons/ai";
-import { LuLoader2 } from "react-icons/lu";
+import { LuArrowRight, LuLoader2 } from "react-icons/lu";
+import type { z } from "zod";
 
 import { Button } from "@giverve/ui/button";
 import {
@@ -27,6 +28,7 @@ const formSchema = patchEventRequestValidator;
 export default function EventSetupForm() {
   const router = useRouter();
   const utils = api.useUtils();
+  const guildId = String(router.query.guildId);
   const eventId = String(router.query.eventId);
 
   const { data, isLoading } = useGetEvent();
@@ -38,7 +40,7 @@ export default function EventSetupForm() {
         {
           eventId: data.eventId,
           title: data.title,
-          description: data.description,
+          description: data.description ?? "",
         },
       );
     },
@@ -47,11 +49,22 @@ export default function EventSetupForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      eventId,
-      title: data?.title ?? "",
-      description: data?.description ?? "",
+      eventId: "",
+      title: "",
+      description: "",
     },
   });
+
+  // Reset form values when data is loaded
+  useEffect(() => {
+    if (data) {
+      form.reset({
+        eventId: eventId,
+        title: data.title,
+        description: data.description ?? "",
+      });
+    }
+  }, [data, eventId, form]);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     mutate(values);
@@ -59,62 +72,79 @@ export default function EventSetupForm() {
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-4 font-bold"
-      >
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Event Title</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="e.g Valorant Stack 5 Tonite"
-                  disabled={isLoading || isPending}
-                  {...field}
-                />
-              </FormControl>
-              <FormDescription>
-                This title will be displayed to your guild members.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+      {!isLoading ? (
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-4 font-bold"
+        >
+          <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Event Title</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="e.g Valorant Stack 5 Tonite"
+                    disabled={isPending}
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>
+                  This title will be displayed to your guild members.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Event Description</FormLabel>
-              <FormControl>
-                <Textarea disabled={isLoading || isPending} {...field} />
-              </FormControl>
-              <FormDescription>
-                This description will be displayed to your guild members.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Event Description</FormLabel>
+                <FormControl>
+                  <Textarea disabled={isPending} {...field} />
+                </FormControl>
+                <FormDescription>
+                  This description will be displayed to your guild members.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <Button type="submit" disabled={isPending}>
-          {!isPending ? (
-            <>
-              <AiTwotoneSave className="mr-1.5 size-6" />
-              Save
-            </>
-          ) : (
-            <>
-              <LuLoader2 className="mr-1.5 size-6 animate-spin" />
-              Saving...
-            </>
-          )}
-        </Button>
-      </form>
+          <div className="flex justify-between">
+            <Button type="submit" disabled={isPending}>
+              {!isPending ? (
+                <>
+                  <AiTwotoneSave className="mr-1.5 size-6" />
+                  Update
+                </>
+              ) : (
+                <>
+                  <LuLoader2 className="mr-1.5 size-6 animate-spin" />
+                  Updating...
+                </>
+              )}
+            </Button>
+            <Button
+              type="button"
+              onClick={() =>
+                router.push(
+                  `/dashboard/${guildId}/events/${eventId}/interactions`,
+                )
+              }
+            >
+              Skip
+              <LuArrowRight className="ml-1.5 size-4" />
+            </Button>
+          </div>
+        </form>
+      ) : (
+        <LuLoader2 className="m-auto size-12 min-h-80 animate-spin" />
+      )}
     </Form>
   );
 }
