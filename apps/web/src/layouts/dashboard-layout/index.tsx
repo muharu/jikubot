@@ -10,7 +10,7 @@ import { cn } from "@giverve/ui";
 import { buttonVariants } from "@giverve/ui/button";
 import { ScrollArea } from "@giverve/ui/scroll-area";
 
-import useGetGuilds from "~/hooks/use-get-guilds";
+import useGetGuild from "~/hooks/use-get-guild";
 import BaseLayout from "../base-layout";
 import GuildCard from "./guild-card";
 
@@ -19,13 +19,10 @@ export default function DashboardLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const router = useRouter();
-  const guildId = String(router.query.guildId);
-  const { data } = useGetGuilds();
-  const currentGuild = data?.find((guild) => guild.id === guildId);
+  const { data } = useGetGuild();
 
   return (
-    <BaseLayout title={`${currentGuild?.name} | Dashboard`}>
+    <BaseLayout title={`${data?.name} | Dashboard`}>
       <div className="flex h-[100dvh]">
         <Sidebar />
         <div className="flex h-full w-full flex-col">

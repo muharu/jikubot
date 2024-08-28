@@ -1,16 +1,10 @@
-import type { GetServerSideProps } from "next";
-
-import type { User } from "~/utils/types";
 import GuildList from "~/features/dashboard/components/guild-list";
 import useAuth from "~/hooks/use-auth";
 import BaseLayout from "~/layouts/base-layout";
 import GlobalLoading from "~/layouts/global-loading";
-import { checkIsLoggedInServerSide } from "~/utils/gssp";
 
-export default function DashboardServerSlection({
-  user,
-}: Readonly<{ user: User }>) {
-  const { isLoading: isUserLoading } = useAuth(user);
+export default function DashboardServerSlection() {
+  const { isLoading: isUserLoading } = useAuth();
   if (isUserLoading) return <GlobalLoading />;
 
   return (
@@ -24,7 +18,3 @@ export default function DashboardServerSlection({
     </BaseLayout>
   );
 }
-
-export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
-  return await checkIsLoggedInServerSide({ req, res });
-};

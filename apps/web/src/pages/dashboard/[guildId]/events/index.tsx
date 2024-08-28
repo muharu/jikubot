@@ -1,6 +1,7 @@
 import dynamic from "next/dynamic";
 
-import useDashboardCheck from "~/hooks/use-dashboard-check";
+import useAuth from "~/hooks/use-auth";
+import useGetGuild from "~/hooks/use-get-guild";
 import DashboardLayout from "~/layouts/dashboard-layout";
 import GlobalLoading from "~/layouts/global-loading";
 
@@ -21,9 +22,10 @@ const ModalCreateEvent = dynamic(
 );
 
 export default function Dashboard() {
-  const { isLoading, isInGuilds } = useDashboardCheck();
+  const { isLoading: isUserLoading } = useAuth();
+  const { isLoading: isGuildsLoading } = useGetGuild();
 
-  if (isLoading || !isInGuilds) {
+  if (isUserLoading || isGuildsLoading) {
     return <GlobalLoading />;
   }
 
