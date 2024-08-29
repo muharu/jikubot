@@ -15,7 +15,7 @@ const BlurFade = dynamic(
   },
 );
 
-export default function EditEventCard({
+export function CreateEventCard({
   children,
   title,
   description,

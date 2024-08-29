@@ -1,7 +1,7 @@
-import GuildListWrapper from "./guild-list-wrapper";
-import GuildSkeletonCard from "./guild-skeleton-card";
+import { GuildListWrapper } from "./guild-list-wrapper";
+import { GuildSkeletonCard } from "./guild-skeleton-card";
 
-export default function GuildSkeletonList() {
+export function GuildSkeletonList() {
   const skeletonCards = Array.from({ length: 12 });
 
   return (

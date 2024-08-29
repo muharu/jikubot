@@ -1,6 +1,6 @@
 import { Skeleton } from "@giverve/ui/skeleton";
 
-export default function GuildSkeletonCard() {
+export function GuildSkeletonCard() {
   return (
     <section className="flex animate-pulse flex-col">
       <div className="relative overflow-hidden">

@@ -2,13 +2,13 @@ import "~/styles/globals.css";
 
 import type { AppType } from "next/app";
 
-import Providers from "./_providers";
+import TrpcContextProvider from "~/context/trpc-context-provider";
 
 const App: AppType = ({ Component, pageProps }) => {
   return (
-    <Providers>
+    <TrpcContextProvider>
       <Component {...pageProps} />
-    </Providers>
+    </TrpcContextProvider>
   );
 };
 

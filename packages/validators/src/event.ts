@@ -23,7 +23,6 @@ export const getEventResponseValidator = z.object({
 export type GetEventResponse = z.infer<typeof getEventResponseValidator>;
 
 export const updateEventRequestValidator = z.object({
-  eventId: z.string(),
   title: z.string().min(3).max(50),
   description: z.string().max(150).optional(),
 });

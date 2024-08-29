@@ -5,7 +5,7 @@ import { RiArrowLeftSLine } from "react-icons/ri";
 import { cn } from "@giverve/ui";
 import { Button, buttonVariants } from "@giverve/ui/button";
 
-export default function EventEditTopbarMenu() {
+export function EventEditTopbarMenu() {
   const router = useRouter();
   const guildId = String(router.query.guildId);
 

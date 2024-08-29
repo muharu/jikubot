@@ -12,10 +12,18 @@ const getBaseUrl = () => {
   return process.env.API_BASE_URL;
 };
 
-export default function Providers({
+export default function TrpcContextProvider({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const [queryClient] = useState(() => new QueryClient());
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: { refetchOnWindowFocus: false },
+        },
+      }),
+  );
+
   const [trpcClient] = useState(() =>
     trpc.createClient({
       links: [

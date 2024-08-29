@@ -1,7 +1,7 @@
-import EventEditSidebaMenu from "./sidebar-menu";
-import EventEditTopbarMenu from "./topbar-menu";
+import { EventEditSidebaMenu } from "./sidebar-menu";
+import { EventEditTopbarMenu } from "./topbar-menu";
 
-export default function EditEventLayout({
+export function CreateEventLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (

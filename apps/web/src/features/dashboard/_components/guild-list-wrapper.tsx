@@ -1,4 +1,4 @@
-export default function GuildListWrapper({
+export function GuildListWrapper({
   children,
 }: Readonly<{
   children: React.ReactNode;

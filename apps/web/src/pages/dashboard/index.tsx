@@ -1,4 +1,4 @@
-import GuildList from "~/features/dashboard/components/guild-list";
+import { GuildList } from "~/features/dashboard/_components/guild-list";
 import useAuth from "~/hooks/use-auth";
 import BaseLayout from "~/layouts/base-layout";
 import GlobalLoading from "~/layouts/global-loading";
@@ -10,9 +10,9 @@ export default function DashboardServerSlection() {
   return (
     <BaseLayout title="Dashboard | Server Selection">
       <main className="mx-auto max-w-5xl">
-        <header className="pt-4 text-center">
+        <div className="pt-4 text-center">
           <h1 className="text-2xl font-bold">Select Server</h1>
-        </header>
+        </div>
         <GuildList />
       </main>
     </BaseLayout>

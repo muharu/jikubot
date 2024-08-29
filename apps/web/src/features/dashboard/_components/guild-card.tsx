@@ -9,7 +9,7 @@ import { Card } from "@giverve/ui/card";
 import type { GuildCardProps } from "../types";
 import { env } from "~/env";
 
-export default function GuildCard({
+export function GuildCard({
   id,
   name,
   icon,
