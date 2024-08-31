@@ -1,3 +1,5 @@
+import { TRPCError } from "@trpc/server";
+
 import {
   guildMeRequestValidator,
   guildMeResponseValidator,
@@ -6,7 +8,7 @@ import {
   leaveGuildRequestValidator,
 } from "@giverve/validators";
 
-import { services } from "../context";
+import { common, services } from "../context";
 import { botProcedure, createTRPCRouter, dashboardProcedure } from "../trpc";
 
 export const dashboardGuildsRouter = createTRPCRouter({
@@ -24,7 +26,11 @@ export const dashboardGuildsRouter = createTRPCRouter({
     .input(guildMeRequestValidator)
     .output(guildMeResponseValidator)
     .query(async ({ input }) => {
-      console.log(input);
+      if (!common.utils.validate.isValidPostgresBigInt(input.guildId)) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+        });
+      }
       const guild = await services.guild.getGuildWithPermissions(
         BigInt(input.guildId),
       );

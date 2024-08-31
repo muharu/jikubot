@@ -18,6 +18,10 @@ export default function useGetGuild() {
           void router.push("/dashboard");
           return false;
         }
+        if (error.data?.code === "BAD_REQUEST") {
+          void router.push("/dashboard");
+          return false;
+        }
         return failureCount <= 3;
       },
       enabled: !!guildId,
