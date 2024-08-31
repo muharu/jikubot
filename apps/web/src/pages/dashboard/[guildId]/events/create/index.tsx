@@ -1,3 +1,6 @@
+import { CreateEventInteractionForm } from "~/features/dashboard/events/create/_components/create-event-interaction-form";
+import { CreateEventLimitForm } from "~/features/dashboard/events/create/_components/create-event-limit-form";
+import { CreateEventNotficationsForm } from "~/features/dashboard/events/create/_components/create-event-notifications";
 import { CreateEventSetupForm } from "~/features/dashboard/events/create/_components/create-event-setup-form";
 import useAuth from "~/hooks/use-auth";
 import useGetGuild from "~/hooks/use-get-guild";
@@ -13,10 +16,6 @@ export default function CreateEventPage() {
 
   const currentStep = useMultiStepCreateEventFormStore(
     (state) => state.currentStep,
-  );
-
-  const previousStep = useMultiStepCreateEventFormStore(
-    (state) => state.previousStep,
   );
 
   if (isUserLoading || isGuildsLoading) {
@@ -37,10 +36,28 @@ export default function CreateEventPage() {
 
         {currentStep === 2 && (
           <CreateEventCard
-            title="Event Setup"
-            description="Fill the basic information of your event"
+            title="Event Interactions"
+            description="Add interactions emojis for participants to react to your event"
           >
-            Content 2<button onClick={previousStep}>Previous</button>
+            <CreateEventInteractionForm />
+          </CreateEventCard>
+        )}
+
+        {currentStep === 3 && (
+          <CreateEventCard
+            title="Event Limit"
+            description="Set the limit rules for your event"
+          >
+            <CreateEventLimitForm />
+          </CreateEventCard>
+        )}
+
+        {currentStep === 4 && (
+          <CreateEventCard
+            title="Event Notifications"
+            description="Set the notification for the event to discord members"
+          >
+            <CreateEventNotficationsForm />
           </CreateEventCard>
         )}
       </CreateEventLayout>
