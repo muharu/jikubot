@@ -1,3 +1,5 @@
+import type { RouterOutputs } from "@giverve/api";
+
 export interface GuildCardProps {
   id: string;
   name: string;
@@ -10,3 +12,5 @@ export interface CardContentProps {
   name: string;
   isJoined: boolean;
 }
+
+export type Guilds = RouterOutputs["dashboard"]["guilds"]["getAll"];

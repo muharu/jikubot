@@ -27,7 +27,7 @@ export async function getGuildWithPermissions(
       isJoined: data.isJoined,
       icon: data.icon,
     };
-    await common.utils.cache.inMemoryCache.set(cacheKey, guild, 59_000);
+    await common.utils.cache.inMemoryCache.set(cacheKey, guild, 5_000);
     return guild;
   }
 }

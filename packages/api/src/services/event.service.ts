@@ -19,7 +19,7 @@ export async function getEvent(
   const [event] = await repositories.event.getEventByDiscordIdAndEventId(data);
   if (!event) {
     throw new TRPCError({
-      code: "NOT_FOUND",
+      code: "FORBIDDEN",
     });
   }
   return {

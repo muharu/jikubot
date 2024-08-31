@@ -14,6 +14,10 @@ export default function useGetGuild() {
           void router.push("/dashboard");
           return false;
         }
+        if (error.data?.code === "NOT_FOUND") {
+          void router.push("/dashboard");
+          return false;
+        }
         return failureCount <= 3;
       },
       enabled: !!guildId,
