@@ -1,4 +1,4 @@
-import useGetGuilds from "~/hooks/use-get-guilds";
+import { useGetGuilds } from "~/hooks/use-get-guilds";
 import { GuildCard } from "./guild-card";
 import { GuildListWrapper } from "./guild-list-wrapper";
 import { GuildSkeletonList } from "./guild-skeleton-list";
