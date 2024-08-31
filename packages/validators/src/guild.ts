@@ -12,7 +12,7 @@ export const leaveGuildRequestValidator = z.object({
 });
 
 export const guildMeRequestValidator = z.object({
-  guildId: z.string(),
+  guildId: z.string().min(1),
 });
 
 export const guildMeResponseValidator = z.object({

@@ -14,8 +14,13 @@ export async function getGuildWithPermissions(
   if (cacheData) {
     return cacheData;
   } else {
-    const [data] = await findOneGuildWithPermissions();
-    if (!data?.isJoined) {
+    const [data] = await findOneGuildWithPermissions(guildId);
+    if (!data) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+      });
+    }
+    if (!data.isJoined) {
       throw new TRPCError({
         code: "FORBIDDEN",
       });

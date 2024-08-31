@@ -24,9 +24,11 @@ export const dashboardGuildsRouter = createTRPCRouter({
     .input(guildMeRequestValidator)
     .output(guildMeResponseValidator)
     .query(async ({ input }) => {
+      console.log(input);
       const guild = await services.guild.getGuildWithPermissions(
         BigInt(input.guildId),
       );
+      console.log(guild);
       return guild;
     }),
 });

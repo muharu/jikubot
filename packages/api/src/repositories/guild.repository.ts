@@ -10,7 +10,7 @@ export function findGuildByGuildId(guildId: bigint, trx = db) {
   return trx.select().from(guilds).where(eq(guilds.guildId, guildId));
 }
 
-export function findOneGuildWithPermissions(trx = db) {
+export function findOneGuildWithPermissions(guildId: bigint, trx = db) {
   return trx
     .select({
       id: guilds.id,
@@ -20,6 +20,7 @@ export function findOneGuildWithPermissions(trx = db) {
       isJoined: guilds.isActive,
     })
     .from(guilds)
+    .where(eq(guilds.guildId, guildId))
     .leftJoin(userGuilds, eq(guilds.guildId, userGuilds.guildId));
 }
 
