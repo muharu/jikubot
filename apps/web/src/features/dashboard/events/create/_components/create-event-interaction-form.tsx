@@ -2,6 +2,7 @@ import { Button } from "@giverve/ui/button";
 
 import { useMultiStepCreateEventFormStore } from "~/state/create-event-multiform-store";
 import { EmojiDialog } from "./add-emoji-dialog";
+import { CreateEventInteractionsTable } from "./create-event-interactions-table";
 import { EmojisPresetSelect } from "./emoji-preset-select";
 
 export function CreateEventInteractionForm() {
@@ -13,12 +14,14 @@ export function CreateEventInteractionForm() {
 
   return (
     <main>
-      <div className="mb-36 flex gap-x-2">
+      <div className="flex gap-x-2">
         <EmojisPresetSelect />
         <EmojiDialog />
       </div>
 
-      <div className="flex items-center justify-between">
+      <CreateEventInteractionsTable />
+
+      <div className="mt-8 flex items-center justify-between">
         <Button onClick={previousStep}>Back</Button>
         <Button onClick={nextStep}>Next</Button>
       </div>
