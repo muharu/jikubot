@@ -13,6 +13,10 @@ import { services } from "../context";
 import { createTRPCRouter, dashboardProcedure } from "../trpc";
 
 export const dashboardEventRouter = createTRPCRouter({
+  createOne: dashboardProcedure.mutation(async () => {
+    return await services.event.sendEventMessage(BigInt("1272177159527596042"));
+  }),
+
   create: dashboardProcedure
     .input(createEventRequestValidator)
     .output(createEventResponseValidator)

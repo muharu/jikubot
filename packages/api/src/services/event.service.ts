@@ -11,7 +11,19 @@ import type {
   InsertEvent,
   UpdateEventByDiscordIdAndEventId,
 } from "../common/types";
-import { repositories } from "../context";
+import { common, repositories } from "../context";
+
+export async function sendEventMessage(channelId: bigint) {
+  return common.utils.discord.fetch
+    .url(`/channels/${channelId}/messages`)
+    .headers({
+      Authorization: `Bot ${process.env.BOT_DISCORD_TOKEN}`,
+    })
+    .post({
+      content: "Test Message From Dashboard",
+    })
+    .json();
+}
 
 export async function getEvent(
   data: GetEventByDiscordIdAndEventId,
