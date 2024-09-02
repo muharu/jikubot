@@ -14,3 +14,4 @@ export interface CardContentProps {
 }
 
 export type Guilds = RouterOutputs["dashboard"]["guilds"]["getAll"];
+export type User = RouterOutputs["dashboard"]["user"]["me"];

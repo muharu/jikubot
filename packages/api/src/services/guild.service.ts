@@ -1,3 +1,4 @@
+import type { RESTGetAPIGuildEmojisResult } from "discord-api-types/v10";
 import { TRPCError } from "@trpc/server";
 
 import type { GuildMe } from "@giverve/validators";
@@ -34,5 +35,29 @@ export async function getGuildWithPermissions(
     };
     await common.utils.cache.inMemoryCache.set(cacheKey, guild, 5_000);
     return guild;
+  }
+}
+
+export async function getGuildEmojis(
+  guildId: bigint,
+): Promise<RESTGetAPIGuildEmojisResult> {
+  const cacheKey = `guildEmojis:${String(guildId)}`;
+  const cacheData =
+    await common.utils.cache.inMemoryCache.get<RESTGetAPIGuildEmojisResult>(
+      cacheKey,
+    );
+  if (cacheData) {
+    return cacheData;
+  } else {
+    const route = common.utils.discord.routes.guildEmojis(String(guildId));
+    const data = await common.utils.discord.fetch
+      .url(route)
+      .headers({
+        Authorization: `Bot ${process.env.BOT_DISCORD_TOKEN}`,
+      })
+      .get()
+      .json<RESTGetAPIGuildEmojisResult>();
+    await common.utils.cache.inMemoryCache.set(cacheKey, data, 5_000);
+    return data;
   }
 }

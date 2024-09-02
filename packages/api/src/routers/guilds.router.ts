@@ -37,6 +37,18 @@ export const dashboardGuildsRouter = createTRPCRouter({
       console.log(guild);
       return guild;
     }),
+
+  getEmojis: dashboardProcedure
+    .input(guildMeRequestValidator)
+    .query(async ({ input }) => {
+      if (!common.utils.validate.isValidPostgresBigInt(input.guildId)) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+        });
+      }
+      const emojis = await services.guild.getGuildEmojis(BigInt(input.guildId));
+      return emojis;
+    }),
 });
 
 export const botGuildsRouter = createTRPCRouter({

@@ -1,6 +1,7 @@
 import { cn } from ".";
 
 function Skeleton({
+  children,
   className,
   ...props
 }: Readonly<React.HTMLAttributes<HTMLDivElement>>) {
@@ -11,7 +12,9 @@ function Skeleton({
         className,
       )}
       {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
