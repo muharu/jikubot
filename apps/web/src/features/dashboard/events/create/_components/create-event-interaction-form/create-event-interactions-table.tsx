@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import {
   Table,
   TableBody,
@@ -7,16 +9,13 @@ import {
   TableRow,
 } from "@giverve/ui/table";
 
-const emojis = [
-  {
-    id: "12321313131",
-    icon: "INV001",
-    name: "Accept",
-    limit: 50,
-  },
-];
+import { useMultiStepCreateEventFormStore } from "~/state/create-event-multiform-store";
 
 export function CreateEventInteractionsTable() {
+  const interactionsStep = useMultiStepCreateEventFormStore(
+    (state) => state.formData.interactionsStep,
+  );
+
   return (
     <Table className="mt-4">
       <TableHeader>
@@ -27,11 +26,19 @@ export function CreateEventInteractionsTable() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {emojis.map((emoji) => (
-          <TableRow className="bg-white" key={emoji.id}>
-            <TableCell className="font-base">{emoji.icon}</TableCell>
-            <TableCell>{emoji.name}</TableCell>
-            <TableCell>{emoji.limit}</TableCell>
+        {interactionsStep.map((interaction) => (
+          <TableRow className="bg-white" key={interaction.emoji}>
+            <TableCell className="font-base">
+              <Image
+                width={20}
+                height={20}
+                src={`https://cdn.discordapp.com/emojis/${interaction.emoji}.webp`}
+                alt={interaction.name}
+                className="h-7 w-7"
+              />
+            </TableCell>
+            <TableCell>{interaction.name}</TableCell>
+            <TableCell>{interaction.limit}</TableCell>
           </TableRow>
         ))}
       </TableBody>

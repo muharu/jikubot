@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Image from "next/image";
-import { useParams } from "next/navigation";
 import { CommandList } from "cmdk";
 import { LuCheck, LuChevronsUpDown, LuLoader2 } from "react-icons/lu";
 
@@ -16,17 +15,18 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@giverve/ui/popover";
 import { Skeleton } from "@giverve/ui/skeleton";
 
-import { trpc } from "~/utils/trpc";
+import { useGetEmojis } from "../../_hooks/use-get-emojis";
 
-export function GuildEmojisCombobox() {
-  const { guildId } = useParams<{ guildId: string }>();
-  const { data: guildEmojis, isLoading } =
-    trpc.dashboard.guilds.getEmojis.useQuery({
-      guildId,
-    });
+export function GuildEmojisCombobox({
+  value,
+  setValue,
+}: Readonly<{
+  value: { id: string; name: string };
+  setValue: (value: { id: string; name: string }) => void;
+}>) {
+  const { data: guildEmojis, isLoading } = useGetEmojis();
 
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -36,20 +36,18 @@ export function GuildEmojisCombobox() {
             variant="noShadow"
             role="combobox"
             aria-expanded={open}
-            className="bg-whitew-full justify-between"
+            className="w-full justify-between bg-white"
           >
-            {value && (
+            {value.id && (
               <Image
                 width={20}
                 height={20}
                 alt="emoji"
-                src={`https://cdn.discordapp.com/emojis/${guildEmojis?.find((emoji) => emoji.name === value)?.id}.webp`}
+                src={`https://cdn.discordapp.com/emojis/${value.id}.webp`}
                 className="h-5 w-5"
               />
             )}
-            {value
-              ? guildEmojis?.find((emoji) => emoji.name === value)?.name
-              : "Select Emojis"}
+            {value.name || "Select Emoji"}
             <LuChevronsUpDown color="black" className="ml-2 h-4 w-4 shrink-0" />
           </Button>
         ) : (
@@ -68,15 +66,18 @@ export function GuildEmojisCombobox() {
                 <CommandItem
                   key={emoji.id}
                   value={String(emoji.name)}
-                  onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue);
+                  onSelect={() => {
+                    setValue({
+                      id: String(emoji.id),
+                      name: String(emoji.name),
+                    });
                     setOpen(false);
                   }}
                 >
                   <LuCheck
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === emoji.id ? "opacity-100" : "opacity-0",
+                      value.id === emoji.id ? "opacity-100" : "opacity-0",
                     )}
                   />
                   <Image

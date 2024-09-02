@@ -3,8 +3,16 @@ import { create } from "zustand";
 
 import type { createEventRequestValidator } from "@giverve/validators";
 
+interface Interactions {
+  emoji: string;
+  name: string;
+  limit: number;
+  participants: string[];
+}
+
 interface FormData {
   setupEventStep?: z.infer<typeof createEventRequestValidator>;
+  interactionsStep: Interactions[];
 }
 
 interface MultiStepFormStore {
@@ -24,6 +32,7 @@ export const useMultiStepCreateEventFormStore = create<MultiStepFormStore>()(
         title: "",
         description: "",
       },
+      interactionsStep: [],
     },
     nextStep: () => set((state) => ({ currentStep: state.currentStep + 1 })),
     previousStep: () =>

@@ -11,7 +11,7 @@ export function EmojisPresetSelect() {
   return (
     <Select>
       <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="Select a present" />
+        <SelectValue placeholder="Select a preset" />
       </SelectTrigger>
       <SelectContent className="bg-white">
         <SelectGroup>
