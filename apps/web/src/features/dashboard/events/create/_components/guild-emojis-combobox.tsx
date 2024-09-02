@@ -62,7 +62,7 @@ export function GuildEmojisCombobox() {
         <Command className="bg-white font-semibold">
           <CommandList>
             <CommandInput placeholder="Search emojis..." />
-            <CommandEmpty>No framework found.</CommandEmpty>
+            <CommandEmpty>No emoji found.</CommandEmpty>
             <CommandGroup>
               {guildEmojis?.map((emoji) => (
                 <CommandItem

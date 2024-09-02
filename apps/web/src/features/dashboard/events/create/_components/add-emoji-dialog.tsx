@@ -16,7 +16,7 @@ export function EmojiDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>Add Emoji to Event</Button>
+        <Button>Add Emoji</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
