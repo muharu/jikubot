@@ -3,6 +3,7 @@ import Image from "next/image";
 import { CommandList } from "cmdk";
 import { LuCheck, LuChevronsUpDown, LuLoader2 } from "react-icons/lu";
 
+import type { EventInteraction } from "@giverve/validators";
 import { cn } from "@giverve/ui";
 import { Button } from "@giverve/ui/button";
 import {
@@ -21,8 +22,8 @@ export function GuildEmojisCombobox({
   value,
   setValue,
 }: Readonly<{
-  value: { id: string; name: string };
-  setValue: (value: { id: string; name: string }) => void;
+  value: EventInteraction | null;
+  setValue: (value: EventInteraction) => void;
 }>) {
   const { data: guildEmojis, isLoading } = useGetEmojis();
 
@@ -38,7 +39,7 @@ export function GuildEmojisCombobox({
             aria-expanded={open}
             className="w-full justify-between bg-white"
           >
-            {value.id && (
+            {value?.id && (
               <Image
                 width={20}
                 height={20}
@@ -47,7 +48,7 @@ export function GuildEmojisCombobox({
                 className="h-5 w-5"
               />
             )}
-            {value.name || "Select Emoji"}
+            {value?.name ?? "Select Emoji"}
             <LuChevronsUpDown color="black" className="ml-2 h-4 w-4 shrink-0" />
           </Button>
         ) : (
@@ -70,6 +71,7 @@ export function GuildEmojisCombobox({
                     setValue({
                       id: String(emoji.id),
                       name: String(emoji.name),
+                      limit: 50,
                     });
                     setOpen(false);
                   }}
@@ -77,7 +79,7 @@ export function GuildEmojisCombobox({
                   <LuCheck
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value.id === emoji.id ? "opacity-100" : "opacity-0",
+                      value?.id === emoji.id ? "opacity-100" : "opacity-0",
                     )}
                   />
                   <Image

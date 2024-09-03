@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import type { EventInteraction } from "@giverve/validators";
 import { Button } from "@giverve/ui/button";
 import {
   Dialog,
@@ -17,30 +18,21 @@ import { GuildEmojisCombobox } from "./guild-emojis-combobox";
 
 export function EmojiDialog() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [value, setValue] = useState<{ id: string; name: string }>({
-    id: "",
-    name: "",
-  });
+  const [value, setValue] = useState<EventInteraction | null>(null);
   const [name, setName] = useState("");
 
-  const updateFormData = useMultiStepCreateEventFormStore(
-    (state) => state.updateFormData,
+  const addInteraction = useMultiStepCreateEventFormStore(
+    (state) => state.addInteraction,
   );
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    updateFormData({
-      interactionsStep: [
-        ...useMultiStepCreateEventFormStore.getState().formData
-          .interactionsStep,
-        {
-          emoji: value.id,
-          name: name,
-          limit: 50,
-          participants: [],
-        },
-      ],
-    });
+    if (value) {
+      addInteraction({
+        ...value,
+        name,
+      });
+    }
     setIsDialogOpen(false);
   }
 
@@ -61,6 +53,7 @@ export function EmojiDialog() {
             <GuildEmojisCombobox value={value} setValue={setValue} />
             <Input
               placeholder="e.g Join/Tentative"
+              value={name}
               onChange={(e) => setName(e.target.value)}
             />
           </div>

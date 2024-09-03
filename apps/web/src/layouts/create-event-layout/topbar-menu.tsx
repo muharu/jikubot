@@ -5,13 +5,16 @@ import { RiArrowLeftSLine } from "react-icons/ri";
 import { cn } from "@giverve/ui";
 import { Button, buttonVariants } from "@giverve/ui/button";
 
+import { useMultiStepCreateEventFormStore } from "~/state/create-event-multiform-store";
 import { trpc } from "~/utils/trpc";
 
 export function EventEditTopbarMenu() {
   const router = useRouter();
   const guildId = String(router.query.guildId);
 
-  const { mutate } = trpc.dashboard.event.createOne.useMutation();
+  const { mutate, isPending } = trpc.dashboard.event.createOne.useMutation();
+
+  const formData = useMultiStepCreateEventFormStore((state) => state.formData);
 
   return (
     <div className="flex items-center justify-between">
@@ -22,7 +25,17 @@ export function EventEditTopbarMenu() {
         <RiArrowLeftSLine className="size-5" />
         Back
       </Link>
-      <Button onClick={() => mutate()}>Publish</Button>
+      <Button
+        disabled={isPending}
+        onClick={() =>
+          mutate({
+            eventSetup: formData.setupEventStep,
+            eventInteractions: formData.interactionsStep,
+          })
+        }
+      >
+        Publish
+      </Button>
     </div>
   );
 }

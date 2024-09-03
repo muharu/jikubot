@@ -27,12 +27,12 @@ export function CreateEventInteractionsTable() {
       </TableHeader>
       <TableBody>
         {interactionsStep.map((interaction) => (
-          <TableRow className="bg-white" key={interaction.emoji}>
+          <TableRow className="bg-white" key={String(interaction.id)}>
             <TableCell className="font-base">
               <Image
                 width={20}
                 height={20}
-                src={`https://cdn.discordapp.com/emojis/${interaction.emoji}.webp`}
+                src={`https://cdn.discordapp.com/emojis/${String(interaction.id)}.webp`}
                 alt={interaction.name}
                 className="h-7 w-7"
               />

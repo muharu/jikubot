@@ -1,18 +1,14 @@
-import type { z } from "zod";
 import { create } from "zustand";
 
-import type { createEventRequestValidator } from "@giverve/validators";
-
-interface Interactions {
-  emoji: string;
-  name: string;
-  limit: number;
-  participants: string[];
-}
+import type {
+  EventInteraction,
+  EventInteractionsRequest,
+  EventSetupRequest,
+} from "@giverve/validators";
 
 interface FormData {
-  setupEventStep?: z.infer<typeof createEventRequestValidator>;
-  interactionsStep: Interactions[];
+  setupEventStep: EventSetupRequest;
+  interactionsStep: EventInteractionsRequest;
 }
 
 interface MultiStepFormStore {
@@ -21,6 +17,7 @@ interface MultiStepFormStore {
   nextStep: () => void;
   previousStep: () => void;
   updateFormData: (newData: Partial<FormData>) => void;
+  addInteraction: (interaction: EventInteraction) => void;
 }
 
 export const useMultiStepCreateEventFormStore = create<MultiStepFormStore>()(
@@ -28,11 +25,13 @@ export const useMultiStepCreateEventFormStore = create<MultiStepFormStore>()(
     currentStep: 1,
     formData: {
       setupEventStep: {
-        guildId: "",
+        channelId: "",
         title: "",
         description: "",
       },
-      interactionsStep: [],
+      interactionsStep: [
+        { id: "1256723755741479022", name: "Accept", limit: 50 },
+      ],
     },
     nextStep: () => set((state) => ({ currentStep: state.currentStep + 1 })),
     previousStep: () =>
@@ -42,6 +41,13 @@ export const useMultiStepCreateEventFormStore = create<MultiStepFormStore>()(
     updateFormData: (newData) =>
       set((state) => ({
         formData: { ...state.formData, ...newData },
+      })),
+    addInteraction: (interaction) =>
+      set((state) => ({
+        formData: {
+          ...state.formData,
+          interactionsStep: [...state.formData.interactionsStep, interaction],
+        },
       })),
   }),
 );

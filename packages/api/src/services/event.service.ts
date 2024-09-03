@@ -1,69 +1,46 @@
-import { TRPCError } from "@trpc/server";
+import type { CreateEventRequest } from "@giverve/validators";
 
-import type {
-  CreateEventResponse,
-  GetEventResponse,
-  UpdateEventResponse,
-} from "@giverve/validators";
+import { common } from "../context";
 
-import type {
-  GetEventByDiscordIdAndEventId,
-  InsertEvent,
-  UpdateEventByDiscordIdAndEventId,
-} from "../common/types";
-import { common, repositories } from "../context";
+export async function sendEventMessage(data: CreateEventRequest) {
+  const color = 0xfc7303;
 
-export async function sendEventMessage(channelId: bigint) {
   return common.utils.discord.fetch
-    .url(`/channels/${channelId}/messages`)
+    .url(`/channels/${data.eventSetup.channelId}/messages`)
     .headers({
       Authorization: `Bot ${process.env.BOT_DISCORD_TOKEN}`,
     })
     .post({
-      content: "Test Message From Dashboard",
+      embeds: [
+        {
+          title: data.eventSetup.title,
+          description: data.eventSetup.description,
+          color,
+          fields: data.eventInteractions.map((interaction) => ({
+            name: `<:${interaction.name.toLowerCase()}:${interaction.id}> ${interaction.name} (${interaction.limit})`,
+            value: "-",
+            inline: true,
+          })),
+          footer: {
+            text: "Event Created | Powered by Groupoop",
+            icon_url: "https://c.tenor.com/3_SGmIxSC4oAAAAC/tenor.gif",
+          },
+        },
+      ],
+      components: [
+        {
+          type: 1,
+          components: data.eventInteractions.map((interaction) => ({
+            type: 2, // Secondary button style
+            style: 2,
+            custom_id: interaction.id,
+            emoji: {
+              name: interaction.name, // Add the emoji name here
+              id: interaction.id, // Add the emoji ID here if using a custom emoji
+            },
+          })),
+        },
+      ],
     })
     .json();
-}
-
-export async function getEvent(
-  data: GetEventByDiscordIdAndEventId,
-): Promise<GetEventResponse & { discordId: string }> {
-  const [event] = await repositories.event.getEventByDiscordIdAndEventId(data);
-  if (!event) {
-    throw new TRPCError({
-      code: "FORBIDDEN",
-    });
-  }
-  return {
-    eventId: String(event.id),
-    discordId: String(event.discordId),
-    title: event.title,
-    description: event.description,
-  };
-}
-
-export async function createEvent(
-  data: InsertEvent,
-): Promise<CreateEventResponse> {
-  const [event] = await repositories.event.insertEvent(data);
-  return {
-    eventId: String(event?.id),
-    title: String(event?.title),
-    description: String(event?.description),
-  };
-}
-
-export async function updateEvent(
-  data: UpdateEventByDiscordIdAndEventId,
-): Promise<UpdateEventResponse> {
-  const [updatedEvent] =
-    await repositories.event.updateEventByDiscordIdAndEventId(data);
-  if (!updatedEvent) {
-    throw new TRPCError({ code: "FORBIDDEN" });
-  }
-  return {
-    eventId: String(updatedEvent.id),
-    title: updatedEvent.title,
-    description: updatedEvent.description,
-  };
 }
