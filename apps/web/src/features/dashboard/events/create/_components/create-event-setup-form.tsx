@@ -1,4 +1,5 @@
 import type { z } from "zod";
+import { useEffect } from "react";
 import { useParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -67,6 +68,12 @@ export function CreateEventSetupForm() {
     nextStep();
   }
 
+  useEffect(() => {
+    if (setupEventStep.channelId) {
+      form.setValue("channelId", setupEventStep.channelId);
+    }
+  }, [form, setupEventStep.channelId]);
+
   return (
     <Form {...form}>
       <form
@@ -113,20 +120,18 @@ export function CreateEventSetupForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Channel</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
                   <SelectTrigger className="max-w-md">
                     <SelectValue placeholder="Select channel to post event." />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent className="bg-white">
-                  {guilds?.map((channel) => {
-                    return (
-                      <SelectItem key={channel.id} value={channel.id}>
-                        {channel.name}
-                      </SelectItem>
-                    );
-                  })}
+                  {guilds?.map((channel) => (
+                    <SelectItem key={channel.id} value={channel.id}>
+                      # {channel.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <FormMessage />

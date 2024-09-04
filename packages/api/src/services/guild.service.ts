@@ -87,25 +87,34 @@ export async function getGuildChannels(guildId: bigint) {
     );
 
     if (!botOverwrite) {
-      // If no overwrite is found, you might want to assume default role-based permissions
-      // For simplicity, let's assume the bot has permission if there are no overwrites
+      // Assume the bot has permission if there are no overwrites
       return true;
     }
 
-    // Calculate effective permissions
-    const isDenied = common.utils.bitfields.hasPermissions(
-      Number(botOverwrite.deny),
-      ["SEND_MESSAGES"],
-    );
+    const { allow, deny } = botOverwrite;
+
+    // Deny takes precedence
+    const isDenied = common.utils.bitfields.hasPermissions(Number(deny), [
+      "SEND_MESSAGES",
+      "VIEW_CHANNEL",
+      "MANAGE_CHANNELS",
+      "MANAGE_MESSAGES",
+      "MANAGE_THREADS",
+    ]);
 
     if (isDenied) return false;
 
-    const isAllowed = common.utils.bitfields.hasPermissions(
-      Number(botOverwrite.allow),
-      ["SEND_MESSAGES"],
-    );
+    // Allow takes precedence if not denied
+    const isAllowed = common.utils.bitfields.hasPermissions(Number(allow), [
+      "SEND_MESSAGES",
+      "VIEW_CHANNEL",
+      "MANAGE_CHANNELS",
+      "MANAGE_MESSAGES",
+      "MANAGE_THREADS",
+    ]);
 
-    return isAllowed;
+    // If neither is set (both 0), assume true (default role-based permissions)
+    return isAllowed || (Number(deny) === 0 && Number(allow) === 0);
   });
 
   return textChannelsWithPermissions;
