@@ -11,14 +11,12 @@ import {
 
 import { useMultiStepCreateEventFormStore } from "~/state/create-event-multiform-store";
 
-// Define types for better type safety
 interface Interaction {
   id: string;
   name: string;
   limit: string;
 }
 
-// Utility function to check if interaction exists
 const interactionExists = (interactions: Interaction[], id: string): boolean =>
   interactions.some((interaction) => interaction.id === id);
 
@@ -49,8 +47,36 @@ export function EmojisPresetSelect() {
     }
   }, [addInteraction, formData.interactionsStep]);
 
+  useEffect(() => {
+    const presets: Record<string, Interaction[]> = {
+      default: [{ id: "1256723755741479022", name: "Accept", limit: "50" }],
+      "accept-decline-tentative": [
+        { id: "1256723755741479022", name: "Accept", limit: "50" },
+        { id: "1256723758396473434", name: "Decline", limit: "50" },
+        { id: "1256723760837562399", name: "Tentative", limit: "50" },
+      ],
+    };
+
+    const currentInteractions = formData.interactionsStep;
+
+    const isPresetMatched = Object.entries(presets).some(
+      ([_, interactions]) => {
+        return (
+          interactions.length === currentInteractions.length &&
+          interactions.every((interaction) =>
+            interactionExists(currentInteractions, interaction.id),
+          )
+        );
+      },
+    );
+
+    if (!isPresetMatched) {
+      setSelectedPreset("custom");
+    }
+  }, [formData.interactionsStep]);
+
   const handlePresetChange = (preset: string) => {
-    setSelectedPreset(preset); // Update the selected preset state
+    setSelectedPreset(preset);
 
     const presets: Record<string, Interaction[]> = {
       default: [{ id: "1256723755741479022", name: "Accept", limit: "50" }],
@@ -63,23 +89,24 @@ export function EmojisPresetSelect() {
 
     const selectedPresetInteractions = presets[preset];
 
-    // Remove interactions that are not part of the selected preset
-    formData.interactionsStep.forEach((interaction) => {
-      if (
-        !selectedPresetInteractions?.some(
-          (presetInteraction) => presetInteraction.id === interaction.id,
-        )
-      ) {
-        removeInteraction(interaction.id);
-      }
-    });
+    if (preset !== "custom") {
+      formData.interactionsStep.forEach((interaction) => {
+        if (
+          !selectedPresetInteractions?.some(
+            (presetInteraction) => presetInteraction.id === interaction.id,
+          )
+        ) {
+          removeInteraction(interaction.id);
+        }
+      });
 
-    // Add interactions from the selected preset
-    selectedPresetInteractions?.forEach((interaction) => {
-      if (!interactionExists(formData.interactionsStep, interaction.id)) {
-        addInteraction(interaction);
-      }
-    });
+      // Add interactions from the selected preset
+      selectedPresetInteractions?.forEach((interaction) => {
+        if (!interactionExists(formData.interactionsStep, interaction.id)) {
+          addInteraction(interaction);
+        }
+      });
+    }
   };
 
   return (
@@ -91,6 +118,7 @@ export function EmojisPresetSelect() {
         <SelectGroup>
           <SelectItem value="default">Default</SelectItem>
           <SelectItem value="accept-decline-tentative">Three Option</SelectItem>
+          <SelectItem value="custom">Custom</SelectItem>
         </SelectGroup>
       </SelectContent>
     </Select>
