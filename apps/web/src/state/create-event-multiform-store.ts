@@ -30,9 +30,7 @@ export const useMultiStepCreateEventFormStore = create<MultiStepFormStore>()(
         title: "",
         description: "",
       },
-      interactionsStep: [
-        { id: "1256723755741479022", name: "Accept", limit: "50" },
-      ],
+      interactionsStep: [],
     },
     nextStep: () => set((state) => ({ currentStep: state.currentStep + 1 })),
     previousStep: () =>

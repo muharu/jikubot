@@ -1,3 +1,5 @@
+import { useEffect, useRef, useState } from "react";
+
 import {
   Select,
   SelectContent,
@@ -7,16 +9,88 @@ import {
   SelectValue,
 } from "@giverve/ui/select";
 
+import { useMultiStepCreateEventFormStore } from "~/state/create-event-multiform-store";
+
+// Define types for better type safety
+interface Interaction {
+  id: string;
+  name: string;
+  limit: string;
+}
+
+// Utility function to check if interaction exists
+const interactionExists = (interactions: Interaction[], id: string): boolean =>
+  interactions.some((interaction) => interaction.id === id);
+
 export function EmojisPresetSelect() {
+  const formData = useMultiStepCreateEventFormStore((state) => state.formData);
+  const addInteraction = useMultiStepCreateEventFormStore(
+    (state) => state.addInteraction,
+  );
+  const removeInteraction = useMultiStepCreateEventFormStore(
+    (state) => state.removeInteraction,
+  );
+
+  const [selectedPreset, setSelectedPreset] = useState<string>("default");
+  const hasAddedDefaultInteraction = useRef(false);
+
+  useEffect(() => {
+    if (!hasAddedDefaultInteraction.current) {
+      if (
+        !interactionExists(formData.interactionsStep, "1256723755741479022")
+      ) {
+        addInteraction({
+          id: "1256723755741479022",
+          name: "Accept",
+          limit: "50",
+        });
+      }
+      hasAddedDefaultInteraction.current = true;
+    }
+  }, [addInteraction, formData.interactionsStep]);
+
+  const handlePresetChange = (preset: string) => {
+    setSelectedPreset(preset); // Update the selected preset state
+
+    const presets: Record<string, Interaction[]> = {
+      default: [{ id: "1256723755741479022", name: "Accept", limit: "50" }],
+      "accept-decline-tentative": [
+        { id: "1256723755741479022", name: "Accept", limit: "50" },
+        { id: "1256723758396473434", name: "Decline", limit: "50" },
+        { id: "1256723760837562399", name: "Tentative", limit: "50" },
+      ],
+    };
+
+    const selectedPresetInteractions = presets[preset];
+
+    // Remove interactions that are not part of the selected preset
+    formData.interactionsStep.forEach((interaction) => {
+      if (
+        !selectedPresetInteractions?.some(
+          (presetInteraction) => presetInteraction.id === interaction.id,
+        )
+      ) {
+        removeInteraction(interaction.id);
+      }
+    });
+
+    // Add interactions from the selected preset
+    selectedPresetInteractions?.forEach((interaction) => {
+      if (!interactionExists(formData.interactionsStep, interaction.id)) {
+        addInteraction(interaction);
+      }
+    });
+  };
+
   return (
-    <Select>
+    <Select value={selectedPreset} onValueChange={handlePresetChange}>
       <SelectTrigger className="w-[180px]">
         <SelectValue placeholder="Select a preset" />
       </SelectTrigger>
       <SelectContent className="bg-white">
         <SelectGroup>
           <SelectItem value="default">Default</SelectItem>
-          <SelectItem value="yes-maybe-no">Yes Maybe No</SelectItem>
+          <SelectItem value="accept-decline-tentative">Three Option</SelectItem>
         </SelectGroup>
       </SelectContent>
     </Select>
