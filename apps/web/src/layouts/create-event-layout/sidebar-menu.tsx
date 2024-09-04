@@ -1,9 +1,4 @@
-import {
-  AiTwotoneBell,
-  AiTwotoneEdit,
-  AiTwotoneLike,
-  AiTwotoneStop,
-} from "react-icons/ai";
+import { AiTwotoneEdit, AiTwotoneLike } from "react-icons/ai";
 
 import { cn } from "@giverve/ui";
 import { buttonVariants } from "@giverve/ui/button";
@@ -43,7 +38,7 @@ export function EventEditSidebaMenu() {
         Interactions
       </button>
 
-      <button
+      {/* <div
         className={cn(
           buttonVariants({
             variant: currentStep === 3 ? "noShadow" : "default",
@@ -54,9 +49,9 @@ export function EventEditSidebaMenu() {
       >
         <AiTwotoneStop className="mr-1.5 size-6" />
         Limits
-      </button>
+      </div>
 
-      <button
+      <div
         className={cn(
           buttonVariants({
             variant: currentStep === 4 ? "noShadow" : "default",
@@ -67,7 +62,7 @@ export function EventEditSidebaMenu() {
       >
         <AiTwotoneBell className="mr-1.5 size-6" />
         Notifications
-      </button>
+      </div> */}
     </aside>
   );
 }
