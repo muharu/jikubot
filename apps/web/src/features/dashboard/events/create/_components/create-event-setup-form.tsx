@@ -1,4 +1,5 @@
 import type { z } from "zod";
+import { useParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { LuArrowRight } from "react-icons/lu";
@@ -25,10 +26,16 @@ import { Textarea } from "@giverve/ui/textarea";
 import { eventSetupRequestValidator } from "@giverve/validators";
 
 import { useMultiStepCreateEventFormStore } from "~/state/create-event-multiform-store";
+import { trpc } from "~/utils/trpc";
 
 const formSchema = eventSetupRequestValidator;
 
 export function CreateEventSetupForm() {
+  const { guildId } = useParams<{ guildId: string }>();
+  const { data: guilds } = trpc.dashboard.guilds.getChannels.useQuery({
+    guildId,
+  });
+
   const setupEventStep = useMultiStepCreateEventFormStore(
     (state) => state.formData.setupEventStep,
   );
@@ -113,8 +120,13 @@ export function CreateEventSetupForm() {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent className="bg-white">
-                  <SelectItem value="1234713459120144434">cmds</SelectItem>
-                  <SelectItem value="1280639240774090875">cmds-2</SelectItem>
+                  {guilds?.map((channel) => {
+                    return (
+                      <SelectItem key={channel.id} value={channel.id}>
+                        {channel.name}
+                      </SelectItem>
+                    );
+                  })}
                 </SelectContent>
               </Select>
               <FormMessage />

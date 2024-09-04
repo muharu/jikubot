@@ -1,4 +1,5 @@
 import { TRPCError } from "@trpc/server";
+import { z } from "zod";
 
 import {
   guildMeRequestValidator,
@@ -34,7 +35,6 @@ export const dashboardGuildsRouter = createTRPCRouter({
       const guild = await services.guild.getGuildWithPermissions(
         BigInt(input.guildId),
       );
-      console.log(guild);
       return guild;
     }),
 
@@ -48,6 +48,12 @@ export const dashboardGuildsRouter = createTRPCRouter({
       }
       const emojis = await services.guild.getGuildEmojis(BigInt(input.guildId));
       return emojis;
+    }),
+
+  getChannels: dashboardProcedure
+    .input(z.object({ guildId: z.string() }))
+    .query(async ({ input }) => {
+      return await services.guild.getGuildChannels(BigInt(input.guildId));
     }),
 });
 
