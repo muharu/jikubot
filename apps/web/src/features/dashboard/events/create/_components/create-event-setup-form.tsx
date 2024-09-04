@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { LuArrowRight } from "react-icons/lu";
+import { LuArrowRight, LuLoader2 } from "react-icons/lu";
 
 import { Button } from "@giverve/ui/button";
 import {
@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@giverve/ui/select";
+import { Skeleton } from "@giverve/ui/skeleton";
 import { Textarea } from "@giverve/ui/textarea";
 import { eventSetupRequestValidator } from "@giverve/validators";
 
@@ -33,9 +34,10 @@ const formSchema = eventSetupRequestValidator;
 
 export function CreateEventSetupForm() {
   const { guildId } = useParams<{ guildId: string }>();
-  const { data: guilds } = trpc.dashboard.guilds.getChannels.useQuery({
-    guildId,
-  });
+  const { data: guilds, isLoading: isGuildLoading } =
+    trpc.dashboard.guilds.getChannels.useQuery({
+      guildId,
+    });
 
   const setupEventStep = useMultiStepCreateEventFormStore(
     (state) => state.formData.setupEventStep,
@@ -80,22 +82,55 @@ export function CreateEventSetupForm() {
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-4 font-bold"
       >
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Event Title</FormLabel>
-              <FormControl>
-                <Input placeholder="e.g Valorant Stack 5 Tonite" {...field} />
-              </FormControl>
-              <FormDescription>
-                This title will be displayed to your guild members.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="grid w-full gap-4 lg:grid-cols-2">
+          <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Event Title</FormLabel>
+                <FormControl>
+                  <Input placeholder="e.g Daily Boss Raid" {...field} />
+                </FormControl>
+                <FormDescription>
+                  This title will be displayed to your guild members.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="channelId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Channel</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  {!isGuildLoading ? (
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select channel to post event." />
+                      </SelectTrigger>
+                    </FormControl>
+                  ) : (
+                    <Skeleton className="flex h-10 w-full animate-pulse items-center bg-[#f0f0f0]">
+                      <LuLoader2 className="ml-2.5 size-5 animate-spin" />
+                    </Skeleton>
+                  )}
+                  <SelectContent className="bg-white">
+                    {guilds?.map((channel) => (
+                      <SelectItem key={channel.id} value={channel.id}>
+                        # {channel.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         <FormField
           control={form.control}
@@ -109,31 +144,6 @@ export function CreateEventSetupForm() {
               <FormDescription>
                 This description will be displayed to your guild members.
               </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="channelId"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Channel</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
-                <FormControl>
-                  <SelectTrigger className="max-w-md">
-                    <SelectValue placeholder="Select channel to post event." />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent className="bg-white">
-                  {guilds?.map((channel) => (
-                    <SelectItem key={channel.id} value={channel.id}>
-                      # {channel.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
               <FormMessage />
             </FormItem>
           )}
