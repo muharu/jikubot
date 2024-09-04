@@ -15,6 +15,7 @@ import {
   CommandInput,
   CommandItem,
 } from "@giverve/ui/command";
+import { DialogFooter } from "@giverve/ui/dialog";
 import {
   Form,
   FormControl,
@@ -187,7 +188,9 @@ export function AddEmojiForm({
           )}
         />
 
-        <Button type="submit">Submit</Button>
+        <DialogFooter>
+          <Button type="submit">Save</Button>
+        </DialogFooter>
       </form>
     </Form>
   );

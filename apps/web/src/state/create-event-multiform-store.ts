@@ -18,6 +18,7 @@ interface MultiStepFormStore {
   previousStep: () => void;
   updateFormData: (newData: Partial<FormData>) => void;
   addInteraction: (interaction: EventInteraction) => void;
+  removeInteraction: (interactionId: string) => void;
 }
 
 export const useMultiStepCreateEventFormStore = create<MultiStepFormStore>()(
@@ -47,6 +48,15 @@ export const useMultiStepCreateEventFormStore = create<MultiStepFormStore>()(
         formData: {
           ...state.formData,
           interactionsStep: [...state.formData.interactionsStep, interaction],
+        },
+      })),
+    removeInteraction: (interactionId: string) =>
+      set((state) => ({
+        formData: {
+          ...state.formData,
+          interactionsStep: state.formData.interactionsStep.filter(
+            (interaction) => interaction.id !== interactionId,
+          ),
         },
       })),
   }),

@@ -14,7 +14,7 @@ export function CreateEventInteractionForm() {
 
   return (
     <main>
-      <div className="flex gap-x-2">
+      <div className="flex items-center justify-between">
         <EmojisPresetSelect />
         <EmojiDialog />
       </div>
