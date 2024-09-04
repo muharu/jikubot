@@ -55,7 +55,23 @@ export function AddEmojiForm({
     (state) => state.addInteraction,
   );
 
+  const existingInteractions = useMultiStepCreateEventFormStore(
+    (state) => state.formData.interactionsStep,
+  );
+
   const onSubmit = (values: z.infer<typeof eventInteraction>) => {
+    const emojiAlreadyExists = existingInteractions.some(
+      (interaction) => interaction.id === values.id,
+    );
+
+    if (emojiAlreadyExists) {
+      form.setError("id", {
+        type: "manual",
+        message: "This emoji is already added.",
+      });
+      return;
+    }
+
     addInteraction(values);
     setIsDialogOpen(false);
   };

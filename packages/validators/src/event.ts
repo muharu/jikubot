@@ -31,7 +31,16 @@ export const eventInteraction = z.object({
     message: "Limit must be a numeric string.",
   }),
 });
-export const eventInteractionsRequestValidator = z.array(eventInteraction);
+const uniqueIdsRefinement = z.array(eventInteraction).refine(
+  (arr) => {
+    const ids = arr.map((item) => item.id);
+    return new Set(ids).size === ids.length;
+  },
+  {
+    message: "Only one interaction per emoji is allowed.",
+  },
+);
+export const eventInteractionsRequestValidator = uniqueIdsRefinement;
 export type EventInteraction = z.infer<typeof eventInteraction>;
 export type EventInteractionsRequest = z.infer<
   typeof eventInteractionsRequestValidator
