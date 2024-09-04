@@ -108,10 +108,19 @@ export function AddEmojiForm({
                           />
                         )}
                         {field.value
-                          ? (guildEmojis?.find(
+                          ? guildEmojis?.find(
                               (emoji) => emoji.id === field.value,
-                            )?.name ?? "Select Emoji")
+                            )?.name
+                            ? guildEmojis
+                                .find((emoji) => emoji.id === field.value)
+                                ?.name?.charAt(0)
+                                .toUpperCase() +
+                              (guildEmojis
+                                .find((emoji) => emoji.id === field.value)
+                                ?.name?.slice(1) ?? "")
+                            : "Select Emoji"
                           : "Select Emoji"}
+
                         <LuChevronsUpDown
                           color="black"
                           className="ml-2 h-4 w-4 shrink-0"
@@ -153,7 +162,10 @@ export function AddEmojiForm({
                                 alt={emoji.name ?? ""}
                                 className="mr-4 h-5 w-5"
                               />
-                              {emoji.name}
+                              {emoji.name
+                                ? emoji.name.slice(0, 1).toUpperCase() +
+                                  emoji.name.slice(1)
+                                : ""}
                             </CommandItem>
                           ))}
                         </CommandGroup>
