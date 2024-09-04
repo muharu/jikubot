@@ -21,9 +21,15 @@ export const eventSetupRequestValidator = z.object({
 export type EventSetupRequest = z.infer<typeof eventSetupRequestValidator>;
 
 export const eventInteraction = z.object({
-  id: z.string(),
-  name: z.string(),
-  limit: z.number().int(),
+  id: z.string().min(1, {
+    message: "Emoji cannot be empty.",
+  }),
+  name: z.string().min(1, {
+    message: "Name cannot be empty.",
+  }),
+  limit: z.string().refine((value) => !isNaN(Number(value)), {
+    message: "Limit must be a numeric string.",
+  }),
 });
 export const eventInteractionsRequestValidator = z.array(eventInteraction);
 export type EventInteraction = z.infer<typeof eventInteraction>;
