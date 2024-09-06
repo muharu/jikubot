@@ -1,4 +1,4 @@
-import { AiTwotoneEdit, AiTwotoneLike } from "react-icons/ai";
+import { AiTwotoneHighlight, AiTwotoneLike } from "react-icons/ai";
 
 import { cn } from "@giverve/ui";
 import { buttonVariants } from "@giverve/ui/button";
@@ -21,7 +21,7 @@ export function EventEditSidebaMenu() {
           currentStep !== 1 ? "bg-white font-medium" : "",
         )}
       >
-        <AiTwotoneEdit className="mr-1.5 size-7" />
+        <AiTwotoneHighlight className="mr-1.5 size-7" />
         Event Setup
       </div>
 

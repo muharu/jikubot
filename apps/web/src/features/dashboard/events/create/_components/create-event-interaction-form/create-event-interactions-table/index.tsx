@@ -1,7 +1,5 @@
 import Image from "next/image";
-import { AiTwotoneDelete } from "react-icons/ai";
 
-import { Button } from "@giverve/ui/button";
 import {
   Table,
   TableBody,
@@ -12,14 +10,12 @@ import {
 } from "@giverve/ui/table";
 
 import { useMultiStepCreateEventFormStore } from "~/state/create-event-multiform-store";
+import { EditInteractionButton } from "./edit-interaction-button";
+import { RemoveInteractionButton } from "./remove-interaction-button";
 
 export function CreateEventInteractionsTable() {
   const interactionsStep = useMultiStepCreateEventFormStore(
     (state) => state.formData.interactionsStep,
-  );
-
-  const removeInteraction = useMultiStepCreateEventFormStore(
-    (state) => state.removeInteraction,
   );
 
   return (
@@ -46,14 +42,9 @@ export function CreateEventInteractionsTable() {
             </TableCell>
             <TableCell>{interaction.name}</TableCell>
             <TableCell>{interaction.limit}</TableCell>
-            <TableCell className="text-right">
-              <Button
-                onClick={() => removeInteraction(interaction.id)}
-                size="icon"
-                variant="reverse"
-              >
-                <AiTwotoneDelete className="size-5" />
-              </Button>
+            <TableCell className="flex items-center justify-end gap-x-2">
+              <EditInteractionButton interactionId={interaction.id} />
+              <RemoveInteractionButton interactionId={interaction.id} />
             </TableCell>
           </TableRow>
         ))}
